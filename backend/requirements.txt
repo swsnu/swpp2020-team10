@@ -1,0 +1,4 @@
+django==3.1.2 echo coverage==5.3 echo pylint==2.6.0 echo pylint-django==2.3.0
+django==3.1.2 echo coverage==5.3 echo pylint==2.6.0 echo pylint-django==2.3.0
+django==3.1.2 echo coverage==5.3 echo pylint==2.6.0 echo pylint-django==2.3.0
+django==3.1.2 echo coverage==5.3 echo pylint==2.6.0 echo pylint-django==2.3.0
