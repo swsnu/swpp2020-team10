@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import *
+from .models import Food, FoodInstance, Recipe, Review, Comment
 
 
 admin.site.register(FoodInstance)
