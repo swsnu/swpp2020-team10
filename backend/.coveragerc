@@ -1,0 +1,7 @@
+# in .coveragerc
+[run]
+omit =
+    # omit this single file
+    backend/wsgi.py
+    backend/asgi.py
+    manage.py
