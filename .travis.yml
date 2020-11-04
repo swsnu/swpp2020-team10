@@ -21,7 +21,7 @@ matrix:
     - pip install -r requirements.txt
     script:
     - pylint **/*.py --load-plugins pylint_django
-    - coverage run --source='.' manage.py test
+    - coverage run --source='.' manage.py test --keepdb
     - coverage xml
 dd:
   secure: QyJG0beKRkI2Kzg22PNw6xMNEXDPQ/lVvBpCMehruu7s/2cC8Im0QOeJpxfN0R/WmW2q2U6TP8DAMMxHK8xXeEi6eHxzeKX3xFRFb2x4UpXLJskv3yC8QsFMUpEhFGZ1vQkqSlxms3u74H7mwhd7bgkBs1qCD58M2PvApu8+IO6rZE3TkSxVPC+poOG3NPKG4B72u0ja10zzwUZs/SnZ1dzZqr2pHYC9cGwvp2c+eRuRES4bOPlCuOBoTcfLNYAFDPc40e+G0x5S5bXGtluETdQoByg920W1q8JgwNjctpSBMTN132sEQdkj9PFw3T3bs9phGdr83dpjXsh5Kxa6Npuq+V2uWl0weKztNnT9ts6NY3D8vnZB954w3ao8moHDtPwWOKfXrXrI4CHDm/z8DaL3Ie+rmxEzI8cnZOAksG1bYeFoJtrIFwTXJEPICl9y7wy0mbzxpelcuIVrRxDbo/YYbI6ZrgXDs0VuUWul2SCG0Dt2dzbsYYJcnhs2dX0JnQzv0erK1dKY+bnTJx3Ylg/7FWbRgsvdhsbvYD1UexyNc9YUtM5dfDu9hAXUkYiy4q+qgs0zI4IyFu5Ge8+wff+kfw0ZruzOEfBoW36+9wx5+MIEpmp2+YBCabKwazrAVXAbfSgRQ8Kt/7axC0VaWalgV3towLcItfUdUPnhC7g=
