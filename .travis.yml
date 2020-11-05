@@ -1,31 +1,32 @@
 matrix:
   include:
-  - language: node_js
-    node_js: '12'
-    cache:
-    - yarn: true
-    before_install:
-    - cd frontend
-    install:
-    - yarn install
-    script:
-    - "./node_modules/.bin/eslint src/"
-    - yarn test --coverage --watchAll=false
-  - language: python
-    python: '3.8'
-    cache:
-    - pip: true
-    before_install:
-    - cd backend
-    install:
-    - pip install -r requirements.txt
-    script:
-    - pylint **/*.py --load-plugins pylint_django
-    - coverage run --source='.' manage.py test --keepdb
-    - coverage xml
-    - cd .. & sonar-scanner
-  - addons:
-      sonarcloud:
-        organization: swsnu
-        token:
-          secure: kP+U7hN4tLvG1JrQOQbiI1xyWxaonh4b9Ej3oVRa0EhlnQaib6DD8tIYk9ecIXzI31F3TCc8spdRSa3FFelNHZ6SdgZc/i9FWSFxsci63mcZGb2jIWmjIV3nVypfw3M51HyYRJElz5AEEA84LSitdArOa1//HtJ4wziFWreBOxnp4LYgKYldiYG9DiPTyx2oOqgb0pHQCTB8jOow7GQSIGCR7u2EiHyWmUJdW8+791Qz4okAp3t0usoKTatMDcs+ArDAMeofW0QruTlq85gmA3NbAppQNDi4KDy3cs4DUHkmmvePO9fV36O1ii4l+Ty2PoI+RslCMPq3e2dTSVNtKlvOGjF6u8nJV/T2+DzCz7IBiY4+vodqUmRv8jwD3UTUBtZALz2qbnHMy2BBeFtLIlq1gRwb6xBbQF49uclHjMGOMj4I4uiB742W8lEGA2iz+WwImvuAXHccJQmxp/vhxo31yRm0hlxUObVpvV+INEoJD1r/dQwPfXgZ3aPjZgDKwH2IMcZOQGmbagiR0jibzUJ13sT/6EDxHfouTKKUy0IR3JMdATayEWWE623p8txCpjunR5RpdW4Elw9ppSk5AKemxs4vXFp4SetAtTEL2KG550GMics1Dw5vD0xda8gaWBly444df+HyMifanrmdmNOx8sLYjwFLW8n9cYDNKhk=
+    - language: node_js
+      addons:
+        sonarcloud:
+          organization: "swsnu"
+          token:
+            secure: "kP+U7hN4tLvG1JrQOQbiI1xyWxaonh4b9Ej3oVRa0EhlnQaib6DD8tIYk9ecIXzI31F3TCc8spdRSa3FFelNHZ6SdgZc/i9FWSFxsci63mcZGb2jIWmjIV3nVypfw3M51HyYRJElz5AEEA84LSitdArOa1//HtJ4wziFWreBOxnp4LYgKYldiYG9DiPTyx2oOqgb0pHQCTB8jOow7GQSIGCR7u2EiHyWmUJdW8+791Qz4okAp3t0usoKTatMDcs+ArDAMeofW0QruTlq85gmA3NbAppQNDi4KDy3cs4DUHkmmvePO9fV36O1ii4l+Ty2PoI+RslCMPq3e2dTSVNtKlvOGjF6u8nJV/T2+DzCz7IBiY4+vodqUmRv8jwD3UTUBtZALz2qbnHMy2BBeFtLIlq1gRwb6xBbQF49uclHjMGOMj4I4uiB742W8lEGA2iz+WwImvuAXHccJQmxp/vhxo31yRm0hlxUObVpvV+INEoJD1r/dQwPfXgZ3aPjZgDKwH2IMcZOQGmbagiR0jibzUJ13sT/6EDxHfouTKKUy0IR3JMdATayEWWE623p8txCpjunR5RpdW4Elw9ppSk5AKemxs4vXFp4SetAtTEL2KG550GMics1Dw5vD0xda8gaWBly444df+HyMifanrmdmNOx8sLYjwFLW8n9cYDNKhk="
+      node_js: '12'
+      cache:
+        - yarn: true
+      before_install:
+        - cd frontend
+      install:
+        - yarn install
+      script:
+        - "./node_modules/.bin/eslint src/"
+        - yarn test --coverage --watchAll=false
+        - sonar-scanner
+
+    - language: python
+      python: '3.8'
+      cache:
+        - pip: true
+      before_install:
+        - cd backend/caffeine
+      install:
+        - pip install -r requirements.txt
+      script:
+        - pylint **/*.py --load-plugins pylint_django
+        - coverage run --source='.' manage.py test --keepdb
+        - coverage xml
