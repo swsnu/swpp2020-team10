@@ -1,16 +1,16 @@
 matrix:
-#  include:
-#  - language: node_js
-#    node_js: '12'
-#    cache:
-#    - yarn: true
-#    before_install:
-#    - cd frontend
-#    install:
-#    - yarn install
-#    script:
-#   - "./node_modules/.bin/eslint src/"
-#    - yarn test --coverage --watchAll=false
+  include:
+  - language: node_js
+    node_js: '12'
+    cache:
+    - yarn: true
+    before_install:
+    - cd frontend
+    install:
+    - yarn install
+    script:
+   - "./node_modules/.bin/eslint src/"
+    - yarn test --coverage --watchAll=false
   - addons:
       sonarcloud:
         organization: swsnu
