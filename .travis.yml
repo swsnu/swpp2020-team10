@@ -16,14 +16,14 @@ matrix:
       script:
         - "./node_modules/.bin/eslint src/"
         - yarn test --coverage --watchAll=false
-        - sonar-scanner
+#       - sonar-scanner
 
     - language: python
       python: '3.8'
       cache:
         - pip: true
       before_install:
-        - cd backend/caffeine
+        - cd backend
       install:
         - pip install -r requirements.txt
       script:
