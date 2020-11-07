@@ -15,9 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import view_recipe
+from .views import view_recipe, view_review, view_comment
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/recipe/', view_recipe.get_recipes, name='get_recipes'),
-    path('api/recipe/<int:_id>/', view_recipe.get_recipe_by_id, name='get_recipe_by_id'),
+    path('api/recipe/', view_recipe.recipes, name='recipes'),
+    path('api/recipe/<int:_id>/', view_recipe.recipe_by_id, name='recipe_by_id'),
+    path('api/recipe/<int:_id>/review/', view_review.recipe_review, name='recipe_review'),
+    path('api/review/<int:_id>/', view_review.review_by_id, name='review_by_id'),
+    path('api/review/<int:_id>/reaction/', view_review.reaction, name='review_reaction'),
+    path('api/review/<int:_id>/comment/', view_comment.review_comment, name='get_review_comment'),
+    path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
+    path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
+
 ]

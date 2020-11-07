@@ -142,7 +142,8 @@ disable=print-statement,
         C0115,
         C0116,
         C0301,
-        R5102
+        R5102,
+        R5101,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -208,10 +209,10 @@ ignore-comments=yes
 ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
-ignore-imports=no
+ignore-imports=yes
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=25
 
 
 [SPELLING]
@@ -311,6 +312,7 @@ good-names=i,
            k,
            ex,
            Run,
+           e,
            _
 
 # Good variable names regexes, separated by a comma. If names match any regex,
