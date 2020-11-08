@@ -20,7 +20,7 @@ export const getComment_ = (comment) => {
 
 export const getComment = (id) => {
   return dispatch => {
-    return axios.get('/comment/' + id)
+    return axios.get('/api/comment/' + id)
       .then(response => {
         dispatch(getComment_(response.data));
       });

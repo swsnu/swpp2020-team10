@@ -1,116 +1,54 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import * as actionCreators from '../store/actions/index';
 
-// move to 'Settings' page
-const onClickSettingsButton = () => {};
-
-// logout and go to index page
-const onClickSignOutButton = () => {};
-
-// move to 'Review Editor' page
-const onClickEditReviewButton = () => {};
-
-// delete the review and go back to 'Recipe Details' page
-const onClickDeleteReviewButton = () => {
-  this.props.onDeleteReview(this.props.match.params.id);
-};
-
-// move to 'Recipe Details' page
-const onClickBackButton = () => {};
-
-// make new comment
-const onClickWriteButton = (comment) => {
-  const newComment = {
-    review: this.props.storedReview,
-    user: this.props.user,
-    content: comment,
-  };
-  this.props.onPostComment(this.props.match.params.id, newComment);
-};
-
-// increment likes count for the review
-const onClickLikeReviewButton = () => {
-  const thisReview = this.props.storedReview;
-  this.props.onLikeReview(this.props.match.params.id, thisReview);
-};
-
-// decrement likes count for the review
-const onClickDisikeReviewButton = () => {
-  const thisReview = this.props.storedReview;
-  this.props.onDisikeReview(this.props.match.params.id, thisReview);
-};
-
-// increment reports count for the review
-const onClickReportReviewButton = () => {
-  const thisReview = this.props.storedReview;
-  this.props.onReportReview(this.props.match.params.id, thisReview);
-};
-
-// edit the comment
-const onClickEditCommentButton = (commentId, comment) => {
-  const [newComment, setNewComment] = useState('');
-
-  // confirm edit
-  const onClickEditCommentConfirmButton = (commentId, comment) => {
-    this.props.onEditComment(commentId, comment);
-  };
-
-  // cancel edit and exit the popup
-  const onClickEditCommentCancelButton = () => {};
-
-  return(
-    <div className='CommentEditor'>
-      <div className='row'>
-        <input id='editCommentInput' rows='4' type='text' value={comment.value}
-          onChange={(event) => setNewComment(event.target.value)}>
-        </input>
-      </div>
-      <button id='editCommentConfirmButton' disabled={newComment === ''}
-        onClick={onClickEditCommentConfirmButton(commentId, {...comment, content: newComment})}>
-        Confirm
-      </button>
-      <button id='editCommentCancelButton' disabled={newComment === ''}
-        onClick={onClickEditCommentCancelButton()}>
-        Cancel
-      </button>
-    </div>
-  );
-};
-
-// delete the comment
-const onClickDeleteCommentButton = (commentId) => {
-  this.props.onDeleteComment(commentId);
-};
-
-// increment likes count for the comment
-const onClickLikeCommentButton = (commentId, comment) => {
-  this.props.onLikeComment(commentId, comment);
-};
-
-// decrement likes count for the comment
-const onClickDislikeCommentButton = (commentId, comment) => {
-  this.props.onDislikeComment(commentId, comment);
-};
-
-// increment reports count for the comment
-const onClickReportCommentButton = (commentId, comment) => {
-  this.props.onReportComment(commentId, comment);
-};
-
-
+/*<div className='row'>
+<button id='settingsButton' onClick={onClickSettingsButton()}>
+  To Settings
+</button>
+<button id='signOutButton' onClick={onClickSignOutButton()}>
+  Sign Out
+</button>
+</div>*/
 function ReviewDetail() {
   const [comment, setComment] = useState('');
+  const history = useHistory();
+
+  /*// move to 'Settings' page
+  const onClickSettingsButton = () => {};
+
+  // logout and go to index page
+  const onClickSignOutButton = () => {};
+  */
+  // move to 'Review Editor' page
+  const onClickEditReviewButton = () => {
+    history.push('/');
+  };
+
+  // delete the review and go back to 'Recipe Details' page
+  const onClickDeleteReviewButton = () => {
+    this.props.onDeleteReview(this.props.match.params.id);
+    history.push('/recipe/' + this.props.storedReview.recipe.id);
+  };
+
+  // move to 'Recipe Details' page
+  const onClickBackButton = () => {
+    history.push('/recipe/' + this.props.storedReview.recipe.id);
+  };
+
+  // make new comment
+  const onClickWriteButton = (comment) => {
+    const newComment = {
+      review: this.props.storedReview,
+      user: this.props.user,
+      content: comment,
+    };
+    this.props.onPostComment(this.props.match.params.id, newComment);
+  };
+  
   return(
     <div className='ReviewDetail'>
-      <div className='row'>
-        <button id='settingsButton' onClick={onClickSettingsButton()}>
-          To Settings
-        </button>
-        <button id='signOutButton' onClick={onClickSignOutButton()}>
-          Sign Out
-        </button>
-      </div>
       <ReviewPart />
       <button id='editReviewButton' disabled={this.props.storedReview.user !== this.props.user} 
         onClick={onClickEditReviewButton()}>
@@ -145,6 +83,24 @@ function ReviewDetail() {
 // returns information about the review.
 // Image should be inserted in future implementation.
 function ReviewPart() {
+  // increment likes count for the review
+  const onClickLikeReviewButton = () => {
+    const thisReview = this.props.storedReview;
+    this.props.onLikeReview(this.props.match.params.id, thisReview);
+  };
+
+  // decrement likes count for the review
+  const onClickDisikeReviewButton = () => {
+    const thisReview = this.props.storedReview;
+    this.props.onDisikeReview(this.props.match.params.id, thisReview);
+  };
+
+  // increment reports count for the review
+  const onClickReportReviewButton = () => {
+    const thisReview = this.props.storedReview;
+    this.props.onReportReview(this.props.match.params.id, thisReview);
+  };
+
   return(
     <div className='ReviewPart'>
       <h1>{this.props.storedReview.title}</h1>
@@ -168,6 +124,58 @@ function ReviewPart() {
 
 // returns list of comments of this review w/ necessary information + buttons
 function CommentList() {
+  // edit the comment
+  const onClickEditCommentButton = (commentId, comment) => {
+    const [newComment, setNewComment] = useState('');
+
+    // confirm edit
+    const onClickEditCommentConfirmButton = (commentId, comment) => {
+      this.props.onEditComment(commentId, comment);
+    };
+
+    // cancel edit and exit the popup
+    const onClickEditCommentCancelButton = () => {
+      return;
+    };
+
+    return(
+      <div className='CommentEditor'>
+        <div className='row'>
+          <input id='editCommentInput' rows='4' type='text' value={comment.value}
+            onChange={(event) => setNewComment(event.target.value)}>
+          </input>
+        </div>
+        <button id='editCommentConfirmButton' disabled={newComment === ''}
+          onClick={onClickEditCommentConfirmButton(commentId, {...comment, content: newComment})}>
+          Confirm
+        </button>
+        <button id='editCommentCancelButton' disabled={newComment === ''}
+          onClick={onClickEditCommentCancelButton()}>
+          Cancel
+        </button>
+      </div>
+    );
+  };
+
+  // delete the comment
+  const onClickDeleteCommentButton = (commentId) => {
+    this.props.onDeleteComment(commentId);
+  };
+
+  // increment likes count for the comment
+  const onClickLikeCommentButton = (commentId, comment) => {
+    this.props.onLikeComment(commentId, comment);
+  };
+
+  // decrement likes count for the comment
+  const onClickDislikeCommentButton = (commentId, comment) => {
+    this.props.onDislikeComment(commentId, comment);
+  };
+
+  // increment reports count for the comment
+  const onClickReportCommentButton = (commentId, comment) => {
+    this.props.onReportComment(commentId, comment);
+  };
   const commentList = this.props.storedComments.map((comment) => {
     if(comment.id === this.props.user.id) {
       return (
@@ -219,8 +227,8 @@ function CommentList() {
 
 const mapStateToProps = (state) => {
   return {
-    storedReview: state.reviews.selectedReview,
-    storedComments: state.comments.comments,
+    storedReview: state.review.selectedReview,
+    storedComments: state.comment.comments,
   };
 };
 

@@ -19,5 +19,6 @@ export {
   editComment,
   likeComment,
   dislikeComment,
-  reportComment
+  reportComment,
+  deleteComment
 } from './comment';

@@ -7,6 +7,7 @@ import {
   applyMiddleware,
 } from 'redux';
 import thunk from 'redux-thunk';
+import 'semantic-ui-css/semantic.min.css';
 
 import recipeReducer from './store/reducers/recipe';
 import reviewReducer from './store/reducers/review';
