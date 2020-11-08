@@ -8,9 +8,9 @@ export const getCommentList_ = (comments) => {
 export const getCommentList = (id) => {
   return dispatch => {
     return axios.get('/api/review/' + id + '/comment/')
-    .then(response => {
-      dispatch(getCommentList_(response.data))
-    });
+      .then(response => {
+        dispatch(getCommentList_(response.data));
+      });
   };
 };
 
@@ -21,9 +21,9 @@ export const getComment_ = (comment) => {
 export const getComment = (id) => {
   return dispatch => {
     return axios.get('/comment/' + id)
-    .then(response => {
-      dispatch(getComment_(response.data))
-    });
+      .then(response => {
+        dispatch(getComment_(response.data));
+      });
   };
 };
 
@@ -42,9 +42,9 @@ export const postComment_ = (comment) => {
 export const postComment = (id, comment) => {
   return dispatch => {
     return axios.post('/api/review/' + id + '/comment/', comment)
-    .then(response => {
-      dispatch(postComment_(response.data))
-    });
+      .then(response => {
+        dispatch(postComment_(response.data));
+      });
   };
 };
 
@@ -55,9 +55,9 @@ export const editComment_ = (id) => {
 export const editComment = (id, comment) => {
   return dispatch => {
     return axios.put('/api/comment/' + id + '/', comment)
-    .then(response => {
-      dispatch(editComment_(id))
-    });
+      .then(() => {
+        dispatch(editComment_(id));
+      });
   };
 };
 
@@ -68,9 +68,9 @@ export const likeComment_ = (id) => {
 export const likeComment = (id, reaction) => {
   return dispatch => {
     return axios.put('/api/comment/' + id + '/reaction/', reaction)
-    .then(response => {
-      dispatch(likeComment_(id));
-    });
+      .then(() => {
+        dispatch(likeComment_(id));
+      });
   };
 };
 
@@ -81,9 +81,9 @@ export const dislikeComment_ = (id) => {
 export const dislikeComment = (id, reaction) => {
   return dispatch => {
     return axios.put('/api/comment/' + id + '/reaction/', reaction)
-    .then(response => {
-      dispatch(dislikeComment_(id));
-    });
+      .then(() => {
+        dispatch(dislikeComment_(id));
+      });
   };
 };
 
@@ -94,9 +94,9 @@ export const reportComment_ = (id) => {
 export const reportComment = (id, reaction) => {
   return dispatch => {
     return axios.put('/api/comment/' + id + '/reaction/', reaction)
-    .then(response => {
-      dispatch(reportComment_(id));
-    });
+      .then(() => {
+        dispatch(reportComment_(id));
+      });
   };
 };
 
@@ -107,8 +107,8 @@ export const deleteComment_ = (id) => {
 export const deleteComment = (id) => {
   return dispatch => {
     return axios.delete('/api/comment/' + id + '/')
-    .then(response => {
-      dispatch(deleteComment_(id))
-    });
+      .then(() => {
+        dispatch(deleteComment_(id));
+      });
   };
 };

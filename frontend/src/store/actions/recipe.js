@@ -8,21 +8,21 @@ export const selectRecipeById_ = (recipe) => {
 export const selectRecipeById = (id) => {
   return dispatch => {
     return axios.get('/api/recipe/' + id + '/')
-    .then(response => {
-      dispatch(getRecipe_(response.data));
-    });
+      .then(response => {
+        dispatch(selectRecipeById_(response.data));
+      });
   };
 };
 
-export const addRecipeRatingById_ = (recipe) => {
+export const addRecipeRatingById_ = (id) => {
   return {type: actionTypes.RATE_RECIPE, targetId: id};
 };
 
 export const addRecipeRatingById = (id, recipe) => {
   return dispatch => {
     return axios.put('/api/recipe/' + id + '/', recipe)
-    .then(response => {
-      dispatch(addRecipeRatingById_(id))
-    });
-  }
+      .then(() => {
+        dispatch(addRecipeRatingById_(id));
+      });
+  };
 };

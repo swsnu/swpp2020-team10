@@ -8,9 +8,9 @@ export const getReviewList_ = (reviews) => {
 export const getReviewList = (id) => {
   return dispatch => {
     return axios.get('/api/recipe/' + id + '/reviews/')
-    .then(response => {
-      dispatch(getReviewList_(response.data))
-    });
+      .then(response => {
+        dispatch(getReviewList_(response.data));
+      });
   };
 };
 
@@ -21,9 +21,9 @@ export const getReview_ = (review) => {
 export const getReview = (id) => {
   return dispatch => {
     return axios.get('/reviews/' + id)
-    .then(response => {
-      dispatch(getReview_(response.data))
-    });
+      .then(response => {
+        dispatch(getReview_(response.data));
+      });
   };
 };
 
@@ -52,10 +52,10 @@ export const likeReview_ = (id) => {
 
 export const likeReview = (id, review) => {
   return dispatch => {
-    return axios.put("/api/review/" + id + "/reaction/", review)
-    .then(response => {
-      dispatch(likeReview_(id));
-    });
+    return axios.put('/api/review/' + id + '/reaction/', review)
+      .then(() => {
+        dispatch(likeReview_(id));
+      });
   };
 };
 
@@ -65,10 +65,10 @@ export const dislikeReview_ = (id) => {
 
 export const dislikeReview = (id, review) => {
   return dispatch => {
-    return axios.put("/api/review/" + id + "/reaction/", review)
-    .then(response => {
-      dispatch(dislikeReview_(id));
-    });
+    return axios.put('/api/review/' + id + '/reaction/', review)
+      .then(() => {
+        dispatch(dislikeReview_(id));
+      });
   };
 };
 
@@ -78,10 +78,10 @@ export const reportReview_ = (id) => {
 
 export const reportReview = (id, review) => {
   return dispatch => {
-    return axios.put("/api/review/" + id + "/reaction/", review)
-    .then(response => {
-      dispatch(reportReview_(id));
-    });
+    return axios.put('/api/review/' + id + '/reaction/', review)
+      .then(() => {
+        dispatch(reportReview_(id));
+      });
   };
 };
 
@@ -91,9 +91,9 @@ export const deleteReview_ = (id) => {
 
 export const deleteReview = (id) => {
   return dispatch => {
-    return axios.delete("/api/review/" + id + "/")
-    .then(response => {
-      dispatch(deleteReview_(id))
-    });
+    return axios.delete('/api/review/' + id + '/')
+      .then(() => {
+        dispatch(deleteReview_(id));
+      });
   };
 };
