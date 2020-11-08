@@ -9,16 +9,16 @@ class Food(models.Model):
     tag = models.JSONField(default=None)
     unit = models.CharField(max_length=10, blank=True, default='')
 
-class FoodInstance(models.Model):
+class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='foodinstance_user_id',
+        related_name='fridgeitem_user_id',
     )
     food = models.ForeignKey(
         Food,
         on_delete=models.CASCADE,
-        related_name='foodinstance_food_type',
+        related_name='fridgeitem_food_type',
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
@@ -30,7 +30,7 @@ class FoodInstance(models.Model):
             self.nutrition_facts = self.food.nutrition
         if len(self.name) == 0:
             self.name = self.food.name
-        super(FoodInstance, self).save(*args, **kwargs)
+        super(FridgeItem, self).save(*args, **kwargs)
 
 
 class Recipe(models.Model):

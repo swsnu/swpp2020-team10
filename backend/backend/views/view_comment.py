@@ -13,9 +13,11 @@ def comment_by_id(request, _id):
     if request.method == 'GET':
         return HttpResponse(comment, status=200, content_type='application/json')
     # PUT / DELETE requires authentication
-    # Not implemented yet
-    #if not request.user.is_authenticated:
-    #    return HttpResponse(f"You are not logged in\n",status=401)
+    comment = json.loads(comment)
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
+    if request.user.id != comment['user_id']:
+        return HttpResponse(f"Invalid request : author {comment['author_id']} but you are {request.user.id}\n", status=403)
     if request.method == 'PUT':
         comment = json.loads(comment)
         try:
@@ -42,7 +44,9 @@ def review_comment(request, _id):
         return HttpResponse(status=404)
     if request.method == 'GET':
         return HttpResponse(comments, status=200, content_type='application/json')
-
+    # POST requires login
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
@@ -59,6 +63,9 @@ def review_comment(request, _id):
 # PUT : Updates reaction, given {"like" : 1, "report" : 0} for like, (-1, 0) for dislike,
 # (0, 1) for report. Other values shall not be feeded.
 def reaction(request, _id):
+    # Reaction needs login
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
     try:
         comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0])
     except IndexError:
