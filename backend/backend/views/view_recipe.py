@@ -2,6 +2,8 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from backend.models import Recipe
 
+# Auth : Anyone can search and request for recipes
+
 # Fetches all recipes and returns JSON object
 # JSON format follows design document - modelscd
 def recipes(request):

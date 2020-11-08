@@ -12,12 +12,14 @@ def review_by_id(request, _id):
         return HttpResponseBadRequest(status=404)
     if request.method == 'GET':
         return HttpResponse(review, status=200, content_type='application/json')
-    # PUT / DELETE requires authentication
-    # Not implemented yet
-    #if not request.user.is_authenticated:
-    #    return HttpResponse(f"You are not logged in\n",status=401)
+    # PUT / DELETE requires authentication.
+    # Only writer can PUT/DELETE...
+    review = json.loads(review)
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
+    if request.user.id != review['user_id']:
+        return HttpResponse(f"Invalid request : author {review['author_id']} but you are {request.user.id}\n", status=403)
     if request.method == 'PUT':
-        review = json.loads(review)
         try:
             req_data = json.loads(request.body.decode())
             title = req_data['title'] if req_data['title'] is not None else review['title']
@@ -36,7 +38,7 @@ def review_by_id(request, _id):
 
 
 # GET : Fetches review with given recipe id
-# PUT : Creates new review on given recipe
+# POST : Creates new review on given recipe
 def recipe_review(request, _id):
     try:
         reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()))
@@ -45,6 +47,9 @@ def recipe_review(request, _id):
     if request.method == 'GET':
         return HttpResponse(reviews, status=200, content_type='application/json')
 
+    # POST here requires login
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
     if request.method == 'POST':
         try:
             req_data = json.loads(request.body.decode())
@@ -62,6 +67,9 @@ def recipe_review(request, _id):
 # PUT : Updates reaction, given {"like" : 1, "report" : 0} for like, (-1, 0) for dislike,
 # (0, 1) for report. Other values shall not be feeded.
 def reaction(request, _id):
+    # Reaction needs login
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
     try:
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
     except IndexError:
