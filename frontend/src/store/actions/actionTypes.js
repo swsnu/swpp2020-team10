@@ -1,6 +1,5 @@
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_OUT = 'SIGN_OUT';
-export const UPDATE_USER_STATUS = 'UPDATE_USER_STATUS';
 
 export const GET_RECIPE = 'GET_RECIPE';
 export const RATE_RECIPE = 'RATE_RECIPE';
