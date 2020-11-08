@@ -13,7 +13,7 @@ export const SignInPage = () => {
   const history = useHistory();
 
   const onClickSigninConfirmButton = () => {
-    dispatch(actionCreators.signin())
+    dispatch(actionCreators.signin({ username, password }))
       .then(response => {
         if (response.status != 204) {
           window.alert('Authentication failed.');
