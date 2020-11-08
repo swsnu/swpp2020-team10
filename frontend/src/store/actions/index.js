@@ -1,4 +1,10 @@
 export {
+  signin,
+  checkUserStatus,
+  signout,
+} from './user';
+
+export {
   selectRecipeById,
   addRecipeRatingById
 } from './recipe';
