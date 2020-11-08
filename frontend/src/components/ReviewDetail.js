@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useDispatch } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as actionCreators from '../store/actions/index';
 
@@ -11,9 +11,22 @@ import * as actionCreators from '../store/actions/index';
   Sign Out
 </button>
 </div>*/
-function ReviewDetail() {
+function ReviewDetail(props) {
   const [comment, setComment] = useState('');
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const storedReview = useSelector(state => state.review.selectedReview);
+
+  const reviewId = props.match.params.reviewId;
+
+  useEffect(() => {
+    if(!storedReview){
+      dispatch(actionCreators.getReview(reviewId));
+    }
+    dispatch(actionCreators.getCommentList(reviewId));
+  });
+
 
   /*// move to 'Settings' page
   const onClickSettingsButton = () => {};
@@ -28,33 +41,33 @@ function ReviewDetail() {
 
   // delete the review and go back to 'Recipe Details' page
   const onClickDeleteReviewButton = () => {
-    this.props.onDeleteReview(this.props.match.params.id);
-    history.push('/recipe/' + this.props.storedReview.recipe.id);
+    this.props.onDeleteReview(reviewId);
+    history.push('/recipe/' + storedReview.recipe.id);
   };
 
   // move to 'Recipe Details' page
   const onClickBackButton = () => {
-    history.push('/recipe/' + this.props.storedReview.recipe.id);
+    history.push('/recipe/' + storedReview.recipe.id);
   };
 
   // make new comment
   const onClickWriteButton = (comment) => {
     const newComment = {
-      review: this.props.storedReview,
+      review: storedReview,
       user: this.props.user,
       content: comment,
     };
-    this.props.onPostComment(this.props.match.params.id, newComment);
+    this.props.onPostComment(reviewId, newComment);
   };
   
   return(
     <div className='ReviewDetail'>
-      <ReviewPart />
-      <button id='editReviewButton' disabled={this.props.storedReview.user !== this.props.user} 
+      <ReviewPart reviewId={reviewId} />
+      <button id='editReviewButton' disabled={storedReview.user !== this.props.user} 
         onClick={onClickEditReviewButton()}>
         Edit
       </button>
-      <button id='deleteReviewButton' disabled={this.props.storedReview.user !== this.props.user} 
+      <button id='deleteReviewButton' disabled={storedReview.user !== this.props.user} 
         onClick={onClickDeleteReviewButton()}>
         Delete
       </button>
@@ -82,41 +95,47 @@ function ReviewDetail() {
 
 // returns information about the review.
 // Image should be inserted in future implementation.
-function ReviewPart() {
+function ReviewPart(props) {
+
+  const dispatch = useDispatch();
+  const storedReview = useSelector(state => state.review.selectedReview);
+  const reviewId = props.reviewId;
+
   // increment likes count for the review
   const onClickLikeReviewButton = () => {
-    const thisReview = this.props.storedReview;
-    this.props.onLikeReview(this.props.match.params.id, thisReview);
+    const thisReview = storedReview;
+    dispatch(actionCreators.likeReview(reviewId, thisReview));
   };
 
   // decrement likes count for the review
   const onClickDisikeReviewButton = () => {
-    const thisReview = this.props.storedReview;
-    this.props.onDisikeReview(this.props.match.params.id, thisReview);
+    const thisReview = storedReview;
+    dispatch(actionCreators.dislikeReview(reviewId, thisReview));
   };
 
   // increment reports count for the review
   const onClickReportReviewButton = () => {
-    const thisReview = this.props.storedReview;
-    this.props.onReportReview(this.props.match.params.id, thisReview);
+    const thisReview = storedReview;
+    dispatch(actionCreators.reportReview(reviewId, thisReview));
+    //this.props.onReportReview(reviewId, thisReview);
   };
 
   return(
     <div className='ReviewPart'>
-      <h1>{this.props.storedReview.title}</h1>
+      <h1>{storedReview.title}</h1>
       <div className='row'>
-        <p1>{this.props.storedReview.content}</p1>
+        <p1>{storedReview.content}</p1>
         <button id='likeReviewButton' onClick={onClickLikeReviewButton()}>
           Like
         </button>
-        {this.props.storedReview.likes}
+        {storedReview.likes}
         <button id='dislikeReviewButton' onClick={onClickDisikeReviewButton()}>
           Dislike
         </button>
         <button id='reportReviewButton' onClick={onClickReportReviewButton()}>
           Report
         </button>
-        <p3>{this.props.storedReview.reports}</p3>
+        <p3>{storedReview.reports}</p3>
       </div>
     </div>
   );
@@ -124,13 +143,16 @@ function ReviewPart() {
 
 // returns list of comments of this review w/ necessary information + buttons
 function CommentList() {
+  const storedComments = useSelector(state => state.comment.comments);
+  const dispatch = useDispatch();
+
   // edit the comment
   const onClickEditCommentButton = (commentId, comment) => {
     const [newComment, setNewComment] = useState('');
 
     // confirm edit
     const onClickEditCommentConfirmButton = (commentId, comment) => {
-      this.props.onEditComment(commentId, comment);
+      dispatch(actionCreators.editComment(commentId, comment));
     };
 
     // cancel edit and exit the popup
@@ -159,24 +181,28 @@ function CommentList() {
 
   // delete the comment
   const onClickDeleteCommentButton = (commentId) => {
-    this.props.onDeleteComment(commentId);
+    dispatch(actionCreators.deleteComment(commentId));
+    //this.props.onDeleteComment(commentId);
   };
 
   // increment likes count for the comment
   const onClickLikeCommentButton = (commentId, comment) => {
-    this.props.onLikeComment(commentId, comment);
+    dispatch(actionCreators.likeComment(commentId, comment));
+    //this.props.onLikeComment(commentId, comment);
   };
 
   // decrement likes count for the comment
   const onClickDislikeCommentButton = (commentId, comment) => {
-    this.props.onDislikeComment(commentId, comment);
+    dispatch(actionCreators.dislikeComment(commentId, comment));
+    //this.props.onDislikeComment(commentId, comment);
   };
 
   // increment reports count for the comment
   const onClickReportCommentButton = (commentId, comment) => {
-    this.props.onReportComment(commentId, comment);
+    dispatch(actionCreators.reportComment(commentId, comment));
+    //this.props.onReportComment(commentId, comment);
   };
-  const commentList = this.props.storedComments.map((comment) => {
+  const commentList = storedComments.map((comment) => {
     if(comment.id === this.props.user.id) {
       return (
         <div className='Comment'>
@@ -225,7 +251,7 @@ function CommentList() {
   return commentList;
 }
 
-const mapStateToProps = (state) => {
+/*const mapStateToProps = (state) => {
   return {
     storedReview: state.review.selectedReview,
     storedComments: state.comment.comments,
@@ -259,4 +285,5 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReviewDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(ReviewDetail);*/
+export default ReviewDetail;
