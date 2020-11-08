@@ -30,7 +30,11 @@ def signin(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponse(status=204)
+            response_data = {
+                "user_id": user.id,
+                "username": user.username,
+            }
+            return JsonResponse(response_data, status=204)
 
         # invalid credentials
         return HttpResponse(status=401)
