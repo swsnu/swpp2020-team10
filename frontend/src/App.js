@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import {BrowserRouter, Route, Redirect, Switch} from 'react-redux-dom';
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import RecipeDetail from './components/RecipeDetail';
+import ReviewDetail from './components/ReviewDetail';
 
 function App() {
   return (
@@ -13,7 +15,7 @@ function App() {
         </Switch>
       </div>
     </BrowserRouter>
-    );
+  );
 }
   
 export default App;
