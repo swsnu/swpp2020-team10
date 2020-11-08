@@ -19,10 +19,11 @@ from .views import view_user, view_recipe, view_review, view_comment
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/signup/', view_user.signup, name='signup'),
-    path('api/signin/', view_user.signin, name='signin'),
-    path('api/signout/', view_user.signout, name='signout'),
-    path('api/user/', view_user.profile, name='profile'),
+    path('api/user/signup/', view_user.signup, name='signup'),
+    path('api/user/signin/', view_user.signin, name='signin'),
+    path('api/user/signout/', view_user.signout, name='signout'),
+    path('api/user/status', view_user.status, name='status'),
+    path('api/user/profile', view_user.profile, name='profile'),
     path('api/recipe/', view_recipe.recipes, name='recipes'),
     path('api/recipe/<int:_id>/', view_recipe.recipe_by_id, name='recipe_by_id'),
     path('api/recipe/<int:_id>/review/', view_review.recipe_review, name='recipe_review'),
@@ -31,5 +32,4 @@ urlpatterns = [
     path('api/review/<int:_id>/comment/', view_comment.review_comment, name='get_review_comment'),
     path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
     path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
-
 ]

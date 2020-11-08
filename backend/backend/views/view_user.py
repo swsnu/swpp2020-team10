@@ -53,6 +53,20 @@ def signout(request):
     return HttpResponseNotAllowed(["GET"])
 
 
+def status(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return HttpResponse(204)
+
+        response_data = {
+            "user_id": request.user.id,
+            "username": request.user.username,
+        }
+        return JsonResponse(response_data, status=200)
+
+    return HttpResponseNotAllowed(["GET"])
+
+
 def profile(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
