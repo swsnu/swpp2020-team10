@@ -9,6 +9,7 @@ import {
 import thunk from 'redux-thunk';
 import 'semantic-ui-css/semantic.min.css';
 
+import userReducer from './store/reducers/user';
 import recipeReducer from './store/reducers/recipe';
 import reviewReducer from './store/reducers/review';
 import commentReducer from './store/reducers/comment';
@@ -19,6 +20,7 @@ import reportWebVitals from './reportWebVitals';
 
 
 const reducer = combineReducers({
+  user: userReducer,
   recipe: recipeReducer,
   review: reviewReducer,
   comment: commentReducer,
