@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
+
 
 export const SignUpPage = () => {
   const [username, setUsername] = useState('');
@@ -35,52 +37,52 @@ export const SignUpPage = () => {
   };
 
   return (
-    <div>
-      <div>
-        F.R.I.D.G.E.
-      </div>
-      <div>
-        Sign Up
-      </div>
-      <div>
-        <div>
-          <label htmlFor='usernameInput'>Username</label>
-          <input
-            type='text'
-            id='usernameInput'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor='passwordInput'>Password</label>
-          <input
-            type='password'
-            id='passwordInput'
-            minLength={8}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor='emailInput'>Email</label>
-          <input
-            type='email'
-            id='emailInput'
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-        </div>
-      </div>
-      <div>
-        <button
+    <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
+      <Grid.Column style={{ maxWidth: 360 }}>
+        <Header textAlign='center' as='h1' color='blue'>
+          F.R.I.D.G.E
+        </Header>
+        <Header textAlign='center' as='h2'>
+          Sign up
+        </Header>
+        <Segment raised>
+          <Form>
+            <Form.Field>
+              <label htmlFor='usernameInput'>Username</label>
+              <input
+                type='text'
+                id='usernameInput'
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor='passwordInput'>Password</label>
+              <input
+                type='password'
+                id='passwordInput'
+                minLength={8}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor='emailInput'>Email</label>
+              <input
+                type='email'
+                id='emailInput'
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
+            </Form.Field>
+          </Form>
+        </Segment>
+        <Button floated='right' primary
           type='button'
           id='signupConfirmButton'
           onClick={onClickSignupConfirmButton}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
+        >Confirm</Button>
+      </Grid.Column>
+    </Grid>
   );
 };

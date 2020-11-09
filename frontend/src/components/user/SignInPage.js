@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
+
 import * as actionCreators from '../../store/actions/index';
 
 
@@ -24,49 +26,47 @@ export const SignInPage = () => {
   };
 
   return (
-    <div>
-      <div>
-        F.R.I.D.G.E.
-      </div>
-      <div>
-        Sign In
-      </div>
-      <div>
-        <div>
-          <label htmlFor='usernameInput'>Username</label>
-          <input
-            type='username'
-            id='usernameInput'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor='passwordInput'>Password</label>
-          <input
-            type='password'
-            id='passwordInput'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-        </div>
-      </div>
-      <div>
-        <button
-          type='button'
-          id='signupButton'
-          onClick={() => { history.push('/signup'); }}
-        >
-          Sign Up
-        </button>
-        <button
+    <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
+      <Grid.Column style={{ maxWidth: 360 }}>
+        <Header textAlign='center' as='h1' color='blue'>
+          F.R.I.D.G.E
+        </Header>
+        <Header textAlign='center' as='h2'>
+          Sign in
+        </Header>
+        <Segment raised>
+          <Form>
+            <Form.Field>
+              <label htmlFor='usernameInput'>Username</label>
+              <input
+                type='text'
+                id='usernameInput'
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label htmlFor='passwordInput'>Password</label>
+              <input
+                type='password'
+                id='passwordInput'
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </Form.Field>
+          </Form>
+        </Segment>
+        <Button floated='right' primary
           type='button'
           id='signinConfirmButton'
           onClick={onClickSigninConfirmButton}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
+        >Confirm</Button>
+        <Button floated='right'
+          type='button'
+          id='signupButton'
+          onClick={() => { history.push('/signup'); }}
+        >Sign Up</Button>
+      </Grid.Column>
+    </Grid>
   );
 };
