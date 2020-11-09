@@ -15,9 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import view_recipe
+from .views import view_user, view_recipe, view_review, view_comment, view_food
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/recipe/', view_recipe.get_recipes, name='get_recipes'),
-    path('api/recipe/<int:_id>/', view_recipe.get_recipe_by_id, name='get_recipe_by_id'),
+    path('api/user/signup/', view_user.signup, name='signup'),
+    path('api/user/signin/', view_user.signin, name='signin'),
+    path('api/user/signout/', view_user.signout, name='signout'),
+    path('api/user/status/', view_user.status, name='status'),
+    path('api/user/profile/', view_user.profile, name='profile'),
+    path('api/recipe/', view_recipe.recipes, name='recipes'),
+    path('api/recipe/<int:_id>/', view_recipe.recipe_by_id, name='recipe_by_id'),
+    path('api/recipe/<int:_id>/review/', view_review.recipe_review, name='recipe_review'),
+    path('api/review/<int:_id>/', view_review.review_by_id, name='review_by_id'),
+    path('api/review/<int:_id>/reaction/', view_review.reaction, name='review_reaction'),
+    path('api/review/<int:_id>/comment/', view_comment.review_comment, name='get_review_comment'),
+    path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
+    path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
+    path('api/food/', view_food.manage_food, name='manage_food')
 ]

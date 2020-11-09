@@ -14,8 +14,9 @@ export {
 } from './fridgeItem';
 
 export {
+  fetchAllRecipes,
   selectRecipeById,
-  addRecipeRatingById
+  addRecipeRatingById,
 } from './recipe';
 
 export {
@@ -26,7 +27,7 @@ export {
   likeReview,
   dislikeReview,
   reportReview,
-  deleteReview
+  deleteReview,
 } from './review';
 
 export {
@@ -37,5 +38,5 @@ export {
   likeComment,
   dislikeComment,
   reportComment,
-  deleteComment
+  deleteComment,
 } from './comment';

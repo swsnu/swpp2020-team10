@@ -1,11 +1,12 @@
 import json
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from backend.models import Recipe
-from django.core.exceptions import ObjectDoesNotExist
+
+# Auth : Anyone can search and request for recipes
 
 # Fetches all recipes and returns JSON object
 # JSON format follows design document - modelscd
-def get_recipes(request):
+def recipes(request):
     if request.method == "GET":
         recipe_list = json.dumps(list(Recipe.objects.all().values()))
         return HttpResponse(recipe_list, status=200, content_type='application/json')
@@ -13,11 +14,11 @@ def get_recipes(request):
 
 # GET : Fetches recipe with given ID and returns JSON object
 # PUT : Updates Rating of recipe, given {"recipe_id":"1", "rating":"2"} style json.
-def get_recipe_by_id(request, _id):
+def recipe_by_id(request, _id):
     if request.method == 'GET':
         try:
             recipe = json.dumps(Recipe.objects.filter(id=_id).all().values()[0])
-        except IndexError as e:
+        except IndexError:
             return HttpResponseBadRequest(status=404)
         return HttpResponse(recipe, status=200, content_type='application/json')
     if request.method == 'PUT':
@@ -28,7 +29,7 @@ def get_recipe_by_id(request, _id):
             return HttpResponseBadRequest(status=404)
         try:
             target_object = Recipe.objects.filter(id=_id).all().values()[0]
-        except IndexError as e:
+        except IndexError:
             return HttpResponseBadRequest(status=404)
         # Using current rating and # of ratings, compute new rating
         current_rating = target_object['rating']
