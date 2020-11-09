@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
+
 export const SignUpPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,8 +24,8 @@ export const SignUpPage = () => {
           window.alert('Succesfully created an account. Please sign in.');
           history.goBack();
         })
-        .catch(response => {
-          if (response.status == 409) {
+        .catch(error => {
+          if (error.response.status === 409) {
             window.alert('Username already exists.');
           } else {
             window.alert('Something went wrong. Please try again later.');
