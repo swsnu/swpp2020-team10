@@ -27,24 +27,31 @@ export const getReview = (id) => {
   };
 };
 
-//I made this by mistake. If you are implementing review editor, 
-// please edit this freely and erase this comment if you're done.
 export const postReview_ = (review) => {
-  return {
-    type: actionTypes.ADD_REVIEW,
-    id: review.id,
-    title: review.title,
-    content: review.content,
-    recipe: review.recipe,
-    user: review.user,
-    likes: review.likes,
-    reports: review.reports,
+  return {type: actionTypes.ADD_REVIEW, review};
+};
+
+export const postReview = (recipeId, review) => {
+  return dispatch => {
+    return axios.post(`/api/recipe/${recipeId}/review/`, review)
+      .then(response => {
+        dispatch(postReview_(response.data));
+      });
   };
 };
 
-//I made this by mistake. If you are implementing review editor, 
-// please edit this freely and erase this comment if you're done.
-//export const postReview = (id, review) => {};
+export const editReview_ = (review) => {
+  return {type: actionTypes.EDIT_REVIEW, review};
+};
+
+export const editReview = (reviewId, review) => {
+  return dispatch => {
+    return axios.put(`/api/review/${reviewId}`, review)
+      .then(response => {
+        dispatch(editReview_(response.data));
+      });
+  };
+};
 
 export const likeReview_ = (id) => {
   return {type: actionTypes.LIKE_REVIEW, targetId: id};
@@ -85,15 +92,15 @@ export const reportReview = (id, review) => {
   };
 };
 
-export const deleteReview_ = (id) => {
-  return {type: actionTypes.DELETE_REVIEW, targetId: id};
+export const deleteReview_ = (reviewId) => {
+  return {type: actionTypes.DELETE_REVIEW, targetId: reviewId};
 };
 
-export const deleteReview = (id) => {
+export const deleteReview = (reviewId) => {
   return dispatch => {
-    return axios.delete('/api/review/' + id + '/')
+    return axios.delete(`/api/review/${reviewId}/`)
       .then(() => {
-        dispatch(deleteReview_(id));
+        dispatch(deleteReview_(reviewId));
       });
   };
 };
