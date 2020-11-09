@@ -8,6 +8,7 @@ import {
   compose,
 } from 'redux';
 import thunk from 'redux-thunk';
+import axios from 'axios';
 import 'semantic-ui-css/semantic.min.css';
 
 import userReducer from './store/reducers/user';
@@ -20,6 +21,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 const reducer = combineReducers({
   user: userReducer,
