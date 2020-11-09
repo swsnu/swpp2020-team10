@@ -13,6 +13,7 @@ import userReducer from './store/reducers/user';
 import recipeReducer from './store/reducers/recipe';
 import reviewReducer from './store/reducers/review';
 import commentReducer from './store/reducers/comment';
+import fridgeItemReducer from './store/reducers/fridgeItem';
 
 import './index.css';
 import App from './App';
@@ -24,6 +25,7 @@ const reducer = combineReducers({
   recipe: recipeReducer,
   review: reviewReducer,
   comment: commentReducer,
+  fridgeItem: fridgeItemReducer,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk));
