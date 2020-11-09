@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { Button, Icon, Label } from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
 /*<div className='row'>
@@ -146,17 +147,27 @@ function ReviewPart(props) {
       <h1>{storedReview.title}</h1>
       <div className='row'>
         <p1>{storedReview.content}</p1>
-        <button id='likeReviewButton' onClick={() => onClickLikeReviewButton()}>
-          Like
-        </button>
-        {storedReview.likes}
+        <Button id='likeReviewButton' labelPosition='right'>
+          <Button color='blue' onClick={() => onClickLikeReviewButton()}>
+            <Icon name='thumbs up' />
+              Like
+          </Button>
+          <Label id='likeLabel' basic color='blue' pointing='left'>
+            {storedReview.likes}
+          </Label>
+        </Button>
         <button id='dislikeReviewButton' onClick={() => onClickDisikeReviewButton()}>
           Dislike
         </button>
-        <button id='reportReviewButton' onClick={() => onClickReportReviewButton()}>
-          Report
-        </button>
-        <p3>{storedReview.reports}</p3>
+        <Button id='reportReviewButton' labelPosition='right'>
+          <Button color='red' onClick={() => onClickReportReviewButton()}>
+            <Icon name='exclamation circle' />
+              Like
+          </Button>
+          <Label id='likeLabel' basic color='red' pointing='left'>
+            {storedReview.reports}
+          </Label>
+        </Button>
       </div>
     </div>
   );
@@ -268,17 +279,27 @@ function CommentList() {
         <div className='Comment'>
           <div className='row'>
             Author: {comment.user_id}
-            <button id='likeCommentButton' onClick={onClickLikeCommentButton(comment.id, comment)}>
-              Like
-            </button>
-            Likes: {comment.likes}
+            <Button id='likeCommentButton' labelPosition='right'>
+              <Button color='blue' onClick={() => onClickLikeCommentButton()}>
+                <Icon name='thumbs up' />
+                  Like
+              </Button>
+              <Label id='likeLabel' basic color='blue' pointing='left'>
+                {comment.likes}
+              </Label>
+            </Button>
             <button id='dislikeCommentButton' onClick={onClickDislikeCommentButton(comment.id, comment)}>
               Dislike
             </button>
-            <button id='reportCommentButton' onClick={onClickReportCommentButton(comment.id, comment)}>
-              Report
-            </button>
-            Reports: {comment.reports}
+            <Button id='reportCommentButton' labelPosition='right'>
+              <Button color='red' onClick={() => onClickReportCommentButton()}>
+                <Icon name='exclamation circle' />
+                  Like
+              </Button>
+              <Label id='likeLabel' basic color='red' pointing='left'>
+                {comment.reports}
+              </Label>
+            </Button>
           </div>
           <div className='row'>
             {comment.content}

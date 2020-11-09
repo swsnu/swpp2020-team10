@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { Rating } from 'semantic-ui-react';
+import { Rating, Image, Item } from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
 function RecipeDetail(props) {
@@ -51,6 +51,7 @@ function RecipeDetail(props) {
   useEffect(() => {
     if(!storedRecipe){
       dispatch(actionCreators.selectRecipeById(recipeId));
+      return;
     }
     dispatch(actionCreators.getReviewList(recipeId));
   });
@@ -85,7 +86,7 @@ function RecipeDetail(props) {
 
   return (
     <div className='RecipeDetail'>
-      <RecipePart recipeId={recipeId} storedRecipe={storedRecipe}/>
+      <RecipePart recipeId={recipeId} />
       <div className='row'>
         <button id='myFridgeButton' onClick={() => onClickMyFridgeButton()}>
           My Fridge
@@ -130,6 +131,7 @@ function RecipePart(props) {
   useEffect(() => {
     if(!storedRecipe){
       dispatch(actionCreators.selectRecipeById(recipeId));
+      return;
     }
   });
 
@@ -142,14 +144,17 @@ function RecipePart(props) {
 
   return (
     <div className='RecipePart'>
-      <h1>{storedRecipe.title}</h1>
-      <div className='row'>
-        <p2>Rating: {storedRecipe.rating}</p2>
-        <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated}/>
-        <p3>Ingredients: {storedRecipe.ingredient}</p3>
-        <p4>Serving: {storedRecipe.serving}, Cooking time: {storedRecipe.cooking_time}</p4>
-        <p5>{storedRecipe.content}</p5>
-      </div>
+      <Item>
+        <Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
+        <Item.Content>
+          <Item.Header>{storedRecipe.title}</Item.Header>
+          <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated} />
+          <Item.Meta>Ingredients</Item.Meta>
+          <Item.Description></Item.Description>
+          <Item.Meta>Serving: {storedRecipe.serving}, Cooking time: {storedRecipe.cooking_time}</Item.Meta>
+          <Item.Description>{storedRecipe.content}</Item.Description>
+        </Item.Content>
+      </Item>
     </div>
   );
 }
