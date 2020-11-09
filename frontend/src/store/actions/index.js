@@ -5,17 +5,29 @@ export {
 } from './user';
 
 export {
+  getFridgeItemList,
+  getFridgeItem,
+  postFridgeItem,
+  editFridgeItem,
+  deleteFridgeItem,
+  clearFridgeItems,
+} from './fridgeItem';
+
+export {
+  fetchAllRecipes,
   selectRecipeById,
-  addRecipeRatingById
+  addRecipeRatingById,
 } from './recipe';
 
 export {
   getReviewList,
   getReview,
+  postReview,
+  editReview,
   likeReview,
   dislikeReview,
   reportReview,
-  deleteReview
+  deleteReview,
 } from './review';
 
 export {
@@ -26,5 +38,5 @@ export {
   likeComment,
   dislikeComment,
   reportComment,
-  deleteComment
+  deleteComment,
 } from './comment';

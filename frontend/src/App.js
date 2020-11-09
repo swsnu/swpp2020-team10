@@ -12,6 +12,8 @@ import {
 //import { SignUpPage } from './components/user/SignUpPage';
 import RecipeDetail from './components/RecipeDetail';
 import ReviewDetail from './components/ReviewDetail';
+//import ReviewCreator from './components/ReviewCreator';
+//import ReviewEditor from './components/ReviewEditor';
 
 
 function App() {
@@ -19,9 +21,9 @@ function App() {
     <Router>
       <div className='App'>
         <Switch>
-          <Route exact path='/recipe/:recipe_id' component={RecipeDetail} />
-          <Route exact path='/review/:review_id' component={ReviewDetail} />
-          <Redirect from='/' to='/recipe/1' />
+          <Route exact path='/recipe/:recipeId' component={RecipeDetail} />
+          <Route exact path='/review/:reviewId' component={ReviewDetail} />
+          <Redirect from='/' to='/recipe/' />
         </Switch>
       </div>
     </Router>

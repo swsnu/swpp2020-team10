@@ -7,7 +7,7 @@ export const getReviewList_ = (reviews) => {
 
 export const getReviewList = (id) => {
   return dispatch => {
-    return axios.get('/api/recipe/' + id + '/reviews/')
+    return axios.get('/api/recipe/' + id + '/review/')
       .then(response => {
         dispatch(getReviewList_(response.data));
       });
@@ -20,7 +20,7 @@ export const getReview_ = (review) => {
 
 export const getReview = (id) => {
   return dispatch => {
-    return axios.get('/api/reviews/' + id)
+    return axios.get('/api/review/' + id)
       .then(response => {
         dispatch(getReview_(response.data));
       });

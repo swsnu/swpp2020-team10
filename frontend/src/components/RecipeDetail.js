@@ -1,16 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { Rating, Image, Item } from 'semantic-ui-react';
+import { Rating, Image, Container, Header, Grid } from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
 function RecipeDetail(props) {
 
   const history = useHistory();
   const dispatch = useDispatch();
+  const recipeId = props.match.params.recipeId;
 
-  const storedRecipe = /*{
+  const [hasRecipe, setHasRecipe] = useState(false);
+  const [hasReviews, setHasReviews] = useState(false);
+  const [hasRated, setRated] = useState(false);
+  // check
+  if(!hasRecipe) {
+    dispatch(actionCreators.selectRecipeById(recipeId))
+      .then(setHasRecipe(true));
+  }
+  if(!hasReviews){
+    dispatch(actionCreators.getReviewList(recipeId))
+      .then(setHasReviews(true));
+  }
+
+  let storedRecipe = /*{
     'id': 1,
     'food_id': 3,
     'title': 'Kimchi',
@@ -26,6 +40,7 @@ function RecipeDetail(props) {
     },
     'serving': 1
   };//*/useSelector(state => state.recipe.selectedRecipe);
+
   const storedReviews = /*[{
     'id': 1,
     'recipe_id': 1,
@@ -45,17 +60,6 @@ function RecipeDetail(props) {
     'reports': 0
   }];//*/useSelector(state => state.review.reviews);
 
-  const recipeId = props.match.params.recipeId;
-
-
-  useEffect(() => {
-    if(!storedRecipe){
-      dispatch(actionCreators.selectRecipeById(recipeId));
-      return;
-    }
-    dispatch(actionCreators.getReviewList(recipeId));
-  });
-
   // move to 'My Fridge' page
   const onClickMyFridgeButton = () => {
     history.push('/fridge/' + this.props.user.id);
@@ -74,6 +78,22 @@ function RecipeDetail(props) {
     history.push('/review/' + recipeId + '/editor');
   };
 
+  const onChangeRatingInput = (e, {rating}) => {
+    e.preventDefault();
+    const ratedRecipe = { ...storedRecipe, rating: rating };
+    setRated(true);
+    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
+  };
+
+  let title, rating, serving, cooking_time, content;
+  if(storedRecipe !== null){
+    title = storedRecipe.title;
+    rating = storedRecipe.rating;
+    serving = storedRecipe.serving;
+    cooking_time = storedRecipe.cooking_time;
+    content = storedRecipe.content;
+  }
+
   /*<div className='row'>
         <button id='settingsButton' onClick={onClickSettingsButton()}>
           To Settings
@@ -86,88 +106,63 @@ function RecipeDetail(props) {
 
   return (
     <div className='RecipeDetail'>
-      <RecipePart recipeId={recipeId} />
-      <div className='row'>
-        <button id='myFridgeButton' onClick={() => onClickMyFridgeButton()}>
-          My Fridge
-        </button>
-      </div>
-      <div className='row'>
-        <h2> Reviews </h2>
-      </div>
+      <Grid centered padded>
+        <Grid.Row>
+          <Image size='medium' src='https://react.semantic-ui.com/images/wireframe/image.png' centered/>
+        </Grid.Row>
+        <Grid.Row>
+          <Container textAlign='center'>
+            <Header textAlign='center'>{title}</Header>
+            <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated} />
+            <p>Rating: {rating}</p>
+            <p>Ingredients</p>
+            <p></p>
+            <p>Serving: {serving}, Cooking time: {cooking_time}</p>
+            <p>{content}</p>
+          </Container>
+        </Grid.Row>
+        <Grid.Row>
+          <button id='myFridgeButton' align='center' onClick={() => onClickMyFridgeButton()}>
+            My Fridge
+          </button>
+        </Grid.Row>
+        <Grid.Row>
+          <h2 textAlign='justified'> Reviews </h2>
+        </Grid.Row>
+      </Grid>
       <ReviewPart storedReviews={storedReviews}/>
-      <div className='row'>
-        <button id='writeButton' onClick={() => onClickWriteButton()}>
-          Write Review
-        </button>
-      </div>
+      <Grid centered padded>
+        <Grid.Row>
+          <button id='writeButton' onClick={() => onClickWriteButton()}>
+            Write Review
+          </button>
+        </Grid.Row>
+      </Grid>
     </div>
   );
 }
 
 // return information about the recipe. Image should be inserted in future implementation.
 // Rating should be inserted after confirming the use of external libraries.
-function RecipePart(props) {
-  const [hasRated, setRated] = useState(false);
-  const dispatch = useDispatch();
-  const storedRecipe = /*{
-    'id': 1,
-    'food_id': 3,
-    'title': 'Kimchi',
-    'content': 'K-food Kimchi recipe blahblah',
-    'rating': 3.44,
-    'count_ratings': 1,
-    'ingredients': {
-      'cabbage': '100'
-    },
-    'cooking_time': 120,
-    'tag': {
-      'difficulty': 'hard'
-    },
-    'serving': 1
-  };//*/useSelector(state => state.recipe.selectedRecipe);
-  const recipeId = props.recipeId;
 
-  useEffect(() => {
-    if(!storedRecipe){
-      dispatch(actionCreators.selectRecipeById(recipeId));
-      return;
-    }
-  });
-
-  const onChangeRatingInput = (e, {rating}) => {
-    e.preventDefault();
-    const ratedRecipe = { ...storedRecipe, rating: rating };
-    setRated(true);
-    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
-  };
-
-  return (
-    <div className='RecipePart'>
-      <Item>
-        <Image size='tiny' src='https://react.semantic-ui.com/images/wireframe/image.png' />
-        <Item.Content>
-          <Item.Header>{storedRecipe.title}</Item.Header>
-          <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated} />
-          <Item.Meta>Ingredients</Item.Meta>
-          <Item.Description></Item.Description>
-          <Item.Meta>Serving: {storedRecipe.serving}, Cooking time: {storedRecipe.cooking_time}</Item.Meta>
-          <Item.Description>{storedRecipe.content}</Item.Description>
-        </Item.Content>
-      </Item>
-    </div>
-  );
-}
 
 // return list of reviews of this recipe w/ headerlines
 function ReviewPart(props) {
   const reviewList = props.storedReviews.map((review) => {
     return (
       <div className='review' key={review.id}>
-        <NavLink id='review-link' to={'/review/' + review.id}>
-          {review.title}
-        </NavLink>
-         Author: {review.user_id} likes: {review.likes} | reports: {review.reports}
+        <Grid centered padded>
+          <Grid.Row>
+            <Grid.Column padded width={4}>
+              <NavLink id='review-link' to={'/review/' + review.id}>
+                {review.title}
+              </NavLink>
+            </Grid.Column>
+            <Grid.Column padded width={3}>
+            Author: {review.user_id} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </div>
     );
   });

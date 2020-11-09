@@ -5,28 +5,37 @@ import {
   createStore,
   combineReducers,
   applyMiddleware,
+  compose,
 } from 'redux';
 import thunk from 'redux-thunk';
+import axios from 'axios';
 import 'semantic-ui-css/semantic.min.css';
 
 import userReducer from './store/reducers/user';
 import recipeReducer from './store/reducers/recipe';
 import reviewReducer from './store/reducers/review';
 import commentReducer from './store/reducers/comment';
+import fridgeItemReducer from './store/reducers/fridgeItem';
 
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
 const reducer = combineReducers({
   user: userReducer,
   recipe: recipeReducer,
   review: reviewReducer,
   comment: commentReducer,
+  fridgeItem: fridgeItemReducer,
 });
 
-const store = createStore(reducer, applyMiddleware(thunk));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <Provider store={store}>
