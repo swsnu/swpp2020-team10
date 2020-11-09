@@ -1,6 +1,7 @@
 import json
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.forms.models import model_to_dict
 from backend.models import Review
 
 # Fetches review by id
@@ -8,7 +9,7 @@ from backend.models import Review
 def review_by_id(request, _id):
     try:
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
-    except IndexError:
+    except (IndexError, JSONDecodeError):
         return HttpResponseBadRequest(status=404)
     if request.method == 'GET':
         return HttpResponse(review, status=200, content_type='application/json')
@@ -18,7 +19,7 @@ def review_by_id(request, _id):
     if not request.user.is_authenticated:
         return HttpResponse("You are not logged in\n",status=401)
     if request.user.id != review['user_id']:
-        return HttpResponse(f"Invalid request : author {review['author_id']} but you are {request.user.id}\n", status=403)
+        return HttpResponse(f"Invalid request : author {review['user_id']} but you are {request.user.id}\n", status=403)
     if request.method == 'PUT':
         try:
             req_data = json.loads(request.body.decode())
@@ -40,10 +41,7 @@ def review_by_id(request, _id):
 # GET : Fetches review with given recipe id
 # POST : Creates new review on given recipe
 def recipe_review(request, _id):
-    try:
-        reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()))
-    except JSONDecodeError:
-        return HttpResponse(status=404)
+    reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()))
     if request.method == 'GET':
         return HttpResponse(reviews, status=200, content_type='application/json')
 
@@ -59,7 +57,8 @@ def recipe_review(request, _id):
             return HttpResponse(status=400)
         new_review = Review(recipe_id=_id, title=title, content=content, user=request.user)
         new_review.save()
-        return HttpResponse(json.dumps(new_review), status=200)
+        new_review_dict = model_to_dict(new_review)
+        return HttpResponse(json.dumps(new_review_dict), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
 
@@ -76,20 +75,17 @@ def reaction(request, _id):
         return HttpResponseBadRequest(status=404)
     review = json.loads(review)
     cur_like = review['likes']
+    cur_dislike = review['dislikes']
     cur_report = review['reports']
     if request.method == 'PUT':
         req_data = json.loads(request.body.decode())
-        try:
-            req_like = int(req_data['like'])
-            req_report = int(req_data['report'])
-        except (TypeError, ValueError, JSONDecodeError):
-            return HttpResponseBadRequest("Cannot feed non-numeric request")
-
-        if req_like != 0 and req_report != 0:
-            return HttpResponseBadRequest("Cannot feed both reaction at once")
+        req_like = int(req_data['like'])
+        req_dislike = int(req_data['dislike'])
+        req_report = int(req_data['report'])
         cur_like += req_like
+        cur_dislike += req_dislike
         cur_report += req_report
-        Review.objects.filter(id=_id).update(likes=cur_like, reports=cur_report)
+        Review.objects.filter(id=_id).update(likes=cur_like, dislikes=cur_dislike, reports=cur_report)
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
         return HttpResponse(review, status=200, content_type='application/json')
 

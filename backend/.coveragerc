@@ -5,3 +5,4 @@ omit =
     backend/wsgi.py
     backend/asgi.py
     manage.py
+    backend/models.py

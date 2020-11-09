@@ -2,7 +2,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils.timezone import now
 class Food(models.Model):
     name = models.CharField(max_length=80, default='')
     nutrition = models.JSONField(default=None)
@@ -22,7 +22,7 @@ class FridgeItem(models.Model):
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
-    expiry_date = models.DateField(default=datetime.date.today())
+    expiry_date = models.DateField(default=now())
     nutrition_facts = models.JSONField(null=True, blank=True, default=None)
 
     def save(self, *args, **kwargs):
@@ -62,6 +62,7 @@ class Review(models.Model):
     title = models.CharField(max_length=80)
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
 
 class Comment(models.Model):
@@ -78,4 +79,5 @@ class Comment(models.Model):
     )
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
