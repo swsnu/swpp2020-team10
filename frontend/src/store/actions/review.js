@@ -44,7 +44,7 @@ export const postReview_ = (review) => {
 
 //I made this by mistake. If you are implementing review editor, 
 // please edit this freely and erase this comment if you're done.
-export const postReview = (id, review) => {};
+//export const postReview = (id, review) => {};
 
 export const likeReview_ = (id) => {
   return {type: actionTypes.LIKE_REVIEW, targetId: id};

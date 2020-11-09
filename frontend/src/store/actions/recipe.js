@@ -20,7 +20,7 @@ export const addRecipeRatingById_ = (id) => {
 
 export const addRecipeRatingById = (id, recipe) => {
   return dispatch => {
-    return axios.put('/api/recipe/' + id + '/', recipe)
+    return axios.put('/api/recipe/' + id + '/', {'recipe_id': recipe.id, 'rating': recipe.rating})
       .then(() => {
         dispatch(addRecipeRatingById_(id));
       });

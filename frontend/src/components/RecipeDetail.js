@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useDispatch } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { Rating } from 'semantic-ui-react';
@@ -10,8 +10,40 @@ function RecipeDetail(props) {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
-  const storedReviews = useSelector(state => state.review.reviews);
+  const storedRecipe = /*{
+    'id': 1,
+    'food_id': 3,
+    'title': 'Kimchi',
+    'content': 'K-food Kimchi recipe blahblah',
+    'rating': 3.44,
+    'count_ratings': 1,
+    'ingredients': {
+      'cabbage': '100'
+    },
+    'cooking_time': 120,
+    'tag': {
+      'difficulty': 'hard'
+    },
+    'serving': 1
+  };//*/useSelector(state => state.recipe.selectedRecipe);
+  const storedReviews = /*[{
+    'id': 1,
+    'recipe_id': 1,
+    'user_id': 1,
+    'title': 'Kimchi review!!!',
+    'content': 'Kimchi is good modify content',
+    'likes': 5,
+    'reports': 3
+  },
+  {
+    'id': 2,
+    'recipe_id': 1,
+    'user_id': 1,
+    'title': 'Review 2',
+    'content': 'Review 22',
+    'likes': 3,
+    'reports': 0
+  }];//*/useSelector(state => state.review.reviews);
 
   const recipeId = props.match.params.recipeId;
 
@@ -38,7 +70,7 @@ function RecipeDetail(props) {
   */
   // move to 'Review Editor' page
   const onClickWriteButton = () => {
-    history.push('/review/editor');
+    history.push('/review/' + recipeId + '/editor');
   };
 
   /*<div className='row'>
@@ -55,7 +87,7 @@ function RecipeDetail(props) {
     <div className='RecipeDetail'>
       <RecipePart recipeId={recipeId} storedRecipe={storedRecipe}/>
       <div className='row'>
-        <button id='myFridgeButton' onClick={onClickMyFridgeButton()}>
+        <button id='myFridgeButton' onClick={() => onClickMyFridgeButton()}>
           My Fridge
         </button>
       </div>
@@ -64,7 +96,7 @@ function RecipeDetail(props) {
       </div>
       <ReviewPart storedReviews={storedReviews}/>
       <div className='row'>
-        <button id='writeButton' onClick={onClickWriteButton()}>
+        <button id='writeButton' onClick={() => onClickWriteButton()}>
           Write Review
         </button>
       </div>
@@ -76,15 +108,36 @@ function RecipeDetail(props) {
 // Rating should be inserted after confirming the use of external libraries.
 function RecipePart(props) {
   const [hasRated, setRated] = useState(false);
-  const dispatchRecipe = useDispatch();
-  const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
+  const dispatch = useDispatch();
+  const storedRecipe = /*{
+    'id': 1,
+    'food_id': 3,
+    'title': 'Kimchi',
+    'content': 'K-food Kimchi recipe blahblah',
+    'rating': 3.44,
+    'count_ratings': 1,
+    'ingredients': {
+      'cabbage': '100'
+    },
+    'cooking_time': 120,
+    'tag': {
+      'difficulty': 'hard'
+    },
+    'serving': 1
+  };//*/useSelector(state => state.recipe.selectedRecipe);
   const recipeId = props.recipeId;
+
+  useEffect(() => {
+    if(!storedRecipe){
+      dispatch(actionCreators.selectRecipeById(recipeId));
+    }
+  });
 
   const onChangeRatingInput = (e, {rating}) => {
     e.preventDefault();
     const ratedRecipe = { ...storedRecipe, rating: rating };
     setRated(true);
-    dispatchRecipe(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
+    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
   return (
@@ -92,7 +145,7 @@ function RecipePart(props) {
       <h1>{storedRecipe.title}</h1>
       <div className='row'>
         <p2>Rating: {storedRecipe.rating}</p2>
-        <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={onChangeRatingInput} disabled={hasRated}/>
+        <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated}/>
         <p3>Ingredients: {storedRecipe.ingredient}</p3>
         <p4>Serving: {storedRecipe.serving}, Cooking time: {storedRecipe.cooking_time}</p4>
         <p5>{storedRecipe.content}</p5>
@@ -109,8 +162,7 @@ function ReviewPart(props) {
         <NavLink id='review-link' to={'/review/' + review.id}>
           {review.title}
         </NavLink>
-        {review.user.username}
-        {review.likes} | {review.reports}
+         Author: {review.user_id} likes: {review.likes} | reports: {review.reports}
       </div>
     );
   });
