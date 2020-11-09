@@ -179,8 +179,8 @@ function CommentList() {
     'content': 'review test 1',
     'likes': 0,
     'reports': 0
-  }];//useSelector(state => state.comment.comments);
-  const storedUser = {
+  }];//*/useSelector(state => state.comment.comments);
+  const storedUser = /*{
     'id': 1,
     'name': 'John',
     'isAuthorized': true
