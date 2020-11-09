@@ -1,6 +1,7 @@
 import json
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.forms.models import model_to_dict
 from backend.models import Comment
 
 # Fetches comment by id
@@ -17,9 +18,8 @@ def comment_by_id(request, _id):
     if not request.user.is_authenticated:
         return HttpResponse("You are not logged in\n",status=401)
     if request.user.id != comment['user_id']:
-        return HttpResponse(f"Invalid request : author {comment['author_id']} but you are {request.user.id}\n", status=403)
+        return HttpResponse(f"Invalid request : author {comment['user_id']} but you are {request.user.id}\n", status=403)
     if request.method == 'PUT':
-        comment = json.loads(comment)
         try:
             req_data = json.loads(request.body.decode())
             content = req_data['content'] if req_data['content'] is not None else comment['content']
@@ -38,10 +38,7 @@ def comment_by_id(request, _id):
 # GET : Fetches comment with given review id
 # PUT : Creates new comment on given review
 def review_comment(request, _id):
-    try:
-        comments = json.dumps(list(Comment.objects.filter(review_id=_id).all().values()))
-    except JSONDecodeError:
-        return HttpResponse(status=404)
+    comments = json.dumps(list(Comment.objects.filter(review_id=_id).all().values()))
     if request.method == 'GET':
         return HttpResponse(comments, status=200, content_type='application/json')
     # POST requires login
@@ -55,7 +52,8 @@ def review_comment(request, _id):
             return HttpResponse(status=400)
         new_comment = Comment(review_id=_id, content=content, user=request.user)
         new_comment.save()
-        return HttpResponse(json.dumps(new_comment), status=200)
+        new_comment_dict = model_to_dict(new_comment)
+        return HttpResponse(json.dumps(new_comment_dict), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
 
@@ -72,20 +70,17 @@ def reaction(request, _id):
         return HttpResponseBadRequest(status=404)
     comment = json.loads(comment)
     cur_like = comment['likes']
+    cur_dislike = comment['dislikes']
     cur_report = comment['reports']
     if request.method == 'PUT':
         req_data = json.loads(request.body.decode())
-        try:
-            req_like = int(req_data['like'])
-            req_report = int(req_data['report'])
-        except (TypeError, ValueError, JSONDecodeError):
-            return HttpResponseBadRequest("Cannot feed non-numeric request")
-
-        if req_like != 0 and req_report != 0:
-            return HttpResponseBadRequest("Cannot feed both reaction at once")
+        req_like = int(req_data['like'])
+        req_dislike = int(req_data['dislike'])
+        req_report = int(req_data['report'])
         cur_like += req_like
+        cur_dislike += req_dislike
         cur_report += req_report
-        Comment.objects.filter(id=_id).update(likes=cur_like, reports=cur_report)
+        Comment.objects.filter(id=_id).update(likes=cur_like, dislikes=cur_dislike, reports=cur_report)
         comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0])
         return HttpResponse(comment, status=200, content_type='application/json')
 

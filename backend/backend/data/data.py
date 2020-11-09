@@ -84,9 +84,6 @@ review_write = {
     "content": "new content"
 }
 
-# like : +1 or 0 or -1. report : 1 or 0.
-# (like)*(report) = 0 should hold.
-# please don't "dislike and report" at once.
 # comment like / reports runs same way.
 review_give_like = {
     "like" : 0,
