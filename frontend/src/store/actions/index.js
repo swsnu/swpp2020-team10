@@ -5,6 +5,7 @@ export {
 } from './user';
 
 export {
+  fetchAllRecipes,
   selectRecipeById,
   addRecipeRatingById
 } from './recipe';

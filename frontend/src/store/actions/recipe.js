@@ -36,7 +36,7 @@ const fetchAllRecipes_ = (response_data) => {
 
 export const fetchAllRecipes = () => {
   return dispatch => {
-    return axios.get('/api/recipes/')
+    return axios.get('/api/recipe/')
       .then(response => {
         dispatch(fetchAllRecipes_(response.data));
       });
