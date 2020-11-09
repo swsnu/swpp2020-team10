@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useDispatch } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as actionCreators from '../store/actions/index';
 
@@ -16,7 +16,20 @@ function ReviewDetail(props) {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const storedReview = useSelector(state => state.review.selectedReview);
+  const storedReview = /*{
+    'id': 1,
+    'recipe_id': 1,
+    'user_id': 1,
+    'title': 'Kimchi review!!!',
+    'content': 'Kimchi is good modify content',
+    'likes': 5,
+    'reports': 3
+  };//*/useSelector(state => state.review.selectedReview);
+  const storedUser = /*{
+    'id': 1,
+    'name': 'John',
+    'isAuthorized': true
+  };//*/useSelector(state => state.user);
 
   const reviewId = props.match.params.reviewId;
 
@@ -54,7 +67,7 @@ function ReviewDetail(props) {
   const onClickWriteButton = (comment) => {
     const newComment = {
       review: storedReview,
-      user: this.props.user,
+      user: storedUser,
       content: comment,
     };
     this.props.onPostComment(reviewId, newComment);
@@ -63,15 +76,15 @@ function ReviewDetail(props) {
   return(
     <div className='ReviewDetail'>
       <ReviewPart reviewId={reviewId} />
-      <button id='editReviewButton' disabled={storedReview.user !== this.props.user} 
-        onClick={onClickEditReviewButton()}>
+      <button id='editReviewButton' disabled={storedReview.user_id !== storedUser.id} 
+        onClick={() => onClickEditReviewButton()}>
         Edit
       </button>
-      <button id='deleteReviewButton' disabled={storedReview.user !== this.props.user} 
-        onClick={onClickDeleteReviewButton()}>
+      <button id='deleteReviewButton' disabled={storedReview.user_id !== storedUser.id} 
+        onClick={() => onClickDeleteReviewButton()}>
         Delete
       </button>
-      <button id='backButton' onClick={onClickBackButton()}>
+      <button id='backButton' onClick={() => onClickBackButton()}>
         Back
       </button>
       <div className='row'>
@@ -84,7 +97,7 @@ function ReviewDetail(props) {
       </div>
       <div className='row'>
         <button className='writeCommentButton' disabled={comment === ''} 
-          onClick={onClickWriteButton(comment)}>
+          onClick={() => onClickWriteButton(comment)}>
           Write
         </button>
       </div>
@@ -98,7 +111,15 @@ function ReviewDetail(props) {
 function ReviewPart(props) {
 
   const dispatch = useDispatch();
-  const storedReview = useSelector(state => state.review.selectedReview);
+  const storedReview = /*{
+    'id': 1,
+    'recipe_id': 1,
+    'user_id': 1,
+    'title': 'Kimchi review!!!',
+    'content': 'Kimchi is good modify content',
+    'likes': 5,
+    'reports': 3
+  };//*/useSelector(state => state.review.selectedReview);
   const reviewId = props.reviewId;
 
   // increment likes count for the review
@@ -125,14 +146,14 @@ function ReviewPart(props) {
       <h1>{storedReview.title}</h1>
       <div className='row'>
         <p1>{storedReview.content}</p1>
-        <button id='likeReviewButton' onClick={onClickLikeReviewButton()}>
+        <button id='likeReviewButton' onClick={() => onClickLikeReviewButton()}>
           Like
         </button>
         {storedReview.likes}
-        <button id='dislikeReviewButton' onClick={onClickDisikeReviewButton()}>
+        <button id='dislikeReviewButton' onClick={() => onClickDisikeReviewButton()}>
           Dislike
         </button>
-        <button id='reportReviewButton' onClick={onClickReportReviewButton()}>
+        <button id='reportReviewButton' onClick={() => onClickReportReviewButton()}>
           Report
         </button>
         <p3>{storedReview.reports}</p3>
@@ -143,7 +164,27 @@ function ReviewPart(props) {
 
 // returns list of comments of this review w/ necessary information + buttons
 function CommentList() {
-  const storedComments = useSelector(state => state.comment.comments);
+  const storedComments = /*[{
+    'id': 1,
+    'review_id': 1,
+    'user_id': 1,
+    'content': 'some bad comment',
+    'likes': 0,
+    'reports': 0
+  },
+  {
+    'id': 2,
+    'review_id': 1,
+    'user_id': 2,
+    'content': 'review test 1',
+    'likes': 0,
+    'reports': 0
+  }];//*/useSelector(state => state.comment.comments);
+  const storedUser = /*{
+    'id': 1,
+    'name': 'John',
+    'isAuthorized': true
+  };//*/useSelector(state => state.user);
   const dispatch = useDispatch();
 
   // edit the comment
@@ -168,11 +209,11 @@ function CommentList() {
           </input>
         </div>
         <button id='editCommentConfirmButton' disabled={newComment === ''}
-          onClick={onClickEditCommentConfirmButton(commentId, {...comment, content: newComment})}>
+          onClick={() => onClickEditCommentConfirmButton(commentId, {...comment, content: newComment})}>
           Confirm
         </button>
         <button id='editCommentCancelButton' disabled={newComment === ''}
-          onClick={onClickEditCommentCancelButton()}>
+          onClick={() => onClickEditCommentCancelButton()}>
           Cancel
         </button>
       </div>
@@ -203,13 +244,11 @@ function CommentList() {
     //this.props.onReportComment(commentId, comment);
   };
   const commentList = storedComments.map((comment) => {
-    if(comment.id === this.props.user.id) {
+    if(comment.user_id === storedUser.id) {
       return (
         <div className='Comment'>
           <div className='row'>
-            {comment.user.username}
-            {comment.likes}
-            {comment.reports}
+            Author: {comment.user_id} Likes: {comment.likes} | Reports: {comment.reports}
           </div>
           <div className='row'>
             {comment.content}
@@ -228,18 +267,18 @@ function CommentList() {
       return (
         <div className='Comment'>
           <div className='row'>
-            {comment.user.username}
+            Author: {comment.user_id}
             <button id='likeCommentButton' onClick={onClickLikeCommentButton(comment.id, comment)}>
               Like
             </button>
-            {comment.likes}
+            Likes: {comment.likes}
             <button id='dislikeCommentButton' onClick={onClickDislikeCommentButton(comment.id, comment)}>
               Dislike
             </button>
             <button id='reportCommentButton' onClick={onClickReportCommentButton(comment.id, comment)}>
               Report
             </button>
-            {comment.reports}
+            Reports: {comment.reports}
           </div>
           <div className='row'>
             {comment.content}

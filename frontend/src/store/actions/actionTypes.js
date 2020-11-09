@@ -1,6 +1,13 @@
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_OUT = 'SIGN_OUT';
 
+export const GET_FRIDGE_ITEMS = 'GET_FRIDGE_ITEMS';
+export const GET_FRIDGE_ITEM = 'GET_FRIDGE_ITEM';
+export const ADD_FRIDGE_ITEM = 'ADD_FRIDGE_ITEM';
+export const EDIT_FRIDGE_ITEM = 'EDIT_FRIDGE_ITEM';
+export const DELETE_FRIDGE_ITEM = 'DELETE_FRIDGE_ITEM';
+export const CLEAR_FRIDGE_ITEMS = 'CLEAR_FRIDGE_ITEMS';
+
 export const GET_RECIPE = 'GET_RECIPE';
 export const RATE_RECIPE = 'RATE_RECIPE';
 export const FETCH_ALL_RECIPES = 'FETCH_ALL_RECIPES';
