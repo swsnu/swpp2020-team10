@@ -1,19 +1,36 @@
-import logo from "./logo.svg";
-import "./App.css";
-import React from "react";
-import {BrowserRouter, Route, Redirect, Switch} from "react-redux-dom";
+import React from 'react';
+import {
+  BrowserRouter as Router, 
+  Route, 
+  Redirect, 
+  Switch
+} from 'react-router-dom';
+import { FrontPage } from './components/FrontPage';
+
+import { RecipeSearchPage } from './components/RecipeSearchPage';
+import { SignInPage } from './components/user/SignInPage';
+import { SignUpPage } from './components/user/SignUpPage';
+import RecipeDetail from './components/RecipeDetail';
+import ReviewDetail from './components/ReviewDetail';
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
+    <Router>
+      <div className='App'>
         <Switch>
-          <Route path="/recipe/:recipe_id" exact component={RecipeDetail} />
-          <Route path="/review/:review_id" exact component={ReviewDetail} />
+          <Route exact path='/signin' component={SignInPage} />
+          <Route exact path='/signup' component={SignUpPage} />
+          <Route exact path='/search/:q' component={RecipeSearchPage} />
+          <Route exact path='/recipe/:recipe_id' component={RecipeDetail} />
+          <Route exact path='/review/:review_id' component={ReviewDetail} />
+          <Route exact path='/' component={FrontPage}/>
+          <Redirect to='/' />
         </Switch>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 }
-
+  
 export default App;
+  
