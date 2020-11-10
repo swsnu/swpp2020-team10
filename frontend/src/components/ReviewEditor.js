@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as actionCreators from '../store/actions/index';
 
+import { Tab, Button, Header, Grid, Input, Label, Image, Message, Icon } from 'semantic-ui-react';
+import './ReviewEditor.css';
+
 export default function ReviewEditor() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -12,20 +15,9 @@ export default function ReviewEditor() {
   const selectedReview = useSelector(state => state.review.selectedReview);
   const selectedRecipe = useSelector(state => state.review.selectedRecipe);
 
-  const [isWriteTab, setIsWriteTab] = useState(true);
   const [title, setTitle] = useState(selectedReview.title);
   //const [image, setImage] = useState(selectedReview.image);
   const [content, setContent] = useState(selectedReview.content);
-
-  // switch to write tab
-  const onClickWriteTabButton = () => {
-    setIsWriteTab(true);
-  };
-
-  // switch to preview tab
-  const onClickPreviewTabButton = () => {
-    setIsWriteTab(false);
-  };
 
   // edit review and move to 'Review Detail' page
   const onClickSubmitButton = () => {
@@ -49,93 +41,118 @@ export default function ReviewEditor() {
   const onClickCancelButton = () => {
     history.goBack();
   };
-  
-  let tab_content;
-  if (isWriteTab) {
-    tab_content = (
+
+  const write_tab_content = (
+    <Tab.Pane>
       <WriteTab
         title={title}
-        onChangeTitle={setTitle}
+        onChangeTitle={(val) => setTitle(val)}
         //image={image}
         //onChangeImage={setImage}
         content={content}
-        onChangeContent={setContent} ></WriteTab>
-    );
-  }
-  else {
-    tab_content = (
+        onChangeContent={(val) => setContent(val)} ></WriteTab>
+    </Tab.Pane>
+  );
+  const preview_tab_content = (
+    <Tab.Pane>
       <PreviewTab
         title={title}
         //image={image}
-        content={content}
-        selectedReview={selectedReview} ></PreviewTab>
-    );
-  }
+        content={content} ></PreviewTab>
+    </Tab.Pane>
+  );
+  
+  const panes = [
+    { menuItem: 'WriteTab', render: () => write_tab_content },
+    { menuItem: 'PreviewTab', render: () => preview_tab_content },
+  ];
 
   return (
-    <div className='ReviewEditor'>
-      <div>
-        <h2> Review Editor </h2>
-      </div>
-      <div className='tabs'>
-        <button id='writeTabButton' onClick={() => onClickWriteTabButton()}>
-          Write
-        </button>
-        <button id='previewTabButton' onClick={() => onClickPreviewTabButton()}>
-          Preview
-        </button>
-      </div>
-      <div className='row'>
-        {tab_content}
-      </div>
-      <div className='actions'>
-        <button id='submitButton' onClick={() => onClickSubmitButton()}>
+    <Grid id='ReviewEditor'>
+      <Grid.Row centered>
+        <Header as='h2'>Review Editor</Header>
+      </Grid.Row>
+      <Grid.Row>
+        <Tab id='tab' panes={panes} />
+      </Grid.Row>
+      <Grid.Row id='buttons'>
+        <Button id='submitButton' onClick={() => onClickSubmitButton()} floated='right'>
           Submit
-        </button>
-        <button id='cancelButton' onClick={() => onClickCancelButton()}>
+        </Button>
+        <Button id='cancelButton' onClick={() => onClickCancelButton()} floated='right'>
           Cancel
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Grid.Row>
+    </Grid>
   );
 }
 
 // returns write tab page with title, image, content inputs
 function WriteTab(props) {
   return (
-    <div className='WriteTab'>
-      <div className='title'>
-        <h2> Title </h2>
-        <input id='titleInput' type='text' value={props.title}
-          onChange={(event) => props.onChangeTitle(event.target.value)}></input>
-      </div>
-      <div className='image'>
-        <h2> Image file </h2>
-        <input id='imageInput' type='file' accept='image/*'// value={image}
-          //onChange={(event) => setImage(event.target.value)}
-        ></input>
-      </div>
-      <div className='content'>
-        <h2> Content </h2>
-        <input id='contentInput' rows='8' type='text' value={props.content}
-          onChange={(event) => props.onChangeContent(event.target.value)}></input>
-      </div>
-    </div>
+    <Grid className='WriteTab'>
+      <Grid.Row className='title'>
+        <Grid.Column stretched>
+          <Input id='titleInput' labelPosition='left' type='text' value={props.title}
+            onChange={(event) => props.onChangeTitle(event.target.value)}>
+            <Label basic>Title</Label>
+            <input />
+          </Input>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row className='image'>
+        <Grid.Column stretched>
+          <Input id='imageInput' labelPosition='left' type='file' accept='image/*'// value={props.image}
+            //onChange={(event) => setImage(event.target.value)}
+          >
+            <Label basic>Image File</Label>
+            <input />
+          </Input>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row className='content'>
+        <Grid.Column stretched>
+          <Input id='contentInput' labelPosition='left' type='textarea'>
+            <Label basic>Content</Label>
+            <textarea rows='8' value={props.content}
+              onChange={(event) => props.onChangeContent(event.target.value)}/>
+          </Input>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
   );
 }
 
 // returns preview tab page of editing review
 function PreviewTab(props) {
   return (
-    <div className='PreviewTab'>
-      <h1>{props.title}</h1>
-      <image src='' alt='image preview'></image>
-      <p1>{props.content}</p1>
-      <div className='reactions'>
-        <img className='likePicture' src='' alt='Like' /> {props.selectedReview.likes}
-        <img className='dislikePicture' src='' alt='Disike' /> {props.selectedReview.dislikes}
-        <img className='reportPicture' src='' alt='Report' /> {props.selectedReview.reports}
-      </div>
-    </div>
+    <Grid id='PreviewTab'>
+      <Grid.Row>
+        <Header as='h1' id='title'>{props.title}</Header>
+      </Grid.Row>
+      <Grid.Row columns={2}>
+        <Grid.Column padded>
+          <Image src='https://source.unsplash.com/512x512/?soup' alt='image preview' rounded size='medium'></Image>
+          <Grid padded>
+            <Grid.Row columns={10} id='reactions'>
+              <Grid.Column>
+                <Icon name='thumbs up outline' /> 0
+              </Grid.Column>
+              <Grid.Column>
+                <Icon name='thumbs down outline' /> 0
+              </Grid.Column>
+              <Grid.Column>
+                <Icon name='bullhorn' /> 0
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Grid.Column>
+        <Grid.Column stretched>
+          <Message>
+            <p1 id="contentPreview">{props.content}</p1>
+          </Message>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
   );
 }

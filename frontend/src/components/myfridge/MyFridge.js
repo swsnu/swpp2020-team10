@@ -5,6 +5,9 @@ import * as actionCreators from '../../store/actions/index';
 import FoodCreate from './FoodCreate';
 import FoodDetail from './FoodDetail';
 
+import { Button, Card, Grid, Image, List, Reveal } from 'semantic-ui-react';
+import './MyFridge.css';
+
 export default function MyFridge() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -48,23 +51,40 @@ export default function MyFridge() {
 
   // clear fridge items
   const onClickClearFridgeButton = () => {
-    dispatch(actionCreators.clearFridgeItems(userId));
+    //dispatch(actionCreators.clearFridgeItems(userId));
+    dispatch(actionCreators.clearFridgeItems_());
   };
   
   // open FoodDetail page
   const onClickFridgeItemButton = (fridgeItem) => {
-    dispatch(actionCreators.getFridgeItem(fridgeItem.id))
+    /*dispatch(actionCreators.getFridgeItem(fridgeItem.id))
       .then(() => {
         setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
         setIsEdit(true);
-      });
+      });*/
+    dispatch(actionCreators.getFridgeItem_(fridgeItem));
+    setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
+    setIsEdit(true);
   };
 
   const fridgeItemButtons = fridgeItems.map((fridgeItem) => {
     return (
-      <button key={fridgeItem.id} className='fridgeItem' onClick={() => onClickFridgeItemButton(fridgeItem)}>
-        <img src='' alt='Fridge Item'></img>
-      </button>
+      <Grid.Column key={fridgeItem.id}>
+        <Card onClick={() => onClickFridgeItemButton(fridgeItem)}>
+          <Reveal animated='move up'>
+            <Reveal.Content visible>
+              <Image src='https://source.unsplash.com/512x512/?soup' alt='Fridge Item' rounded></Image>
+            </Reveal.Content>
+            <Reveal.Content hidden>
+              <List verticalAlign='middle' size='huge'>
+                <List.Item>{fridgeItem.name}</List.Item>
+                <List.Item>{fridgeItem.quantity + fridgeItem.unit}</List.Item>
+                <List.Item>{fridgeItem.expiryDate}</List.Item>
+              </List>
+            </Reveal.Content>
+          </Reveal>
+        </Card>
+      </Grid.Column>
     );
   });
   
@@ -73,23 +93,27 @@ export default function MyFridge() {
   }
   else {
     return (
-      <div className='MyFridge'>
-        <h2>{title}</h2>
-        <div className='Fridge' style={{height:'400px',overflow:'auto'}}>
+      <Grid id='MyFridge' divided='vertically'>
+        <Grid.Row>
+          <Grid.Column>
+            <h1>{title}</h1>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row id='fridge' columns={4}>
           {fridgeItemButtons}
-        </div>
-        <div className='buttons'>
-          <button id='searchRecipeButton' onClick={() => onClickSearchRecipeButton()}>
+        </Grid.Row>
+        <Grid.Row id='buttons'>
+          <Button id='searchRecipeButton' onClick={() => onClickSearchRecipeButton()}>
             Search Recipe
-          </button>
-          <button id='addFoodButton' onClick={() => onClickAddFoodButton()}>
+          </Button>
+          <Button id='addFoodButton' onClick={() => onClickAddFoodButton()}>
             Add
-          </button>
-          <button id='clearFridgeButton' onClick={() => onClickClearFridgeButton()}>
+          </Button>
+          <Button id='clearFridgeButton' onClick={() => onClickClearFridgeButton()}>
             Clear
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Grid.Row>
+      </Grid>
     );
   }
 }
