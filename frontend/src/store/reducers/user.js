@@ -10,22 +10,19 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SIGN_IN:
+      console.log(action);
       return {
         ...state,
-        users: {
-          isAuthorized: true,
-          id: action.id,
-          name: action.name,
-        }
+        isAuthorized: true,
+        id: action.id,
+        name: action.name,
       };
     case actionTypes.SIGN_OUT:
       return {
         ...state,
-        users: {
-          isAuthorized: false,
-          id: null,
-          name: null,
-        }
+        isAuthorized: false,
+        id: null,
+        name: null,
       };
   }
   return state;

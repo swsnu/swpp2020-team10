@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 
@@ -24,7 +23,7 @@ export const SignUpPage = () => {
       axios.post('/api/user/signup/', { username, password, email })
         .then(() => {
           window.alert('Succesfully created an account. Please sign in.');
-          history.goBack();
+          history.push('/');
         })
         .catch(error => {
           if (error.response.status === 409) {
@@ -39,12 +38,8 @@ export const SignUpPage = () => {
   return (
     <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
       <Grid.Column style={{ maxWidth: 360 }}>
-        <Header textAlign='center' as='h1' color='blue'>
-          F.R.I.D.G.E
-        </Header>
-        <Header textAlign='center' as='h2'>
-          Sign up
-        </Header>
+        <Header content='F.R.I.D.G.E' textAlign='center' as='h1' color='blue' />
+        <Header content='Sign up' textAlign='center' as='h2' />
         <Segment raised>
           <Form>
             <Form.Field>
@@ -78,10 +73,10 @@ export const SignUpPage = () => {
           </Form>
         </Segment>
         <Button floated='right' primary
-          type='button'
           id='signupConfirmButton'
           onClick={onClickSignupConfirmButton}
-        >Confirm</Button>
+          content='Confirm'
+        />
       </Grid.Column>
     </Grid>
   );
