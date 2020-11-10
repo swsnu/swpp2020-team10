@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { Rating, Image, Container, Header, Grid } from 'semantic-ui-react';
+import { Rating, Image, Container, Header, Grid, Button, Segment } from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
 function RecipeDetail(props) {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const recipeId = props.match.params.recipeId;
+  const recipeId = props.match.params.recipe_id;
 
   const [hasRecipe, setHasRecipe] = useState(false);
   const [hasReviews, setHasReviews] = useState(false);
@@ -60,9 +60,13 @@ function RecipeDetail(props) {
     'reports': 0
   }];//*/useSelector(state => state.review.reviews);
 
+  const userId = useSelector(state => state.user.id);
+
   // move to 'My Fridge' page
   const onClickMyFridgeButton = () => {
-    history.push('/fridge/' + this.props.user.id);
+    if(userId !== null) {
+      history.push('/fridge/' + userId);
+    }
   };
 
   /*// move to 'Settings' page
@@ -85,46 +89,84 @@ function RecipeDetail(props) {
     dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
-  let title, rating, serving, cooking_time, content;
+  let title, rating, serving, cooking_time, content, ingredients;
   if(storedRecipe !== null){
     title = storedRecipe.title;
     rating = storedRecipe.rating;
     serving = storedRecipe.serving;
     cooking_time = storedRecipe.cooking_time;
     content = storedRecipe.content;
+    ingredients = storedRecipe.ingredients;
   }
 
+  let ingredient;
+  if(ingredients != null) {
+    ingredient = Object.keys(ingredients).map((key) => {
+      return (
+        <p key={key}>
+          {key}: {ingredients[key]}
+        </p>
+      );
+    });
+  }
+
+
   /*<div className='row'>
-        <button id='settingsButton' onClick={onClickSettingsButton()}>
+        <Button id='settingsButton' onClick={onClickSettingsButton()}>
           To Settings
-        </button>
-        <button id='signOutButton' onClick={onClickSignOutButton()}>
+        </Button>
+        <Button id='signOutButton' onClick={onClickSignOutButton()}>
           Sign Out
-        </button>
+        </Button>
       </div>
   */ 
 
   return (
     <div className='RecipeDetail'>
-      <Grid centered padded>
+      <Grid centered padded divided>
         <Grid.Row>
-          <Image size='medium' src='https://react.semantic-ui.com/images/wireframe/image.png' centered/>
+          <Image size='medium' src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Various_kimchi.jpg/330px-Various_kimchi.jpg' centered/>
         </Grid.Row>
         <Grid.Row>
           <Container textAlign='center'>
             <Header textAlign='center'>{title}</Header>
             <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated} />
             <p>Rating: {rating}</p>
-            <p>Ingredients</p>
-            <p></p>
-            <p>Serving: {serving}, Cooking time: {cooking_time}</p>
-            <p>{content}</p>
+            <Segment.Group horizontal compact attached='top'>
+              <Segment>
+                <p>Ingredients</p>
+              </Segment>
+              <Segment>
+                {ingredient}
+              </Segment>
+            </Segment.Group>
+            <Segment.Group horizontal>
+              <Segment>
+                <p>Serving</p>
+              </Segment> 
+              <Segment>
+                {serving}
+              </Segment>
+            </Segment.Group>
+            <Segment.Group horizontal>
+              <Segment>
+                <p>Cooking time</p>
+              </Segment> 
+              <Segment>
+                {cooking_time}
+              </Segment>
+            </Segment.Group>
+            <Segment.Group horizontal attached='bottom'>
+              <Segment>
+                {content}
+              </Segment>
+            </Segment.Group>
           </Container>
         </Grid.Row>
         <Grid.Row>
-          <button id='myFridgeButton' align='center' onClick={() => onClickMyFridgeButton()}>
+          <Button id='myFridgeButton' align='center' onClick={() => onClickMyFridgeButton()}>
             My Fridge
-          </button>
+          </Button>
         </Grid.Row>
         <Grid.Row>
           <h2 textAlign='justified'> Reviews </h2>
@@ -133,9 +175,9 @@ function RecipeDetail(props) {
       <ReviewPart storedReviews={storedReviews}/>
       <Grid centered padded>
         <Grid.Row>
-          <button id='writeButton' onClick={() => onClickWriteButton()}>
+          <Button id='writeButton' onClick={() => onClickWriteButton()}>
             Write Review
-          </button>
+          </Button>
         </Grid.Row>
       </Grid>
     </div>
@@ -153,14 +195,16 @@ function ReviewPart(props) {
       <div className='review' key={review.id}>
         <Grid centered padded>
           <Grid.Row>
-            <Grid.Column padded width={4}>
-              <NavLink id='review-link' to={'/review/' + review.id}>
-                {review.title}
-              </NavLink>
-            </Grid.Column>
-            <Grid.Column padded width={3}>
-            Author: {review.user_id} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
-            </Grid.Column>
+            <Segment>
+              <Grid.Column padded width={4}>
+                <NavLink id='review-link' to={'/review/' + review.id}>
+                  {review.title}
+                </NavLink>
+              </Grid.Column>
+              <Grid.Column padded width={3}>
+              Author: {review.author_name} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
+              </Grid.Column>
+            </Segment>
           </Grid.Row>
         </Grid>
       </div>
