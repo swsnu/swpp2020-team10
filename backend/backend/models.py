@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 class Food(models.Model):
     name = models.CharField(max_length=80, default='')
@@ -59,11 +60,18 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='review_user_id',
     )
+    author_name = models.CharField(max_length=80, default='', blank=True, null = True)
     title = models.CharField(max_length=80)
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if self.author_name is None or len(self.author_name) == 0:
+            self.author_name = get_object_or_404(User, pk=self.user.id).username
+        super(Review, self).save(*args, **kwargs)
+
 
 class Comment(models.Model):
     review = models.ForeignKey(
@@ -77,7 +85,13 @@ class Comment(models.Model):
         related_name='review_comment_id',
         default=None
     )
+    author_name = models.CharField(max_length=80, default='', blank=True, null = True)
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if self.author_name is None or len(self.author_name) == 0:
+            self.author_name = get_object_or_404(User, pk=self.user.id).username
+        super(Comment, self).save(*args, **kwargs)
