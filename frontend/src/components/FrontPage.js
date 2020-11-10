@@ -66,7 +66,7 @@ export const FrontPage = () => {
   );
 
   return (
-    <Container text style={{ marginTop: '2em' }}>
+    <Container text style={{ marginTop: '1em' }}>
       <Segment color='blue' inverted tertiary>
         <Grid>
           <Grid.Column verticalAlign='middle'>

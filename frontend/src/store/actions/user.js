@@ -25,9 +25,7 @@ export const checkUserStatus = () => {
   return dispatch => {
     return axios.get('/api/user/status')
       .then(response => {
-        if (response.status == 200) {
-          dispatch(authorize(response.data));
-        }
+        dispatch(authorize(response.data));
       });
   };
 };

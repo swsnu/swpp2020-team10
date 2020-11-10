@@ -19,6 +19,7 @@ import fridgeItemReducer from './store/reducers/fridgeItem';
 import * as actionCreators from './store/actions/index';
 
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 

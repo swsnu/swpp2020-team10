@@ -2,7 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 
 
 const initialState = {
-  isAuthorized: null,
+  isAuthorized: false,
   id: null,
   name: null,
 };
