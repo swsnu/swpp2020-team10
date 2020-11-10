@@ -56,7 +56,7 @@ def signout(request):
 def status(request):
     if request.method == "GET":
         if not request.user.is_authenticated:
-            return HttpResponse(204)
+            return HttpResponse(status=401)
 
         response_data = {
             "user_id": request.user.id,
