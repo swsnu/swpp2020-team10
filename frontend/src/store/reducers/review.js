@@ -34,7 +34,7 @@ const reducer = (state=initialState, action) => {
     case actionTypes.DISLIKE_REVIEW:
       var modifiedDislikeReview = state.reviews.map((review) => {
         if (review.id === action.targetId) {
-          return {...review, likes: review.likes - 1};
+          return {...review, dislikes: review.dislikes + 1};
         } else {
           return {...review};
         }
