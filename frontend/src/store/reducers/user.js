@@ -12,20 +12,16 @@ const reducer = (state = initialState, action) => {
     case actionTypes.SIGN_IN:
       return {
         ...state,
-        users: {
-          isAuthorized: true,
-          id: action.id,
-          name: action.name,
-        }
+        isAuthorized: true,
+        id: action.id,
+        name: action.name,
       };
     case actionTypes.SIGN_OUT:
       return {
         ...state,
-        users: {
-          isAuthorized: false,
-          id: null,
-          name: null,
-        }
+        isAuthorized: false,
+        id: null,
+        name: null,
       };
   }
   return state;

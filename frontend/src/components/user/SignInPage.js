@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
@@ -17,10 +16,10 @@ export const SignInPage = () => {
   const onClickSigninConfirmButton = () => {
     dispatch(actionCreators.signin({ username, password }))
       .then(response => {
-        if (response.status != 204) {
+        if (response.status != 200) {
           window.alert('Authentication failed.');
         } else {
-          history.goBack();
+          history.push('/');
         }
       });
   };
@@ -28,12 +27,8 @@ export const SignInPage = () => {
   return (
     <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
       <Grid.Column style={{ maxWidth: 360 }}>
-        <Header textAlign='center' as='h1' color='blue'>
-          F.R.I.D.G.E
-        </Header>
-        <Header textAlign='center' as='h2'>
-          Sign in
-        </Header>
+        <Header content='F.R.I.D.G.E' textAlign='center' as='h1' color='blue' />
+        <Header content='Sign in' textAlign='center' as='h2' />
         <Segment raised>
           <Form>
             <Form.Field>
@@ -60,12 +55,13 @@ export const SignInPage = () => {
           type='button'
           id='signinConfirmButton'
           onClick={onClickSigninConfirmButton}
-        >Confirm</Button>
+          content='Confirm'
+        />
         <Button floated='right'
-          type='button'
           id='signupButton'
           onClick={() => { history.push('/signup'); }}
-        >Sign Up</Button>
+          content='Sign up'
+        />
       </Grid.Column>
     </Grid>
   );

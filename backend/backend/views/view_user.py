@@ -34,7 +34,7 @@ def signin(request):
                 "user_id": user.id,
                 "username": user.username,
             }
-            return JsonResponse(response_data, status=204)
+            return JsonResponse(response_data, status=200)
 
         # invalid credentials
         return HttpResponse(status=401)

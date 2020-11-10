@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Button, Checkbox, Container, Dropdown, Form, Grid, Header, Icon, Item, Rating, Segment } from 'semantic-ui-react';
 
 import * as actionCreators from '../store/actions/index';
 
@@ -21,10 +22,10 @@ export const RecipeSearchPage = ({ match }) => {
   const [includeTags, setIncludeTags] = useState('');
   const [excludeTags, setExcludeTags] = useState('');
 
+  const dispatch = useDispatch();
+
   // checks if recipes have been fetched
   const [hasRecipes, setHasRecipes] = useState(false);
-
-  const dispatch = useDispatch();
 
   if (!hasRecipes) {
     dispatch(actionCreators.fetchAllRecipes())
@@ -33,120 +34,193 @@ export const RecipeSearchPage = ({ match }) => {
 
   const recipes = useSelector(state => state.recipe.recipes);
 
-  const searchResult = recipes.map(recipe => (
-    <div key={recipe.id}>
-      <img src='https://picsum.photos/200' />
-      <div><Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link></div>
-      <div>Rating: {recipe.rating}</div>
-      <div>{recipe.tag.map(tag => `${tag} `)}</div>
-      <div>Cooking time: {recipe.cooking_time}</div>
-      <div>Serving: {recipe.serving}</div>
-    </div>
-  ));
+  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
-  return (
-    <div>
-      <div>
-        <input
-          type='search'
-          id='searchInput'
-          placeholder='Search recipes...'
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-        />
-      </div>
-      <div>
-        <select id='sortOptions'>
-          <option value=''>Sort by...</option>
-          <option value='relevance'>Relevance</option>
-          <option value='rating'>Rating</option>
-          <option value='time'>Cooking time</option>
-        </select>
-        <button onClick={() => setShowFilterTab(!showFilterTab)}>Filter</button>
-      </div>
-      { showFilterTab &&
-        <div>
-          <div>
-            <input
-              type='checkbox'
-              id='enableFridgeInput'
-              checked={enableFridge}
-              onChange={() => setEnableFridge(!enableFridge)}
-            />
-            <label htmlFor='enableFridgeInput'>
-              Check availability from My Fridge
-            </label>
-          </div>
-          <div>
-            <input
-              type='checkbox'
-              id='enableCookingTimeInput'
-              checked={enableCookingTime}
-              onChange={() => setEnableCookingTime(!enableCookingTime)}
-            />
-            <label htmlFor='enableCookingTimeInput'>
-              Maximum cooking time
-            </label>
+  const sortOptions = [
+    {
+      key: 'Relevance',
+      text: 'Relevance',
+      value: 'Relevance',
+    },
+    {
+      key: 'Rating',
+      text: 'Rating',
+      value: 'Rating',
+    },
+    {
+      key: 'Cooking time',
+      text: 'Cooking time',
+      value: 'Cooking time',
+    }
+  ];
+
+  const filterTab = (
+    <Segment>
+      <Form>
+        <Form.Field>
+          <Checkbox
+            label='Check availability from My Fridge'
+            checked={enableFridge}
+            onChange={() => setEnableFridge(!enableFridge)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Checkbox
+            label='Set maximum cooking time'
+            checked={enableCookingTime}
+            onChange={() => setEnableCookingTime(!enableCookingTime)}
+          />
+        </Form.Field>
+        <Form.Group>
+          <Form.Field disabled={!enableCookingTime}>
+            <label>Cooking time</label>
             <input
               type='range'
               id='cookingTimeRangeInput'
+              max={180}
               value={cookingTime}
               onChange={e => setCookingTime(e.target.value)}
             />
+          </Form.Field>
+          <Form.Field disabled={!enableCookingTime} width={2}>
             <input
               type='number'
               id='cookingTimeNumberInput'
+              max={180}
               value={cookingTime}
               onChange={e => setCookingTime(e.target.value)}
             />
-          </div>
-          <div>
-            <input
-              type='checkbox'
-              id='enableMinRatingInput'
-              checked={enableMinRating}
-              onChange={() => setEnableMinRating(!enableMinRating)}
-            />
-            <label htmlFor='enableMinRatingInput'>
-              Minimum rating
-            </label>
+          </Form.Field>
+        </Form.Group>
+        <Form.Field>
+          <Checkbox
+            label='Set minimum Rating'
+            checked={enableMinRating}
+            onChange={() => setEnableMinRating(!enableMinRating)}
+          />
+        </Form.Field>
+        <Form.Group>
+          <Form.Field disabled={!enableMinRating}>
+            <label>Rating</label>
             <input
               type='range'
               id='minRatingRangeInput'
+              max={5}
+              step={0.1}
               value={minRating}
               onChange={e => setMinRating(e.target.value)}
             />
+          </Form.Field>
+          <Form.Field disabled={!enableMinRating} width={2}>
             <input
               type='number'
               id='minRatingNumberInput'
+              max={5}
+              step={0.1}
               value={minRating}
               onChange={e => setMinRating(e.target.value)}
             />
-          </div>
-          <div>
-            <label htmlFor='includeTagsInput'>Include tags: </label>
-            <input
-              type='text'
-              id='includeTagsInput'
-              value={includeTags}
-              onChange={e => setIncludeTags(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor='excludeTagsInput'>Exclude tags: </label>
-            <input
-              type='text'
-              id='excludeTagsInput'
-              value={excludeTags}
-              onChange={e => setExcludeTags(e.target.value)}
-            />
-          </div>
-          <button>Save preferences</button>
-        </div>
+          </Form.Field>
+        </Form.Group>
+      </Form>
+      <Header content='Tags' as='h4' />
+      <Form>
+        <Form.Field>
+          <label htmlFor='includeTagsInput'>Include</label>
+          <input
+            type='text'
+            id='includeTagsInput'
+            value={includeTags}
+            onChange={e => setIncludeTags(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label htmlFor='excludeTagsInput'>Exclude</label>
+          <input
+            type='text'
+            id='excludeTagsInput'
+            value={excludeTags}
+            onChange={e => setExcludeTags(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Button basic
+            content='Save preferences'
+            disabled={userIsAuthorized !== true}
+          />
+        </Form.Field>
+      </Form>
+    </Segment>
+  );
+
+  const searchResults = recipes.map(recipe => (
+    <Item key={recipe.id}>
+      <Item.Image
+        src={`https://source.unsplash.com/512x512/?soup,${recipe.id}`}
+        size='small'
+        as={Link} to={`/recipe/${recipe.id}`}
+      />
+      <Item.Content>
+        <Item.Header>
+          <Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link>
+        </Item.Header>
+        <Item.Meta>
+          {recipe.rating.toFixed(1)}&ensp;
+          <Rating
+            rating={recipe.rating}
+            maxRating={5}
+            clearable={false} icon='star' size='mini'
+          />&emsp;
+          Serving&ensp;{recipe.serving}&emsp;
+          Cooking time&ensp;{recipe.cooking_time}
+        </Item.Meta>
+        <Item.Description>
+          {recipe.content.substr(0, 160)}
+        </Item.Description>
+        <Item.Extra>
+          {recipe.tag.map(tag => <span key={tag}>{tag}&emsp;</span>)}
+        </Item.Extra>
+      </Item.Content>
+    </Item>
+  ));
+
+  return (
+    <Container text style={{ marginTop: '2em' }}>
+      <Segment color='blue' inverted tertiary>
+        <Grid>
+          <Grid.Column verticalAlign='middle'>
+            <label htmlFor='searchInput'><Icon name='search' size='big' /></label>
+          </Grid.Column>
+          <Grid.Column width={15}>
+            <Form>
+              <Form.Field>
+                <input
+                  type='search'
+                  id='searchInput'
+                  placeholder='Search recipes...'
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
+              </Form.Field>
+            </Form>
+          </Grid.Column>
+        </Grid>
+      </Segment>
+      <Dropdown button basic
+        placeholder='Sort by...'
+        options={sortOptions}
+        style={{ width: 150 }}
+      />
+      <Button
+        onClick={() => setShowFilterTab(!showFilterTab)}
+        content='Filter'
+      />
+      { showFilterTab &&
+        filterTab
       }
-      <div>
-        {searchResult}
-      </div>
-    </div>
+      <Item.Group divided>
+        {searchResults}
+      </Item.Group>
+    </Container>
   );
 };

@@ -16,8 +16,8 @@ import recipeReducer from './store/reducers/recipe';
 import reviewReducer from './store/reducers/review';
 import commentReducer from './store/reducers/comment';
 import fridgeItemReducer from './store/reducers/fridgeItem';
+import * as actionCreators from './store/actions/index';
 
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -36,6 +36,8 @@ const reducer = combineReducers({
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
+
+store.dispatch(actionCreators.checkUserStatus());
 
 ReactDOM.render(
   <Provider store={store}>

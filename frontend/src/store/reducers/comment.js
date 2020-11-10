@@ -42,7 +42,7 @@ const reducer = (state=initialState, action) => {
     case actionTypes.DISLIKE_COMMENT:
       var modifiedDislikeComment = state.comments.map((comment) => {
         if (comment.id === action.targetId) {
-          return { ...comment, likes: comment.likes - 1 };
+          return { ...comment, dislikes: comment.dislikes + 1 };
         } else {
           return { ...comment };
         }
