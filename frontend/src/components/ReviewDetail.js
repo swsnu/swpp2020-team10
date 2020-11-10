@@ -47,6 +47,11 @@ function ReviewDetail(props) {
     recipeId = storedReview.recipe_id;
   }
 
+  let thisUserId;
+  if(storedUser != null){
+    thisUserId = storedUser.id;
+  }
+
   /*// move to 'Settings' page
   const onClickSettingsButton = () => {};
 
@@ -85,11 +90,11 @@ function ReviewDetail(props) {
       <ReviewPart reviewId={reviewId} />
       <Grid centered>
         <Grid.Row>
-          <button id='editReviewButton' disabled={userId !== storedUser.id} 
+          <button id='editReviewButton' disabled={userId !== thisUserId} 
             onClick={() => onClickEditReviewButton()}>
             Edit
           </button>
-          <button id='deleteReviewButton' disabled={userId !== storedUser.id} 
+          <button id='deleteReviewButton' disabled={userId !== thisUserId} 
             onClick={() => onClickDeleteReviewButton()}>
             Delete
           </button>
@@ -141,20 +146,17 @@ function ReviewPart(props) {
 
   // increment likes count for the review
   const onClickLikeReviewButton = () => {
-    const thisReview = storedReview;
-    dispatch(actionCreators.likeReview(reviewId, thisReview));
+    dispatch(actionCreators.likeReview(reviewId));
   };
 
-  // decrement likes count for the review
+  // increment dislikes count for the review
   const onClickDislikeReviewButton = () => {
-    const thisReview = storedReview;
-    dispatch(actionCreators.dislikeReview(reviewId, thisReview));
+    dispatch(actionCreators.dislikeReview(reviewId));
   };
 
   // increment reports count for the review
   const onClickReportReviewButton = () => {
-    const thisReview = storedReview;
-    dispatch(actionCreators.reportReview(reviewId, thisReview));
+    dispatch(actionCreators.reportReview(reviewId));
     //this.props.onReportReview(reviewId, thisReview);
   };
 
@@ -214,6 +216,10 @@ function ReviewPart(props) {
 
 // returns list of comments of this review w/ necessary information + buttons
 function CommentList() {
+
+  const [newComment, setNewComment] = useState('');
+  const [editedComment, setEditedComment] = useState(0);
+
   const storedComments = /*[{
     'id': 1,
     'review_id': 1,
@@ -235,41 +241,27 @@ function CommentList() {
     'name': 'John',
     'isAuthorized': true
   };//*/useSelector(state => state.user);
+
+  let thisUserId;
+  if(storedUser !== null) {
+    thisUserId = storedUser.id;
+  }
   const dispatch = useDispatch();
 
   // edit the comment
-  const onClickEditCommentButton = (commentId, comment) => {
-    const [newComment, setNewComment] = useState('');
+  const onClickEditCommentButton = (commentId) => {
+    setEditedComment(commentId);
+  };
 
-    // confirm edit
-    const onClickEditCommentConfirmButton = (commentId, comment) => {
-      dispatch(actionCreators.editComment(commentId, comment));
-    };
+  // confirm edit
+  const onClickEditCommentConfirmButton = (commentId, comment) => {
+    dispatch(actionCreators.editComment(commentId, comment));
+    setEditedComment(0);
+  };
 
-    // cancel edit and exit the popup
-    const onClickEditCommentCancelButton = () => {
-      return;
-    };
-
-    return(
-      <div className='CommentEditor'>
-        <Grid centered padded>
-          <div className='row'>
-            <input id='editCommentInput' rows='4' type='text' value={comment.value}
-              onChange={(event) => setNewComment(event.target.value)}>
-            </input>
-          </div>
-          <button id='editCommentConfirmButton' disabled={newComment === ''}
-            onClick={() => onClickEditCommentConfirmButton(commentId, {...comment, content: newComment})}>
-            Confirm
-          </button>
-          <button id='editCommentCancelButton' disabled={newComment === ''}
-            onClick={() => onClickEditCommentCancelButton()}>
-            Cancel
-          </button>
-        </Grid>
-      </div>
-    );
+  // cancel edit and exit the popup
+  const onClickEditCommentCancelButton = () => {
+    setEditedComment(0);
   };
 
   // delete the comment
@@ -279,24 +271,24 @@ function CommentList() {
   };
 
   // increment likes count for the comment
-  const onClickLikeCommentButton = (commentId, comment) => {
-    dispatch(actionCreators.likeComment(commentId, comment));
+  const onClickLikeCommentButton = (commentId) => {
+    dispatch(actionCreators.likeComment(commentId));
     //this.props.onLikeComment(commentId, comment);
   };
 
   // decrement likes count for the comment
-  const onClickDislikeCommentButton = (commentId, comment) => {
-    dispatch(actionCreators.dislikeComment(commentId, comment));
+  const onClickDislikeCommentButton = (commentId) => {
+    dispatch(actionCreators.dislikeComment(commentId));
     //this.props.onDislikeComment(commentId, comment);
   };
 
   // increment reports count for the comment
-  const onClickReportCommentButton = (commentId, comment) => {
-    dispatch(actionCreators.reportComment(commentId, comment));
+  const onClickReportCommentButton = (commentId) => {
+    dispatch(actionCreators.reportComment(commentId));
     //this.props.onReportComment(commentId, comment);
   };
   const commentList = storedComments.map((comment) => {
-    if(comment.user_id === storedUser.id) {
+    if(comment.user_id === thisUserId) {
       return (
         <div className='Comment'>
           <Grid centered padded>
@@ -307,11 +299,26 @@ function CommentList() {
               {comment.content}
             </Grid.Row>
             <Grid.Row>
-              <button id='editCommentButton' onClick={onClickEditCommentButton(comment.id, comment)}>
+              <button id='editCommentButton' onClick={onClickEditCommentButton(comment.id)}>
                 Edit
               </button>
               <button id='deleteCommentButton' onClick={onClickDeleteCommentButton(comment.id)}>
                 Delete
+              </button>
+            </Grid.Row>
+            <Grid.Row>
+              <input id='editCommentInput' rows='4' type='text' disabled={comment.id !== editedComment} value={comment.value}
+                onChange={(event) => setNewComment(event.target.value)}>
+              </input>
+            </Grid.Row>
+            <Grid.Row>
+              <button id='editCommentConfirmButton' disabled={(newComment === '') || (comment.id === editedComment)}
+                onClick={() => onClickEditCommentConfirmButton(comment.id, {...comment, content: newComment})}>
+                Confirm
+              </button>
+              <button id='editCommentCancelButton' disabled={(newComment === '') || (comment.id === editedComment)}
+                onClick={() => onClickEditCommentCancelButton()}>
+                Cancel
               </button>
             </Grid.Row>
           </Grid>
