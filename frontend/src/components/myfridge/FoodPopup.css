@@ -1,0 +1,35 @@
+#base {
+  text-align: center;
+}
+
+#FoodCreate,#FoodDetail {
+  display: inline-block;
+  padding-top: 50px;
+}
+
+#foodInfo {
+  width: 300px;
+  height: fit-content;
+  padding: 10px;
+}
+
+#nutritionFacts {
+  width: 300px;
+  height: fit-content;
+  padding: 10px;
+}
+
+#base .header {
+  display: flex;
+  justify-content: center;
+}
+
+.label {
+  width: 100px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.input {
+  padding-bottom: 10px;
+}

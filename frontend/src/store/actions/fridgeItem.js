@@ -67,7 +67,7 @@ export const deleteFridgeItem = (fridgeItemId) => {
 };
 
 export const clearFridgeItems_ = () => {
-  return { type: actionTypes.DELETE_FRIDGE_ITEM };
+  return { type: actionTypes.CLEAR_FRIDGE_ITEMS };
 };
 
 export const clearFridgeItems = (userId) => {

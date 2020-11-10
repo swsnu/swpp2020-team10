@@ -1,0 +1,51 @@
+.reveal {
+  width: 100%;
+  height: 100%;
+}
+
+.reveal>.content {
+  width: 100%;
+  height: 100%;
+}
+
+.reveal>.hidden {
+  font-size: large;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.reveal>.hidden>.list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+#fridge>.column {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+#MyFridge {
+  vertical-align: top;
+  padding: 100px;
+  padding-top: 50px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#fridge {
+  border-radius: 5px;
+  width: 80%;
+  min-height: 500px;
+  border: solid #cccccc 1px;
+}
+
+#MyFridge #buttons {
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-end;
+}
