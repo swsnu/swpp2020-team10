@@ -60,7 +60,7 @@ function ReviewDetail(props) {
   */
   // move to 'Review Editor' page
   const onClickEditReviewButton = () => {
-    history.push('/');
+    history.push('/review/' + storedReview.id + '/edit');
   };
 
   // delete the review and go back to 'Recipe Details' page

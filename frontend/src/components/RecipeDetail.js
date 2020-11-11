@@ -79,7 +79,7 @@ function RecipeDetail(props) {
   */
   // move to 'Review Editor' page
   const onClickWriteButton = () => {
-    history.push('/review/' + recipeId + '/editor');
+    history.push('/review/' + recipeId + '/create');
   };
 
   const onChangeRatingInput = (e, {rating}) => {
