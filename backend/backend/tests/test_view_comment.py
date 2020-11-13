@@ -24,7 +24,7 @@ class CommentTestCase(TestCase):
         client = Client()
         client.post('/api/user/signup/', json.dumps(test_user), content_type='applications/json')
         response = client.post('/api/user/signin/', json.dumps(test_user), content_type='applications/json')
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         response = client.post('/api/review/1/comment/', json.dumps(rev), content_type='applications/json')
         self.assertEqual(response.status_code, 201)
         wid = json.loads(response.content)['id']

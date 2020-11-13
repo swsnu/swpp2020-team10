@@ -2,8 +2,8 @@ import json
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
-
-
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def signup(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
@@ -20,7 +20,7 @@ def signup(request):
 
     return HttpResponseNotAllowed(["POST"])
 
-
+@csrf_exempt
 def signin(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
@@ -41,7 +41,7 @@ def signin(request):
 
     return HttpResponseNotAllowed(["POST"])
 
-
+@csrf_exempt
 def signout(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
@@ -52,7 +52,7 @@ def signout(request):
 
     return HttpResponseNotAllowed(["GET"])
 
-
+@csrf_exempt
 def status(request):
     if request.method == "GET":
         if not request.user.is_authenticated:
@@ -66,7 +66,7 @@ def status(request):
 
     return HttpResponseNotAllowed(["GET"])
 
-
+@csrf_exempt
 def profile(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
