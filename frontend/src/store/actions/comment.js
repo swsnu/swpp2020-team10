@@ -32,8 +32,8 @@ export const postComment_ = (comment) => {
     type: actionTypes.ADD_COMMENT,
     id: comment.id,
     content: comment.content,
-    review: comment.review,
-    user: comment.user,
+    review_id: comment.review_id,
+    user_id: comment.user_id,
     likes: comment.likes,
     reports: comment.reports,
   };

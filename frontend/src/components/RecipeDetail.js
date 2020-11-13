@@ -83,7 +83,7 @@ function RecipeDetail(props) {
   };
 
   // should be commented out until testing issues are solved
-  const onChangeRatingInput = (e, {rating}) => {
+  const onChangeRatingInput = () => {
     //const ratedRecipe = { ...storedRecipe, rating: rating };
     setRated(true);
     //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
