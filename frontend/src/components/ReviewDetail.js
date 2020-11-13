@@ -51,20 +51,17 @@ function ReviewDetail(props) {
 
   let userId, recipeId;
   let title, content, likes, dislikes, reports;
-  if(storedReview !== null) {
-    userId = storedReview.user_id;
-    recipeId = storedReview.recipe_id;
-    title = storedReview.title;
-    content = storedReview.content;
-    likes = storedReview.likes;
-    dislikes = storedReview.dislikes;
-    reports = storedReview.reports;
-  }
+  userId = storedReview.user_id;
+  recipeId = storedReview.recipe_id;
+  title = storedReview.title;
+  content = storedReview.content;
+  likes = storedReview.likes;
+  dislikes = storedReview.dislikes;
+  reports = storedReview.reports;
+
 
   let thisUserId;
-  if(storedUser != null){
-    thisUserId = storedUser.id;
-  }
+  thisUserId = storedUser.id;
 
   /*// move to 'Settings' page
   const onClickSettingsButton = () => {};
