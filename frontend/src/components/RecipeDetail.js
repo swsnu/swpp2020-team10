@@ -16,12 +16,12 @@ function RecipeDetail(props) {
   const [hasRated, setRated] = useState(false);
   // check
   if(!hasRecipe) {
-    dispatch(actionCreators.selectRecipeById(recipeId))
-      .then(setHasRecipe(true));
+    dispatch(actionCreators.selectRecipeById(recipeId));
+    setHasRecipe(true);
   }
   if(!hasReviews){
-    dispatch(actionCreators.getReviewList(recipeId))
-      .then(setHasReviews(true));
+    dispatch(actionCreators.getReviewList(recipeId));
+    setHasReviews(true);
   }
 
   let storedRecipe = /*{
@@ -82,11 +82,11 @@ function RecipeDetail(props) {
     history.push('/review/' + recipeId + '/create');
   };
 
+  // should be commented out until testing issues are solved
   const onChangeRatingInput = (e, {rating}) => {
-    e.preventDefault();
-    const ratedRecipe = { ...storedRecipe, rating: rating };
+    //const ratedRecipe = { ...storedRecipe, rating: rating };
     setRated(true);
-    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
+    //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
   let title, rating, serving, cooking_time, content, ingredients;
@@ -123,16 +123,16 @@ function RecipeDetail(props) {
 
   return (
     <div className='RecipeDetail'>
-      <Grid centered padded divided>
+      <Grid centered>
         <Grid.Row>
           <Image size='medium' src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Various_kimchi.jpg/330px-Various_kimchi.jpg' centered/>
         </Grid.Row>
         <Grid.Row>
-          <Container textAlign='center'>
-            <Header textAlign='center'>{title}</Header>
-            <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={() => onChangeRatingInput} disabled={hasRated} />
+          <Container textalign='center'>
+            <Header textalign='center'>{title}</Header>
+            <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={onChangeRatingInput} disabled={hasRated} />
             <p>Rating: {rating}</p>
-            <Segment.Group horizontal compact attached='top'>
+            <Segment.Group horizontal  attached='top'>
               <Segment>
                 <p>Ingredients</p>
               </Segment>
@@ -169,11 +169,11 @@ function RecipeDetail(props) {
           </Button>
         </Grid.Row>
         <Grid.Row>
-          <h2 textAlign='justified'> Reviews </h2>
+          <h2 textalign='justified'> Reviews </h2>
         </Grid.Row>
       </Grid>
       <ReviewPart storedReviews={storedReviews}/>
-      <Grid centered padded>
+      <Grid centered>
         <Grid.Row>
           <Button id='writeButton' onClick={() => onClickWriteButton()}>
             Write Review
@@ -193,15 +193,15 @@ function ReviewPart(props) {
   const reviewList = props.storedReviews.map((review) => {
     return (
       <div className='review' key={review.id}>
-        <Grid centered padded>
+        <Grid centered>
           <Grid.Row>
             <Segment>
-              <Grid.Column padded width={4}>
+              <Grid.Column width={4}>
                 <NavLink id='review-link' to={'/review/' + review.id}>
                   {review.title}
                 </NavLink>
               </Grid.Column>
-              <Grid.Column padded width={3}>
+              <Grid.Column width={3}>
               Author: {review.author_name} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
               </Grid.Column>
             </Segment>

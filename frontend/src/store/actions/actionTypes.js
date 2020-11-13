@@ -18,8 +18,8 @@ export const ADD_REVIEW = 'ADD_REVIEW';
 export const EDIT_REVIEW = 'EDIT_REVIEW';
 export const LIKE_REVIEW = 'LIKE_REVIEW';
 export const DISLIKE_REVIEW = 'DISLIKE_REVIEW';
-export const REPORT_REVIEW = 'GET_REVIEW';
-export const DELETE_REVIEW = 'GET_REVIEW';
+export const REPORT_REVIEW = 'REPORT_REVIEW';
+export const DELETE_REVIEW = 'DELETE_REVIEW';
 
 export const GET_REVIEW_COMMENTS = 'GET_REVIEW_COMMENTS';
 export const GET_COMMENT = 'GET_COMMENT';
