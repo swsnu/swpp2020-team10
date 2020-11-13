@@ -17,7 +17,6 @@ matrix:
       script:
         - "./node_modules/.bin/eslint src/"
         - yarn test --coverage --watchAll=false --passWithNoTests
-        - cd ..
         - sonar-scanner
       after_success:
         - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
@@ -35,7 +34,6 @@ matrix:
         - pylint **/*.py --load-plugins pylint_django
         - coverage run --source='.' manage.py test --keepdb
         - coverage xml
-        - cd ..
         - sonar-scanner
       after_success:
         - coveralls
