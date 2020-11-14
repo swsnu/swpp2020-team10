@@ -34,7 +34,7 @@ const stubEditFridgeItem = {
 const emptyState = {
   fridgeItems: [],
   selectedFridgeItem: null
-}
+};
 
 describe('fridgeItem reducer', () => {
   it('should return default state', () => {
