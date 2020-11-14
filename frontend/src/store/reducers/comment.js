@@ -9,15 +9,16 @@ const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.GET_REVIEW_COMMENTS:
       return { ...state, comments: action.comments };
-    case actionTypes.GET_REVIEW:
+    case actionTypes.GET_COMMENT:
       return { ...state, selectedComment: action.target };
     case actionTypes.ADD_COMMENT:
       var newComment = {
         id: action.id,
-        review: action.review,
-        user: action.user,
+        review_id: action.review_id,
+        user_id: action.user_id,
         content: action.content,
         likes: action.likes,
+        dislikes: action.dislikes,
         reports: action.reports,
       };
       return { ...state, comments: state.comments.concat(newComment) };
@@ -57,9 +58,9 @@ const reducer = (state=initialState, action) => {
         }
       });
       return { ...state, comments: modifiedReportComment };
-    case actionTypes.DELETE_REVIEW:
+    case actionTypes.DELETE_COMMENT:
       var deletedComments = state.comments.filter((comment) => {
-        return comment.id === action.targetId;
+        return comment.id !== action.targetId;
       });
       return { ...state, comments: deletedComments };
     default:
