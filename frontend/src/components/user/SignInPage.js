@@ -15,12 +15,11 @@ export const SignInPage = () => {
 
   const onClickSigninConfirmButton = () => {
     dispatch(actionCreators.signin({ username, password }))
-      .then(response => {
-        if (response.status != 200) {
-          window.alert('Authentication failed.');
-        } else {
-          history.push('/');
-        }
+      .then(() => {
+        history.push('/');
+      })
+      .catch(() => {
+        window.alert('Authentication failed.');
       });
   };
 

@@ -90,7 +90,7 @@ export default function ReviewEditor() {
 // returns write tab page with title, image, content inputs
 function WriteTab(props) {
   return (
-    <Grid className='WriteTab'>
+    <Grid id='WriteTab'>
       <Grid.Row className='title'>
         <Grid.Column stretched>
           <Input id='titleInput' labelPosition='left' type='text' value={props.title}
@@ -131,9 +131,9 @@ function PreviewTab(props) {
         <Header as='h1' id='title'>{props.title}</Header>
       </Grid.Row>
       <Grid.Row columns={2}>
-        <Grid.Column padded>
+        <Grid.Column>
           <Image src='https://source.unsplash.com/512x512/?soup' alt='image preview' rounded size='medium'></Image>
-          <Grid padded>
+          <Grid>
             <Grid.Row columns={10} id='reactions'>
               <Grid.Column>
                 <Icon name='thumbs up outline' /> 0
@@ -149,7 +149,7 @@ function PreviewTab(props) {
         </Grid.Column>
         <Grid.Column stretched>
           <Message>
-            <p1 id="contentPreview">{props.content}</p1>
+            <p id="contentPreview">{props.content}</p>
           </Message>
         </Grid.Column>
       </Grid.Row>
