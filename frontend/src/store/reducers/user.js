@@ -23,8 +23,9 @@ const reducer = (state = initialState, action) => {
         id: null,
         name: null,
       };
+    default:
+      return state;
   }
-  return state;
 };
 
 export default reducer;

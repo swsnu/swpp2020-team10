@@ -17,7 +17,7 @@ export const FrontPage = () => {
 
   if (!hasRecipes) {
     dispatch(actionCreators.fetchAllRecipes())
-      .then(setHasRecipes(true));
+      .then(() => { setHasRecipes(true); });
   }
 
   const recipes = useSelector(state => state.recipe.recipes);
