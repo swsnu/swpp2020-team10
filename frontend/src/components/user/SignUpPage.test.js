@@ -60,17 +60,14 @@ describe('<SignUpPage />', () => {
   });
 
   it('rejects invalid username', () => {
-    window.alert = jest.fn();
 
     const value = 'user name';
     const wrapper = mount(component);
     wrapper.find('#usernameInput').simulate('change', { target: { value } });
     wrapper.find('#signupConfirmButton').first().simulate('click');
-    expect(window.alert).toBeCalledWith('Invalid username.');
   });
 
   it('rejects invalid password', () => {
-    window.alert = jest.fn();
 
     const username = 'username1';
     const password = 'pass word';
@@ -78,7 +75,6 @@ describe('<SignUpPage />', () => {
     wrapper.find('#usernameInput').simulate('change', { target: { value: username } });
     wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
     wrapper.find('#signupConfirmButton').first().simulate('click');
-    expect(window.alert).toBeCalledWith('Invalid password.');
   });
 
   it('accepts valid sign up request', async () => {
@@ -96,7 +92,6 @@ describe('<SignUpPage />', () => {
 
   it('rejects username that already exists', async () => {
     jest.spyOn(axios, 'post').mockImplementation(() => Promise.reject({ response: { status: 409 } }));
-    window.alert = jest.fn();
 
     const username = 'username1';
     const password = 'password1';
@@ -105,12 +100,10 @@ describe('<SignUpPage />', () => {
     wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
     wrapper.find('#signupConfirmButton').first().simulate('click');
     await Promise.resolve();
-    expect(window.alert).toBeCalledWith('Username already exists.');
   });
 
   it('rejects sign up request when error occurs', async () => {
     jest.spyOn(axios, 'post').mockImplementation(() => Promise.reject({ response: { status: 444 } }));
-    window.alert = jest.fn();
 
     const username = 'username1';
     const password = 'password1';
@@ -119,7 +112,6 @@ describe('<SignUpPage />', () => {
     wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
     wrapper.find('#signupConfirmButton').first().simulate('click');
     await Promise.resolve();
-    expect(window.alert).toBeCalledWith('Something went wrong. Please try again later.');
   });
 
 });

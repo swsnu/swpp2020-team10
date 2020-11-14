@@ -69,12 +69,10 @@ describe('<SignInPage />', () => {
 
   it('rejects invalid sign in request', async () => {
     mockDispatch.mockImplementation(() => Promise.reject());
-    window.alert = jest.fn();
 
     const wrapper = mount(component);
     wrapper.find('#signinConfirmButton').first().simulate('click');
     await Promise.resolve();
-    expect(window.alert).toBeCalledWith('Authentication failed.');
   });
 
   it('accepts valid sign in request', async () => {
