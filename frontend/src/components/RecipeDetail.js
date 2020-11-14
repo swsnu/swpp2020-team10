@@ -64,9 +64,7 @@ function RecipeDetail(props) {
 
   // move to 'My Fridge' page
   const onClickMyFridgeButton = () => {
-    if(userId !== null) {
-      history.push('/fridge/' + userId);
-    }
+    history.push('/fridge/' + userId);
   };
 
   /*// move to 'Settings' page
@@ -83,32 +81,29 @@ function RecipeDetail(props) {
   };
 
   // should be commented out until testing issues are solved
-  const onChangeRatingInput = (e, {rating}) => {
+  const onChangeRatingInput = () => {
     //const ratedRecipe = { ...storedRecipe, rating: rating };
     setRated(true);
     //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
   let title, rating, serving, cooking_time, content, ingredients;
-  if(storedRecipe !== null){
-    title = storedRecipe.title;
-    rating = storedRecipe.rating;
-    serving = storedRecipe.serving;
-    cooking_time = storedRecipe.cooking_time;
-    content = storedRecipe.content;
-    ingredients = storedRecipe.ingredients;
-  }
+  title = storedRecipe.title;
+  rating = storedRecipe.rating;
+  serving = storedRecipe.serving;
+  cooking_time = storedRecipe.cooking_time;
+  content = storedRecipe.content;
+  ingredients = storedRecipe.ingredients;
+
 
   let ingredient;
-  if(ingredients != null) {
-    ingredient = Object.keys(ingredients).map((key) => {
-      return (
-        <p key={key}>
-          {key}: {ingredients[key]}
-        </p>
-      );
-    });
-  }
+  ingredient = Object.keys(ingredients).map((key) => {
+    return (
+      <p key={key}>
+        {key}: {ingredients[key]}
+      </p>
+    );
+  });
 
 
   /*<div className='row'>
