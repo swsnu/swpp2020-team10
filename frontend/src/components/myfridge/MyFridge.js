@@ -52,7 +52,7 @@ export default function MyFridge() {
   // clear fridge items
   const onClickClearFridgeButton = () => {
     //dispatch(actionCreators.clearFridgeItems(userId));
-    dispatch(actionCreators.clearFridgeItems_());
+    ////dispatch(actionCreators.clearFridgeItems_());
   };
   
   // open FoodDetail page
@@ -62,7 +62,8 @@ export default function MyFridge() {
         setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
         setIsEdit(true);
       });*/
-    dispatch(actionCreators.getFridgeItem_(fridgeItem));
+    //
+    //dispatch(actionCreators.getFridgeItem_(fridgeItem));
     setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
     setIsEdit(true);
   };

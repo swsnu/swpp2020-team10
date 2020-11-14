@@ -38,7 +38,8 @@ export default function FoodDetail(props) {
       .then(() => {
         props.onEnd();
       });*/
-    dispatch(actionCreators.editFridgeItem_(editedFridgeItem));
+    
+    //dispatch(actionCreators.editFridgeItem_(editedFridgeItem));
     props.onEnd();
   };
 
@@ -48,7 +49,8 @@ export default function FoodDetail(props) {
       .then(() => {
         props.onEnd();
       });*/
-    dispatch(actionCreators.deleteFridgeItem_(selectedFridgeItem.id));
+    
+      //dispatch(actionCreators.deleteFridgeItem_(selectedFridgeItem.id));
     props.onEnd();
   };
 
@@ -86,7 +88,7 @@ export default function FoodDetail(props) {
               </Input>
             </Segment>
             <Accordion>
-              <Accordion.Title active={open} onClick={() => setOpen(open ? false : true)}>
+              <Accordion.Title id='showNutritions' active={open} onClick={() => setOpen(open ? false : true)}>
                 <Icon name='dropdown' /> Nutrition Facts
               </Accordion.Title>
               <Accordion.Content active={open}>

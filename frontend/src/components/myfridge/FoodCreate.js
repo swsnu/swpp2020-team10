@@ -38,7 +38,7 @@ export default function FoodCreate(props) {
       .then(() => {
         props.onEnd();
       });*/
-    dispatch(actionCreators.postFridgeItem_(newFridgeItem));
+    //dispatch(actionCreators.postFridgeItem_(newFridgeItem));
     props.onEnd();
   };
 
@@ -76,7 +76,7 @@ export default function FoodCreate(props) {
               </Input>
             </Segment>
             <Accordion>
-              <Accordion.Title active={open} onClick={() => setOpen(open ? false : true)}>
+              <Accordion.Title id='showNutritions' active={open} onClick={() => setOpen(open ? false : true)}>
                 <Icon name='dropdown' /> Nutrition Facts
               </Accordion.Title>
               <Accordion.Content active={open}>
