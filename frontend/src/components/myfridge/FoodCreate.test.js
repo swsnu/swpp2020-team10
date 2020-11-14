@@ -6,7 +6,7 @@ import { createBrowserHistory } from 'history';
 import { getMockStore } from '../../test-utils/mocks';
 
 import FoodCreate from './FoodCreate';
-import * as fridgeItemActionCreators from '../../store/actions/fridgeItem';
+//import * as fridgeItemActionCreators from '../../store/actions/fridgeItem';
 
 const stubInitialState = {
   user: {

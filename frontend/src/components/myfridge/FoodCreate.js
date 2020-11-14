@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch, /*useSelector*/ } from 'react-redux';
-import * as actionCreators from '../../store/actions/index';
+//import { /*useDispatch,*/ /*useSelector*/ } from 'react-redux';
+//import * as actionCreators from '../../store/actions/index';
 
 import { Accordion, Button, Icon, Input, Label, Segment, Grid, Header } from 'semantic-ui-react';
 import './FoodPopup.css';
 
 export default function FoodCreate(props) {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
   // redux store state
   //const userId = useSelector(state => state.user.id);
@@ -29,11 +29,12 @@ export default function FoodCreate(props) {
 
   // add new fridge item and go to MyFridge page
   const onClickAddButton = () => {
-    const newFridgeItem = {
+    /*const newFridgeItem = {
       name, type, quantity, unit, expiryDate,
       nutritionFacts: [calorie, sodium, protein],
       id: '100'
-    };
+    };*/
+
     /*dispatch(actionCreators.postFridgeItem(userId, newFridgeItem))
       .then(() => {
         props.onEnd();

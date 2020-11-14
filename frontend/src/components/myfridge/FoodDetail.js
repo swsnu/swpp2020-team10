@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import * as actionCreators from '../../store/actions/index';
+import { /*useDispatch,*/ useSelector } from 'react-redux';
+//import * as actionCreators from '../../store/actions/index';
 
 import { Accordion, Button, Grid, Icon, Input, Label, Segment, Header } from 'semantic-ui-react';
 import './FoodPopup.css';
 
 export default function FoodDetail(props) {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
   // redux store state
   const selectedFridgeItem = useSelector(state => state.fridgeItem.selectedFridgeItem);
@@ -29,11 +29,12 @@ export default function FoodDetail(props) {
 
   // edit food detail and go to MyFridge page
   const onClickConfirmEditButton = () => {
-    const editedFridgeItem = {
+    /*const editedFridgeItem = {
       id: selectedFridgeItem.id,
       name, type, quantity, unit, expiryDate,
       nutritionFacts: [calorie, sodium, protein],
-    };
+    };*/
+
     /*dispatch(actionCreators.editFridgeItem(selectedFridgeItem.id, selectedFridgeItem))
       .then(() => {
         props.onEnd();
@@ -50,7 +51,7 @@ export default function FoodDetail(props) {
         props.onEnd();
       });*/
     
-      //dispatch(actionCreators.deleteFridgeItem_(selectedFridgeItem.id));
+    //dispatch(actionCreators.deleteFridgeItem_(selectedFridgeItem.id));
     props.onEnd();
   };
 

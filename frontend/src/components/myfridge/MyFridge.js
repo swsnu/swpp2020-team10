@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { /*useDispatch,*/ useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import * as actionCreators from '../../store/actions/index';
 import FoodCreate from './FoodCreate';
@@ -9,7 +9,7 @@ import { Button, Card, Grid, Image, List, Reveal } from 'semantic-ui-react';
 import './MyFridge.css';
 
 export default function MyFridge() {
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const history = useHistory();
   const params = useParams();
 
@@ -56,7 +56,7 @@ export default function MyFridge() {
   };
   
   // open FoodDetail page
-  const onClickFridgeItemButton = (fridgeItem) => {
+  const onClickFridgeItemButton = (/*fridgeItem*/) => {
     /*dispatch(actionCreators.getFridgeItem(fridgeItem.id))
       .then(() => {
         setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
