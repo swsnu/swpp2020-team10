@@ -41,17 +41,29 @@ const getMockUserReducer = jest.fn(
     return state;
   }
 );
+
+const getMockFridgeItemReducer = jest.fn(
+  initialstate => (state = initialstate, action) => {
+    switch (action.type){
+      default:
+        break;
+    }
+    return state;
+  }
+);
   
 export const getMockStore = (initialstate) => {
   const mockUserReducer = getMockUserReducer(initialstate);
   const mockRecipeReducer = getMockRecipeReducer(initialstate);
   const mockReviewReducer = getMockReviewReducer(initialstate);
   const mockCommentReducer = getMockCommentReducer(initialstate);
+  const mockFridgeItemReducer = getMockFridgeItemReducer(initialstate);
   const rootReducer = combineReducers({
     user: mockUserReducer,
     recipe: mockRecipeReducer,
     review: mockReviewReducer,
     comment: mockCommentReducer,
+    fridgeItem: mockFridgeItemReducer,
   });
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   const mockStore = createStore(rootReducer,
