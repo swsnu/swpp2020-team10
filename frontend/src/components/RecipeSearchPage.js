@@ -29,7 +29,7 @@ export const RecipeSearchPage = ({ match }) => {
 
   if (!hasRecipes) {
     dispatch(actionCreators.fetchAllRecipes())
-      .then(setHasRecipes(true));
+      .then(() => { setHasRecipes(true); });
   }
 
   const recipes = useSelector(state => state.recipe.recipes);
@@ -59,6 +59,7 @@ export const RecipeSearchPage = ({ match }) => {
       <Form>
         <Form.Field>
           <Checkbox
+            id='enableFridge'
             label='Check availability from My Fridge'
             checked={enableFridge}
             onChange={() => setEnableFridge(!enableFridge)}
@@ -66,6 +67,7 @@ export const RecipeSearchPage = ({ match }) => {
         </Form.Field>
         <Form.Field>
           <Checkbox
+            id='enableCookingTime'
             label='Set maximum cooking time'
             checked={enableCookingTime}
             onChange={() => setEnableCookingTime(!enableCookingTime)}
@@ -94,6 +96,7 @@ export const RecipeSearchPage = ({ match }) => {
         </Form.Group>
         <Form.Field>
           <Checkbox
+            id='enableMinRating'
             label='Set minimum Rating'
             checked={enableMinRating}
             onChange={() => setEnableMinRating(!enableMinRating)}
@@ -212,6 +215,7 @@ export const RecipeSearchPage = ({ match }) => {
         style={{ width: 150 }}
       />
       <Button
+        id='showFilterTabButton'
         onClick={() => setShowFilterTab(!showFilterTab)}
         content='Filter'
       />
