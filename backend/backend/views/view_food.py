@@ -49,8 +49,13 @@ def fridge_by_id(request, _id):
         return HttpResponseBadRequest(status=404)
     if request.method == "GET":
         return HttpResponse(fridge_item, status=200, content_type='application/json')
+    # PUT / DELETE requires authentication
+    fridge_item = json.loads(fridge_item)
+    if not request.user.is_authenticated:
+        return HttpResponse("You are not logged in\n",status=401)
+    if request.user.id != fridge_item['user_id']:
+        return HttpResponse(f"Invalid request : author {fridge_item['user_id']} but you are {request.user.id}\n", status=403)
     if request.method == "PUT":
-        fridge_item = json.loads(fridge_item)
         try:
             req_data = json.loads(request.body.decode())
             name = req_data['name'] if req_data['name'] is not None else fridge_item['name']
