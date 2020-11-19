@@ -32,8 +32,8 @@ def manage_fridge(request, _id):
             nutrition_facts = req_data['nutrition_facts']
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        new_fridge_item = FridgeItem(food_id=food_id, user=request.user, quantity=quantity, name=name,
-            expiry_date=expiry_date, nutrition_facts=nutrition_facts)
+        new_fridge_item = FridgeItem(food_id=food_id, user=request.user, quantity=quantity,
+            name=name, expiry_date=expiry_date, nutrition_facts=nutrition_facts)
         new_fridge_item.save()
         new_fridge_item_dict = model_to_dict(new_fridge_item)
         return HttpResponse(json.dumps(new_fridge_item_dict), status=201)
@@ -54,21 +54,32 @@ def fridge_by_id(request, _id):
     if not request.user.is_authenticated:
         return HttpResponse("You are not logged in\n",status=401)
     if request.user.id != fridge_item['user_id']:
-        return HttpResponse(f"Invalid request : author {fridge_item['user_id']} but you are {request.user.id}\n", status=403)
+        return HttpResponse(
+            f"Invalid request : author {fridge_item['user_id']} but you are {request.user.id}\n",
+            status=403)
     if request.method == "PUT":
         try:
             req_data = json.loads(request.body.decode())
-            name = req_data['name'] if req_data['name'] is not None else fridge_item['name']
-            quantity = req_data['quantity'] if req_data['quantity'] is not None else fridge_item['quantity']
-            expiry_date = req_data['expiry_date'] if req_data['expiry_date'] is not None else fridge_item['expiry_date']
-            nutrition_facts = req_data['nutrition_facts'] if req_data['nutrition_facts'] is not None else fridge_item['nutrition_facts']
+            if req_data['name'] is not None:
+                name = req_data['name']
+            else: name = fridge_item['name']
+            if req_data['quantity'] is not None:
+                quantity = req_data['quantity']
+            else: quantity = fridge_item['quantity']
+            if req_data['expiry_date'] is not None:
+                expiry_date = req_data['expiry_date']
+            else: expiry_date =  fridge_item['expiry_date']
+            if req_data['nutrition_facts'] is not None:
+                nutrition_facts = req_data['nutrition_facts']
+            else: nutrition_facts = fridge_item['nutrition_facts']
             fridge_item['name'] = name
             fridge_item['quantity'] = quantity
             fridge_item['expiry_date'] = expiry_date
             fridge_item['nutrition_facts'] = nutrition_facts
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        FridgeItem.objects.filter(id=_id).update(name=name, quantity=quantity, expiry_date=expiry_date, nutrition_facts=nutrition_facts)
+        FridgeItem.objects.filter(id=_id).update(name=name, quantity=quantity,
+            expiry_date=expiry_date, nutrition_facts=nutrition_facts)
         return HttpResponse(json.dumps(fridge_item), status=200, content_type='application/json')
     if request.method == 'DELETE':
         FridgeItem.objects.filter(id=_id).delete()

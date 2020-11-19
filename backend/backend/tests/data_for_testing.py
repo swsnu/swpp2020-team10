@@ -103,3 +103,11 @@ test_post_fridge_item_2 = {
         "sodium": "50",
     }
 }
+
+test_empty_fridge_item = {
+    "food_id": None,
+    "name": None,
+    "quantity": None,
+    "expiry_date": None,
+    "nutrition_facts": None,
+}
