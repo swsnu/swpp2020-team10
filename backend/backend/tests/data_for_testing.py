@@ -82,13 +82,24 @@ test_fridge_item_1 = {
     }
 }
 
-test_post_fridge_item = {
+test_post_fridge_item_1 = {
     "food_id": 1,
     "name": "yangbaechu",
     "quantity": 150,
-    "expiry_date": 2020/4/25,
+    "expiry_date": "2020-04-25",
     "nutrition_facts": {
         "calories": "80",
         "sodium": "40",
+    }
+}
+
+test_post_fridge_item_2 = {
+    "food_id": 1,
+    "name": "baechu",
+    "quantity": 100,
+    "expiry_date": "2020-04-25",
+    "nutrition_facts": {
+        "calories": "100",
+        "sodium": "50",
     }
 }

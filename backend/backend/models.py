@@ -23,7 +23,7 @@ class FridgeItem(models.Model):
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
-    expiry_date = models.DateField(default=now())
+    expiry_date = models.CharField(default=str(now()), max_length=12)
     nutrition_facts = models.JSONField(null=True, blank=True, default=None)
 
     def save(self, *args, **kwargs):
