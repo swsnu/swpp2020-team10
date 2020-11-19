@@ -1,4 +1,5 @@
 import json
+import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
@@ -7,6 +8,11 @@ from backend.models import Food, FridgeItem
 # Users cannot send request to here without authentication
 # -> authentication already ensured by frontend, so
 # checks for authentication is not needed here
+
+def json_default(value):
+    if isinstance(value, datetime.date):
+        return value.strftime('%Y-%m-%d')
+    raise TypeError('not JSON serializable')
 
 # Fetches all food info and returns JSON object
 def manage_food(request):
@@ -19,7 +25,8 @@ def manage_food(request):
 # POST: creates new fridgeItem on given user id
 def manage_fridge(request, _id):
     if request.method == "GET":
-        fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()))
+        fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()),
+            default=json_default)
         return HttpResponse(fridge_item_list, status=200, content_type="application/json")
 
     if request.method == "POST":
@@ -36,7 +43,7 @@ def manage_fridge(request, _id):
             name=name, expiry_date=expiry_date, nutrition_facts=nutrition_facts)
         new_fridge_item.save()
         new_fridge_item_dict = model_to_dict(new_fridge_item)
-        return HttpResponse(json.dumps(new_fridge_item_dict), status=201)
+        return HttpResponse(json.dumps(new_fridge_item_dict, default=json_default), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
 # GET: fetches fridgeItem by id
@@ -44,7 +51,8 @@ def manage_fridge(request, _id):
 # DELETE: deletes fridgeItem by id
 def fridge_by_id(request, _id):
     try:
-        fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0])
+        fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0],
+            default=json_default)
     except (IndexError, JSONDecodeError):
         return HttpResponseBadRequest(status=404)
     if request.method == "GET":
@@ -80,7 +88,8 @@ def fridge_by_id(request, _id):
             return HttpResponse(status=400)
         FridgeItem.objects.filter(id=_id).update(name=name, quantity=quantity,
             expiry_date=expiry_date, nutrition_facts=nutrition_facts)
-        return HttpResponse(json.dumps(fridge_item), status=200, content_type='application/json')
+        return HttpResponse(json.dumps(fridge_item, default=json_default), status=200,
+            content_type='application/json')
     if request.method == 'DELETE':
         FridgeItem.objects.filter(id=_id).delete()
         return HttpResponse("FridgeItem Deleted", status=200)
