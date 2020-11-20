@@ -1,14 +1,15 @@
 import json
+from datetime import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
-from backend.models import Review
-
+from ..models import Review
+from .util import json_default
 # Fetches review by id
 # JSON format follows design document - modelscd
 def review_by_id(request, _id):
     try:
-        review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
+        review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
     except (IndexError, JSONDecodeError):
         return HttpResponseBadRequest(status=404)
     if request.method == 'GET':
@@ -41,7 +42,7 @@ def review_by_id(request, _id):
 # GET : Fetches review with given recipe id
 # POST : Creates new review on given recipe
 def recipe_review(request, _id):
-    reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()))
+    reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()),default=json_default)
     if request.method == 'GET':
         return HttpResponse(reviews, status=200, content_type='application/json')
 
@@ -55,10 +56,11 @@ def recipe_review(request, _id):
             content = req_data['content']
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        new_review = Review(recipe_id=_id, title=title, content=content, user=request.user)
+        new_review = Review(recipe_id=_id, title=title, content=content, user=request.user, time_posted=datetime.now())
+        print(new_review.time_posted)
         new_review.save()
         new_review_dict = model_to_dict(new_review)
-        return HttpResponse(json.dumps(new_review_dict), status=201)
+        return HttpResponse(json.dumps(new_review_dict, default=json_default), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
 
@@ -70,7 +72,7 @@ def reaction(request, _id):
     if not request.user.is_authenticated:
         return HttpResponse("You are not logged in\n",status=401)
     try:
-        review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
+        review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
     except IndexError:
         return HttpResponseBadRequest(status=404)
     review = json.loads(review)
@@ -86,7 +88,7 @@ def reaction(request, _id):
         cur_dislike += req_dislike
         cur_report += req_report
         Review.objects.filter(id=_id).update(likes=cur_like, dislikes=cur_dislike, reports=cur_report)
-        review = json.dumps(Review.objects.filter(id=_id).all().values()[0])
+        review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
         return HttpResponse(review, status=200, content_type='application/json')
 
     return HttpResponseNotAllowed(["PUT"])
