@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
-from ..models import FridgeItem, Review, Comment
+from ..models import FridgeItem, Review, Comment, Recipe
 
 @csrf_exempt
 def signup(request):
@@ -94,7 +94,8 @@ def profile(request):
 
     return HttpResponseNotAllowed(["GET", "PUT"])
 
-
+THRESHOLD_ITEM_DAYS    = 2.00
+THRESHOLD_COMMENT_DAYS = 1.00
 # Notification : Fridge item expiry date 24h, past 24h comment on your review
 def notification(request, _id):
     print(f"Noti {_id} called")
@@ -113,7 +114,7 @@ def notification(request, _id):
         for item in my_fridge_items:
             seconds_left = (item['expiry_date']-today).day
             days_left = seconds_left / 86400
-            if days_left < 2.00:
+            if days_left < THRESHOLD_ITEM_DAYS :
                 noti['near_expired_items'].append({
                     'name' : item['name'],
                     'quantity' : item['quantity'],
@@ -122,11 +123,14 @@ def notification(request, _id):
         for cm in my_review_comments:
             seconds_elapsed = (now - cm['time_posted']).total_seconds()
             days_elapsed = seconds_elapsed / 86400
-            if days_elapsed < 1.00:
+            if days_elapsed < THRESHOLD_COMMENT_DAYS:
+                on_review = Review.objects.filter(id=cm['review_id']).all().values()[0]
+                print(on_review)
                 noti['recent_comments'].append({
                     'comment_author' : cm['author_name'],
                     'review_id' : cm['review_id'],
-                    'review_title' : Review.objects.filter(id=cm['review_id']).all().values()[0]['title']
+                    'review_title' : on_review['title'],
+                    'review_recipe' : Recipe.objects.filter(id=on_review['recipe_id']).all().values()[0]['title']
                 })
 
         return JsonResponse(noti, status=200)
