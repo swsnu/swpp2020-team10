@@ -45,13 +45,11 @@ export const signout = () => {
 };
 
 export const notification_ = (noti) => {
-  console.log(`follow noti`);
   console.log(noti);
   return {type: actionTypes.GET_NOTIFICATION, noti : noti};
 };
 
 export const notification = (userId) => {
-  console.log(`notification called \`/api/user/${userId}/notification/\``);
   return dispatch => {
     return axios.get(`/api/user/${userId}/notification/`)
       .then(response => {
