@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch} from 'react-redux';
 import {Message} from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
-/*const notiJSON = {
+const notiJSON = {
   'recent_comments': [
     {
       'comment_author': 'someRandomUser',
@@ -25,7 +25,7 @@ import * as actionCreators from '../store/actions/index';
       'left_days' : 2
     }
   ]
-};*/
+};
 function commentNotification(cm) {
   let reviewTitleConcise = cm['review_title'];
   if (cm['review_title'].length > 20){
@@ -48,7 +48,7 @@ function commentNotification(cm) {
 function itemNotification(item) {
   return (
     <Message color='red'>
-      Your <b>{item['quantity']} {item['name']}</b> expires in <b>{item['left_days']}</b>
+      Your <b>{item['name']}({item['quantity']})</b> expires in <b>{item['left_days']} days</b>
     </Message>
   );
 }
@@ -59,7 +59,7 @@ export const Notification = (userId) => {
   }
   const dispatch = useDispatch();
   const [hasnoti, sethasnoti] = useState(false);
-  const notiJSON = useSelector(state => state.user.noti);
+  //const notiJSON = useSelector(state => state.user.noti);
 
   if (!hasnoti)
   {
