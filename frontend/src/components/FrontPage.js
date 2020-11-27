@@ -57,8 +57,7 @@ export const FrontPage = () => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
   const userId = useSelector(state => state.user.id);
-  if (userId === null)
-    return null;
+
   const dimmer = (
     <Dimmer
       active={userIsAuthorized !== true}

@@ -33,5 +33,5 @@ urlpatterns = [
     path('api/review/<int:_id>/comment/', view_comment.review_comment, name='get_review_comment'),
     path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
     path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
-    path('api/food/', view_food.manage_food, name='manage_food')
+    #path('api/food/', view_food.manage_food, name='manage_food')
 ]

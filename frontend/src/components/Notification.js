@@ -3,29 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {Message} from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
-/*const notiJSON = {
-  'recent_comments': [
-    {
-      'comment_author': 'someRandomUser',
-      'review_id': 3,
-      'review_title': 'noti testing review 2',
-      'review_recipe': 'Recipe 1'
-    },
-    {
-      'comment_author': 'someMoreRandomUserWithVeryVeryLongUserName',
-      'review_id': 4,
-      'review_title': 'someReviewIwroteWithVeryVeryLongTitle',
-      'review_recipe': 'Recipe 1'
-    }
-  ],
-  'near_expired_items': [
-    {
-      'name' : 'some_food_name',
-      'quantity' : 3,
-      'left_days' : 2
-    }
-  ]
-};*/
 function commentNotification(cm) {
   let reviewTitleConcise = cm['review_title'];
   if (cm['review_title'].length > 20){
@@ -69,11 +46,9 @@ export const Notification = (props) => {
   }
   if (notiJSON !== null)
   {
-    console.log(notiJSON);
     let nearExpiredItems, recentComments;
     nearExpiredItems = notiJSON['near_expired_items'];
     recentComments = notiJSON['recent_comments'];
-    console.log(nearExpiredItems, recentComments);
     let notiString = [];
     for (let item of nearExpiredItems) {
       notiString.push(itemNotification(item));

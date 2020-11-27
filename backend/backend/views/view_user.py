@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from ..models import FridgeItem, Review, Comment, Recipe
 
-@csrf_exempt
 def signup(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
@@ -24,7 +23,6 @@ def signup(request):
 
     return HttpResponseNotAllowed(["POST"])
 
-@csrf_exempt
 def signin(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
@@ -45,7 +43,6 @@ def signin(request):
 
     return HttpResponseNotAllowed(["POST"])
 
-@csrf_exempt
 def signout(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
@@ -56,7 +53,6 @@ def signout(request):
 
     return HttpResponseNotAllowed(["GET"])
 
-@csrf_exempt
 def status(request):
     if request.method == "GET":
         if not request.user.is_authenticated:
@@ -98,11 +94,9 @@ THRESHOLD_ITEM_DAYS    = 2.00
 THRESHOLD_COMMENT_DAYS = 1.00
 # Notification : Fridge item expiry date 24h, past 24h comment on your review
 def notification(request, _id):
-    print(f"Noti {_id} called")
     if request.method == "GET":
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
-
         noti = {
             "recent_comments" : [],
             "near_expired_items" : [],
@@ -110,9 +104,8 @@ def notification(request, _id):
         my_fridge_items = list(FridgeItem.objects.filter(user_id=_id).all().values())
         my_review_comments = list(Comment.objects.filter(review__user_id=_id).all().values())
         now = datetime.datetime.now(datetime.timezone.utc)
-        today = datetime.datetime.today()
         for item in my_fridge_items:
-            seconds_left = (item['expiry_date']-today).day
+            seconds_left = (item['expiry_date']-now ).total_seconds()
             days_left = seconds_left / 86400
             if days_left < THRESHOLD_ITEM_DAYS :
                 noti['near_expired_items'].append({
@@ -125,7 +118,6 @@ def notification(request, _id):
             days_elapsed = seconds_elapsed / 86400
             if days_elapsed < THRESHOLD_COMMENT_DAYS:
                 on_review = Review.objects.filter(id=cm['review_id']).all().values()[0]
-                print(on_review)
                 noti['recent_comments'].append({
                     'comment_author' : cm['author_name'],
                     'review_id' : cm['review_id'],

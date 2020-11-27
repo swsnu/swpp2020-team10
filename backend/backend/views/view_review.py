@@ -57,7 +57,6 @@ def recipe_review(request, _id):
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
         new_review = Review(recipe_id=_id, title=title, content=content, user=request.user, time_posted=datetime.now())
-        print(new_review.time_posted)
         new_review.save()
         new_review_dict = model_to_dict(new_review)
         return HttpResponse(json.dumps(new_review_dict, default=json_default), status=201)

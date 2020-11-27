@@ -21,4 +21,10 @@ describe('user reducer', () => {
     reducer(undefined, {});
   });
 
+  it('notification', () => {
+    reducer(undefined, {
+      type: actionTypes.GET_NOTIFICATION,
+      noti: null
+    });
+  });
 });

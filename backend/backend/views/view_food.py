@@ -1,2 +1,2 @@
-def manage_food(request):
-    pass
+#def manage_food(request):
+#    pass
