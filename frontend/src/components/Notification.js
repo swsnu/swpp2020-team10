@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useDispatch} from 'react-redux';
+import { useDispatch, useSelector} from 'react-redux';
 import {Message} from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
-const notiJSON = {
+/*const notiJSON = {
   'recent_comments': [
     {
       'comment_author': 'someRandomUser',
@@ -25,7 +25,7 @@ const notiJSON = {
       'left_days' : 2
     }
   ]
-};
+};*/
 function commentNotification(cm) {
   let reviewTitleConcise = cm['review_title'];
   if (cm['review_title'].length > 20){
@@ -59,24 +59,28 @@ export const Notification = (userId) => {
   }
   const dispatch = useDispatch();
   const [hasnoti, sethasnoti] = useState(false);
-  //const notiJSON = useSelector(state => state.user.noti);
+  const notiJSON = useSelector(state => state.user.noti);
 
   if (!hasnoti)
   {
-    dispatch(actionCreators.notification(userId));
-    sethasnoti(true);
+    dispatch(actionCreators.notification(userId))
+      .then(() => {sethasnoti(true);});
   }
-  console.log(notiJSON);
-  let nearExpiredItems, recentComments;
-  nearExpiredItems = notiJSON['near_expired_items'];
-  recentComments = notiJSON['recent_comments'];
-  console.log(nearExpiredItems, recentComments);
-  let notiString = [];
-  for (let item of nearExpiredItems) {
-    notiString.push(itemNotification(item));
+  if (notiJSON !== null)
+  {
+    console.log(notiJSON);
+    let nearExpiredItems, recentComments;
+    nearExpiredItems = notiJSON['near_expired_items'];
+    recentComments = notiJSON['recent_comments'];
+    console.log(nearExpiredItems, recentComments);
+    let notiString = [];
+    for (let item of nearExpiredItems) {
+      notiString.push(itemNotification(item));
+    }
+    for (let comment of recentComments) {
+      notiString.push(commentNotification(comment));
+    }
+    return notiString;
   }
-  for (let comment of recentComments) {
-    notiString.push(commentNotification(comment));
-  }
-  return notiString;
+  return null;
 };

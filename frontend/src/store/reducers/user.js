@@ -5,6 +5,7 @@ const initialState = {
   isAuthorized: false,
   id: null,
   name: null,
+  noti: null,
 };
 
 const reducer = (state = initialState, action) => {

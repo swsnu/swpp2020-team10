@@ -54,6 +54,7 @@ export const notification = (userId) => {
     return axios.get(`/api/user/${userId}/notification/`)
       .then(response => {
         dispatch(notification_(response.data));
+        return response;
       })
       .catch(response => response);
   };
