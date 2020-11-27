@@ -57,7 +57,8 @@ export const FrontPage = () => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
   const userId = useSelector(state => state.user.id);
-
+  if (userId === null)
+    return null;
   const dimmer = (
     <Dimmer
       active={userIsAuthorized !== true}
@@ -111,7 +112,8 @@ export const FrontPage = () => {
             {dimmer}
           </Segment>
           <Segment>
-            <Header content='Notifications' /><Notification/>
+            <Header content='Notifications' />
+            <Notification userId={userId}/>
             {/*<Message color='red'>
               Your review on <b>Spam</b> has been reported.
             </Message>

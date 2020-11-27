@@ -45,7 +45,6 @@ export const signout = () => {
 };
 
 export const notification_ = (noti) => {
-  console.log(noti);
   return {type: actionTypes.GET_NOTIFICATION, noti : noti};
 };
 
