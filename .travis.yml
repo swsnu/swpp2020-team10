@@ -1,3 +1,5 @@
+services:
+  - postgresql
 matrix:
   include:
     - language: node_js
@@ -37,6 +39,18 @@ matrix:
       install:
         - pip install -r requirements.txt
         - pip install coveralls
+        - sudo apt-get update
+        - sudo apt-get --yes remove postgresql\*
+        - sudo apt-get install -y postgresql-11 postgresql-client-11
+        - sudo cp /etc/postgresql/{9.6,11}/main/pg_hba.conf
+        - sudo service postgresql restart 11
+        - pip install psycopg2
+      before_script:
+        - psql -c "CREATE DATABASE fridge_db;" -U postgres
+      env:
+        global:
+          - PGUSER=postgres
+          - PGPORT=5432
       script:
         - pylint **/*.py --load-plugins pylint_django
         - coverage run --source='.' manage.py test --keepdb

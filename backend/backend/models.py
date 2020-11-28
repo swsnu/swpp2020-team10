@@ -19,7 +19,7 @@ class Food(models.Model):
     nutrition = models.JSONField(default=None)
     tag = models.JSONField(default=None)
     unit = models.CharField(max_length=10, blank=True, default='')
-    
+
 class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
@@ -107,3 +107,4 @@ class Comment(models.Model):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
+        

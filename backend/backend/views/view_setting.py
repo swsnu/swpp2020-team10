@@ -17,7 +17,7 @@ def setting(request):
             "diet_labels": search_setting.diet_labels,
             "health_labels": search_setting.health_labels,
             "calories": search_setting.calories,
-            "cooking_time": search_setting.cooking_time
+            "cooking_time": search_setting.cooking_time,
             "rating": search_setting.rating
         }
         return JsonResponse(response_data, status=200)

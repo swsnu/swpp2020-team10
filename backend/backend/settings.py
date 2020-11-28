@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'FILL_IN_HERE',
+        'NAME': 'fridge_db',
         'USER': 'postgres',
-        'PASSWORD': 'FILL_IN_HERE',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'some_pass',
+        'HOST': 'localhost',
         'PORT': '5432'
     }
 }
