@@ -13,6 +13,9 @@ export const RecipeSearchPage = ({ match }) => {
   const [sortBy, setSortBy] = useState('');
   const [hasSetting, setHasSetting] = useState(false);
 
+  // search result
+  const [recipes, setRecipes] = useState([]);
+
   // number of currently loaded pages (pageCount * pageSize recipes)
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
@@ -36,50 +39,6 @@ export const RecipeSearchPage = ({ match }) => {
 
   const [dietLabels, setDietLabels] = useState('');
   const [healthLabels, setHealthLabels] = useState('');
-
-  // search result
-  let recipes = []; /*[
-    {
-      title: 'Recipe 1',
-      content: 'content',
-      rating: 3.5,
-      serving: 4,
-      cooking_time: 30,
-      calorie: 256,
-      diet_labels: ['diet1', 'diet2'],
-      health_labels: ['health1', 'health2'],
-    },
-    {
-      title: 'Recipe 2',
-      content: 'content',
-      rating: 3.5,
-      serving: 4,
-      cooking_time: 30,
-      calorie: 256,
-      diet_labels: ['diet1', 'diet2'],
-      health_labels: ['health1', 'health2'],
-    },
-    {
-      title: 'Recipe 3',
-      content: 'content',
-      rating: 3.5,
-      serving: 4,
-      cooking_time: 30,
-      calorie: 256,
-      diet_labels: ['diet1', 'diet2'],
-      health_labels: ['health1', 'health2'],
-    },
-    {
-      title: 'Recipe 4',
-      content: 'content',
-      rating: 3.5,
-      serving: 4,
-      cooking_time: 30,
-      calorie: 256,
-      diet_labels: ['diet1', 'diet2'],
-      health_labels: ['health1', 'health2'],
-    },
-  ];*/
 
   const sortOptions = [
     {
@@ -137,8 +96,7 @@ export const RecipeSearchPage = ({ match }) => {
       calorie: enableMaxCalorie ? maxCalorie : null,
       diet_labels: dietLabels.trim().split(/\s+/),
       health_labels: healthLabels.trim().split(/\s+/),
-    })
-      .catch(error => { /* 401 */ return error; });
+    });
   };
 
   const fetchResults = (reset) => {
@@ -167,16 +125,16 @@ export const RecipeSearchPage = ({ match }) => {
     return axios.get('/api/search/?' + params)
       .then(response => {
         const recipes_new = response.data.recipes;
-        if (recipes_new === []) {
+        if (!recipes_new.length) {
           setHasFetchedAll(true);
         }
 
         if (reset) {
           setPageCount(0);
-          recipes = recipes_new;
+          setRecipes(recipes_new);
         } else {
           setPageCount(pageCount + 1);
-          recipes += recipes_new;
+          setRecipes(recipes + recipes_new);
         }
 
         return response;

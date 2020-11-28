@@ -1,5 +1,7 @@
-import { mount } from 'enzyme';
+//import axios from 'axios';
+import axios from 'axios';
 import React from 'react';
+import { mount } from 'enzyme';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
@@ -7,64 +9,37 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { RecipeSearchPage } from './RecipeSearchPage';
 
 
+const mockUseSelector = jest.fn();
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: () => mockUseSelector(),
+}));
+
 const initialState = {
   user: {
 
   },
-  recipe: {
-    recipes: [
-      {
-        id: 1,
-        title: 'title 1',
-        rating: 3,
-        serving: 1,
-        cooking_time: 30,
-        content: 'content 1',
-        tag: [
-          'tag 1',
-        ],
-      }
-    ],
-  },
-  fridgeItem: {
-    fridgeItems: [
-      {
-        name: 'name 1',
-        quantity: 2,
-      }
-    ]
-  },
 };
+
+const stubRecipes = [
+  {
+    title: 'Recipe 4',
+    content: 'content',
+    rating: 3.5,
+    serving: 4,
+    cooking_time: 30,
+    calorie: 256,
+    diet_labels: ['diet1', 'diet2'],
+    health_labels: ['health1', 'health2'],
+  },
+];
 
 const mockStore = createStore((state = initialState) => state);
 
-const mockDispatch = jest.fn();
-
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
-}));
-
-const mockHistoryPush = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}));
-
-jest.mock('../store/actions/index', () => ({
-  fetchAllRecipes: jest.fn(),
-}));
-
-
 describe('<RecipeSearchPage />', () => {
   let component;
-
   beforeEach(() => {
-    mockDispatch.mockImplementation(() => ({ then: resolve => resolve() }));
-
     component = (
       <Provider store={mockStore}>
         <Router>
@@ -93,14 +68,87 @@ describe('<RecipeSearchPage />', () => {
     const wrapper = mount(component);
     wrapper.find('#showFilterTabButton').first().simulate('click');
     wrapper.find('#enableFridge').first().simulate('change', { target: { checked: true } });
-    wrapper.find('#enableCookingTime').first().simulate('change', { target: { checked: true } });
-    wrapper.find('#cookingTimeRangeInput').first().simulate('change', { target: { value: 60 } });
-    wrapper.find('#cookingTimeNumberInput').first().simulate('change', { target: { value: 90 } });
+    wrapper.find('#enableMaxCookingTime').first().simulate('change', { target: { checked: true } });
+    wrapper.find('#maxCookingTimeInput').first().simulate('change', { target: { value: 90 } });
     wrapper.find('#enableMinRating').first().simulate('change', { target: { checked: true } });
-    wrapper.find('#minRatingRangeInput').first().simulate('change', { target: { value: 4 } });
-    wrapper.find('#minRatingNumberInput').first().simulate('change', { target: { value: 4.3 } });
-    wrapper.find('#includeTagsInput').first().simulate('change', { target: { value: 'include' } });
-    wrapper.find('#excludeTagsInput').first().simulate('change', { target: { value: 'exclude' } });
+    wrapper.find('#minRatingInput').first().simulate('change', { target: { value: 4.3 } });
+    wrapper.find('#enableMaxCalorie').first().simulate('change', { target: { checked: true } });
+    wrapper.find('#maxCalorieInput').first().simulate('change', { target: { value: 400 } });
+    wrapper.find('#dietLabelsInput').first().simulate('change', { target: { value: 'dl1 dl2' } });
+    wrapper.find('#healthLabelsInput').first().simulate('change', { target: { value: 'hl1 hl2' } });
+  });
+
+  it('changes sort options', () => {
+    const wrapper = mount(component);
+    wrapper.find('#sortOption').first().simulate('change', { target: { value: 'rating' } });
+  });
+
+  describe('when user is not authorized', () => {
+    beforeEach(() => {
+      mockUseSelector.mockImplementation(() => false);
+    });
+
+    it('apply filter button works with empty response', () => {
+      jest.spyOn(axios, 'get')
+        .mockImplementation(() => new Promise(resolve => resolve({ data: { recipes: [] } })));
+
+      const wrapper = mount(component);
+      wrapper.find('#showFilterTabButton').first().simulate('click');
+      wrapper.find('#applyFilterButton').first().simulate('click');
+    });
+
+    it('apply filter button works with nonempty response', () => {
+      jest.spyOn(axios, 'get')
+        .mockImplementation(() => new Promise(resolve => resolve({ data: { recipes: stubRecipes } })));
+
+      const wrapper = mount(component);
+      wrapper.find('#showFilterTabButton').first().simulate('click');
+      wrapper.find('#applyFilterButton').first().simulate('click');
+    });
+  });
+
+  describe('when user is authorized', () => {
+    beforeEach(() => {
+      mockUseSelector.mockImplementation(() => true);
+
+      jest.spyOn(axios, 'get')
+        .mockImplementation(() => new Promise(resolve => resolve(
+          {
+            data: {
+              cooking_time: 22,
+              rating: 2,
+              calorie: 222,
+              diet_labels: ['d1', 'd2'],
+              health_labels: ['h1', 'h2'],
+            }
+          }
+        )));
+
+      jest.spyOn(axios, 'put').mockImplementation(() => Promise.resolve());
+    });
+
+    it('user may not have stored settings', () => {
+      jest.spyOn(axios, 'get')
+        .mockImplementation(() => new Promise(resolve => resolve(
+          {
+            data: {
+              cooking_time: null,
+              rating: null,
+              calorie: null,
+              diet_labels: [],
+              health_labels: [],
+            }
+          }
+        )));
+
+      mount(component);
+    });
+
+    it('save preferences button works', () => {
+      const wrapper = mount(component);
+      wrapper.find('#showFilterTabButton').first().simulate('click');
+      wrapper.find('#saveFilterButton').first().simulate('click');
+    });
   });
 
 });
