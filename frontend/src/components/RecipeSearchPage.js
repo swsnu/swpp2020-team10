@@ -1,58 +1,149 @@
+import axios from 'axios';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Checkbox, Container, Dropdown, Form, Grid, Header, Icon, Item, Rating, Segment } from 'semantic-ui-react';
-
-import * as actionCreators from '../store/actions/index';
+import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
 
 
 export const RecipeSearchPage = ({ match }) => {
+  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
+
   const [searchInput, setSearchInput] = useState(match.params.q);
   const [showFilterTab, setShowFilterTab] = useState(false);
+  const [sortBy, setSortBy] = useState('');
+  const [hasSetting, setHasSetting] = useState(false);
 
-  // filter tab attributes
+  // search result
+  const [recipes, setRecipes] = useState([]);
+
+  // number of currently loaded pages (pageCount * pageSize recipes)
+  const [pageCount, setPageCount] = useState(0);
+  const pageSize = 10;
+
+  // flag indicating whether search results have been exhausted
+  const [hasFetchedAll, setHasFetchedAll] = useState(false);
+
+  // filter attributes
   const [enableFridge, setEnableFridge] = useState(false);
 
-  const [enableCookingTime, setEnableCookingTime] = useState(false);
-  const [cookingTime, setCookingTime] = useState('');
+  const [enableMaxCookingTime, setEnableMaxCookingTime] = useState(false);
+  const [maxCookingTime, setMaxCookingTime] = useState(30);
+  const maxCookingTimeMaxInput = 360;
 
   const [enableMinRating, setEnableMinRating] = useState(false);
-  const [minRating, setMinRating] = useState('');
+  const [minRating, setMinRating] = useState(2.5);
 
-  const [includeTags, setIncludeTags] = useState('');
-  const [excludeTags, setExcludeTags] = useState('');
+  const [enableMaxCalorie, setEnableMaxCalorie] = useState(false);
+  const [maxCalorie, setMaxCalorie] = useState(500);
+  const maxCalorieMaxInput = 2000;
 
-  const dispatch = useDispatch();
-
-  // checks if recipes have been fetched
-  const [hasRecipes, setHasRecipes] = useState(false);
-
-  if (!hasRecipes) {
-    dispatch(actionCreators.fetchAllRecipes())
-      .then(() => { setHasRecipes(true); });
-  }
-
-  const recipes = useSelector(state => state.recipe.recipes);
-
-  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
+  const [dietLabels, setDietLabels] = useState('');
+  const [healthLabels, setHealthLabels] = useState('');
 
   const sortOptions = [
     {
-      key: 'Relevance',
-      text: 'Relevance',
-      value: 'Relevance',
-    },
-    {
-      key: 'Rating',
+      key: 1,
       text: 'Rating',
-      value: 'Rating',
+      value: 'rating',
     },
     {
-      key: 'Cooking time',
+      key: 2,
       text: 'Cooking time',
-      value: 'Cooking time',
+      value: 'time',
+    },
+    {
+      key: 3,
+      text: 'Calorie',
+      value: 'calorie',
     }
   ];
+
+  const fetchSetting = () => {
+    return axios.get('/api/user/setting/')
+      .then(response => {
+        let {
+          cooking_time,
+          rating,
+          calorie,
+          diet_labels,
+          health_labels,
+        } = response.data;
+
+        if (cooking_time) {
+          setEnableMaxCookingTime(cooking_time);
+        }
+        if (rating) {
+          setMinRating(rating);
+        }
+        if (calorie) {
+          setMaxCalorie(calorie);
+        }
+        if (diet_labels.length) {
+          setDietLabels(diet_labels.join(' '));
+        }
+        if (health_labels.length) {
+          setHealthLabels(health_labels.join(' '));
+        }
+
+        return response;
+      });
+  };
+
+  const saveSetting = () => {
+    return axios.put('/api/user/setting/', {
+      cooking_time: enableMaxCookingTime ? maxCookingTime : null,
+      rating: enableMinRating ? minRating : null,
+      calorie: enableMaxCalorie ? maxCalorie : null,
+      diet_labels: dietLabels.trim().split(/\s+/),
+      health_labels: healthLabels.trim().split(/\s+/),
+    });
+  };
+
+  const fetchResults = (reset) => {
+    let fromParam = 'from=' + pageCount * pageSize;
+    let toParam = 'to=' + (pageCount + 1) * pageSize;
+    let sortParam = sortBy ? 'sort=' + sortBy : '';
+    let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
+    let ratingParam = enableMinRating ? 'rating=' + minRating : '';
+    let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
+    let dietParam = dietLabels.trim().split(/\s+/).map(label => 'diet_labels=' + label).join('&');
+    let healthParam = healthLabels.trim().split(/\s+/).map(label => 'health_labels=' + label).join('&');
+
+    let params = [
+      fromParam,
+      toParam,
+      sortParam,
+      timeParam,
+      ratingParam,
+      calorieParam,
+      dietParam,
+      healthParam,
+    ].filter(Boolean).join('&');
+
+    setHasFetchedAll(false);
+
+    return axios.get('/api/search/?' + params)
+      .then(response => {
+        const recipes_new = response.data.recipes;
+        if (!recipes_new.length) {
+          setHasFetchedAll(true);
+        }
+
+        if (reset) {
+          setPageCount(0);
+          setRecipes(recipes_new);
+        } else {
+          setPageCount(pageCount + 1);
+          setRecipes(recipes + recipes_new);
+        }
+
+        return response;
+      });
+  };
+
+  if (userIsAuthorized && !hasSetting) {
+    fetchSetting().finally(() => setHasSetting(true));
+  }
 
   const filterTab = (
     <Segment>
@@ -67,121 +158,135 @@ export const RecipeSearchPage = ({ match }) => {
         </Form.Field>
         <Form.Field>
           <Checkbox
-            id='enableCookingTime'
+            id='enableMaxCookingTime'
             label='Set maximum cooking time'
-            checked={enableCookingTime}
-            onChange={() => setEnableCookingTime(!enableCookingTime)}
+            checked={enableMaxCookingTime}
+            onChange={() => setEnableMaxCookingTime(!enableMaxCookingTime)}
           />
         </Form.Field>
-        <Form.Group>
-          <Form.Field disabled={!enableCookingTime}>
-            <label>Cooking time</label>
-            <input
-              type='range'
-              id='cookingTimeRangeInput'
-              max={180}
-              value={cookingTime}
-              onChange={e => setCookingTime(e.target.value)}
-            />
-          </Form.Field>
-          <Form.Field disabled={!enableCookingTime} width={2}>
-            <input
-              type='number'
-              id='cookingTimeNumberInput'
-              max={180}
-              value={cookingTime}
-              onChange={e => setCookingTime(e.target.value)}
-            />
-          </Form.Field>
-        </Form.Group>
+        <Form.Field disabled={!enableMaxCookingTime} width={3}>
+          <input
+            type='number'
+            id='maxCookingTimeInput'
+            min={0}
+            max={maxCookingTimeMaxInput}
+            value={maxCookingTime}
+            onChange={e => setMaxCookingTime(e.target.value)}
+          />
+        </Form.Field>
         <Form.Field>
           <Checkbox
             id='enableMinRating'
-            label='Set minimum Rating'
+            label='Set minimum rating'
             checked={enableMinRating}
             onChange={() => setEnableMinRating(!enableMinRating)}
           />
         </Form.Field>
-        <Form.Group>
-          <Form.Field disabled={!enableMinRating}>
-            <label>Rating</label>
-            <input
-              type='range'
-              id='minRatingRangeInput'
-              max={5}
-              step={0.1}
-              value={minRating}
-              onChange={e => setMinRating(e.target.value)}
-            />
-          </Form.Field>
-          <Form.Field disabled={!enableMinRating} width={2}>
+        <Form.Field disabled={!enableMinRating} width={3}>
+          <input
+            type='number'
+            id='minRatingInput'
+            min={0}
+            max={5}
+            step={0.1}
+            value={minRating}
+            onChange={e => setMinRating(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Checkbox
+            id='enableMaxCalorie'
+            label='Set maximum calories per serving'
+            checked={enableMaxCalorie}
+            onChange={() => setEnableMaxCalorie(!enableMaxCalorie)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <Form.Field disabled={!enableMaxCalorie} width={3}>
             <input
               type='number'
-              id='minRatingNumberInput'
-              max={5}
-              step={0.1}
-              value={minRating}
-              onChange={e => setMinRating(e.target.value)}
+              id='maxCalorieInput'
+              min={0}
+              max={maxCalorieMaxInput}
+              value={maxCalorie}
+              onChange={e => setMaxCalorie(e.target.value)}
+            />
+          </Form.Field>
+        </Form.Field>
+        <Form.Field>
+          <label htmlFor='dietLabelsInput'>Diet labels</label>
+          <input
+            type='text'
+            id='dietLabelsInput'
+            value={dietLabels}
+            onChange={e => setDietLabels(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label htmlFor='healthLabelsInput'>Health labels</label>
+          <input
+            type='text'
+            id='healthLabelsInput'
+            value={healthLabels}
+            onChange={e => setHealthLabels(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Group>
+          <Form.Field>
+            <Button
+              basic
+              color='blue'
+              id='applyFilterButton'
+              content='Apply'
+              onClick={() => fetchResults(true)}
+            />
+          </Form.Field>
+          <Form.Field>
+            <Button
+              basic
+              id='saveFilterButton'
+              content='Save preferences'
+              onClick={() => saveSetting()}
+              disabled={userIsAuthorized !== true}
             />
           </Form.Field>
         </Form.Group>
       </Form>
-      <Header content='Tags' as='h4' />
-      <Form>
-        <Form.Field>
-          <label htmlFor='includeTagsInput'>Include</label>
-          <input
-            type='text'
-            id='includeTagsInput'
-            value={includeTags}
-            onChange={e => setIncludeTags(e.target.value)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label htmlFor='excludeTagsInput'>Exclude</label>
-          <input
-            type='text'
-            id='excludeTagsInput'
-            value={excludeTags}
-            onChange={e => setExcludeTags(e.target.value)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Button basic
-            content='Save preferences'
-            disabled={userIsAuthorized !== true}
-          />
-        </Form.Field>
-      </Form>
     </Segment>
   );
 
-  const searchResults = recipes.map(recipe => (
-    <Item key={recipe.id}>
+  const searchResults = recipes.map((recipe, key) => (
+    <Item key={key} as={Link} to={`/recipe/${recipe.id}`}>
       <Item.Image
-        src={`https://source.unsplash.com/512x512/?soup,${recipe.id}`}
+        src={`https://source.unsplash.com/512x512/?soup,${key}`}
         size='small'
-        as={Link} to={`/recipe/${recipe.id}`}
       />
       <Item.Content>
         <Item.Header>
-          <Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link>
+          {recipe.title}
         </Item.Header>
         <Item.Meta>
           {recipe.rating.toFixed(1)}&ensp;
           <Rating
             rating={recipe.rating}
             maxRating={5}
-            clearable={false} icon='star' size='mini'
-          />&emsp;
-          Serving&ensp;{recipe.serving}&emsp;
-          Cooking time&ensp;{recipe.cooking_time}
+            icon='star'
+            size='mini'
+            disabled
+          />
+        </Item.Meta>
+        <Item.Meta>
+          {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
+          {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
+          {recipe.calorie}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Item.Meta>
         <Item.Description>
           {recipe.content.substr(0, 160)}
+          {recipe.content.length > 160 ? '...' : ''}
         </Item.Description>
         <Item.Extra>
-          {recipe.tag.map(tag => <span key={tag}>{tag}&emsp;</span>)}
+          {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+          {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
         </Item.Extra>
       </Item.Content>
     </Item>
@@ -191,8 +296,10 @@ export const RecipeSearchPage = ({ match }) => {
     <Container text style={{ marginTop: '1em' }}>
       <Segment color='blue' inverted tertiary>
         <Grid>
-          <Grid.Column verticalAlign='middle'>
-            <label htmlFor='searchInput'><Icon name='search' size='big' /></label>
+          <Grid.Column verticalAlign='middle' width={1}>
+            <label htmlFor='searchInput'>
+              <Icon name='search' size='big' />
+            </label>
           </Grid.Column>
           <Grid.Column width={15}>
             <Form>
@@ -209,10 +316,19 @@ export const RecipeSearchPage = ({ match }) => {
           </Grid.Column>
         </Grid>
       </Segment>
-      <Dropdown button basic
+      <Dropdown
+        button
+        basic
+        clearable
+        id='sortOption'
         placeholder='Sort by...'
         options={sortOptions}
-        style={{ width: 150 }}
+        value={sortBy}
+        onChange={(e, { value }) => {
+          setSortBy(value);
+          fetchResults(true);
+        }}
+        style={{ width: '11em' }}
       />
       <Button
         id='showFilterTabButton'
@@ -222,9 +338,13 @@ export const RecipeSearchPage = ({ match }) => {
       { showFilterTab &&
         filterTab
       }
-      <Item.Group divided>
-        {searchResults}
-      </Item.Group>
-    </Container>
+      <Visibility onBottomVisible={() => fetchResults(false)}>
+        <Item.Group divided>
+          {searchResults}
+        </Item.Group>
+      </Visibility>
+      <br />
+      <Loader active={!hasFetchedAll} inline='centered' />
+    </Container >
   );
 };
