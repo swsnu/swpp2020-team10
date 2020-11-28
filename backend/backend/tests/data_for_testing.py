@@ -1,3 +1,9 @@
+test_search_setting = {
+    "diet_labels": ['balanced', 'high-fiber'],
+    "health_labels": ['alcohol-free', 'immuno-supportive', 'celery-free', 'crustacean-free'],
+    "calories": 800,
+    "cooking_time": 5
+}
 test_recipe_data_1 = {
     "id": 1,
     "food_id": 3,

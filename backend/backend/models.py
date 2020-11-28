@@ -1,15 +1,25 @@
 import datetime
 
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+
+class SearchSetting(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    diet_labels = ArrayField(models.CharField(max_length=15), default=[], blank=True)
+    health_labels = ArrayField(models.CharField(max_length=20), default=[], blank=True)
+    calories = models.IntegerField(default=0)
+    cooking_time = models.IntegerField(default=0)
+    rating = models.FloatField(default=0.0)
+
 class Food(models.Model):
     name = models.CharField(max_length=80, default='')
     nutrition = models.JSONField(default=None)
     tag = models.JSONField(default=None)
     unit = models.CharField(max_length=10, blank=True, default='')
-
+    
 class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
@@ -42,11 +52,13 @@ class Recipe(models.Model):
     )
     title = models.CharField(max_length=80)
     content = models.TextField(default='')
-    rating = models.FloatField(default='0.0')
+    rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
     ingredients = models.JSONField(default=None)
+    diet_labels = ArrayField(models.CharField(max_length=15), default=[], blank=True)
+    health_labels = ArrayField(models.CharField(max_length=20), default=[], blank=True)
+    calories = models.IntegerField(default=0)
     cooking_time = models.IntegerField(default=0)
-    tag = models.JSONField(default=None)
     serving = models.IntegerField(default=0)
 
 class Review(models.Model):

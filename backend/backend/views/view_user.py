@@ -2,6 +2,7 @@ import json
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
+from backend.models import SearchSetting
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def signup(request):
@@ -15,7 +16,11 @@ def signup(request):
         if User.objects.filter(username=username).exists():
             return HttpResponse(status=409)
 
-        User.objects.create_user(username=username, password=password, email=email)
+        new_user = User.objects.create_user(username=username, password=password, email=email)
+        new_user.save()
+        new_setting = SearchSetting(user=new_user)
+        new_setting.save()
+        
         return HttpResponse(status=201)
 
     return HttpResponseNotAllowed(["POST"])

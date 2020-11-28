@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Food, FridgeItem, Recipe, Review, Comment
+from .models import SearchSetting, Food, FridgeItem, Recipe, Review, Comment
 
-
+admin.site.register(SearchSetting)
 admin.site.register(FridgeItem)
 admin.site.register(Food)
 admin.site.register(Recipe)

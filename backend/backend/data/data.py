@@ -13,9 +13,11 @@ recipe_data_1 = {
         "cabbage": "100"
     },
     "cooking_time": 120,
-    "tag": {
-        "difficulty": "hard"
-    },
+    "diet_labels": [
+        "balanced", "high-fiber"
+    ],
+    "health_labels": [],
+    "calories": 500,
     "serving": 1
 }
 

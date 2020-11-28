@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import view_user, view_recipe, view_review, view_comment, view_food
+from .views import view_user, view_setting, view_recipe, view_review, view_comment, view_food, view_search
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/user/signout/', view_user.signout, name='signout'),
     path('api/user/status/', view_user.status, name='status'),
     path('api/user/profile/', view_user.profile, name='profile'),
+    path('api/user/setting/', view_setting.setting, name='setting'),
     path('api/recipe/', view_recipe.recipes, name='recipes'),
     path('api/recipe/<int:_id>/', view_recipe.recipe_by_id, name='recipe_by_id'),
     path('api/recipe/<int:_id>/review/', view_review.recipe_review, name='recipe_review'),
@@ -32,5 +33,6 @@ urlpatterns = [
     path('api/review/<int:_id>/comment/', view_comment.review_comment, name='get_review_comment'),
     path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
     path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
-    path('api/food/', view_food.manage_food, name='manage_food')
+    path('api/food/', view_food.manage_food, name='manage_food'),
+    path('api/search/', view_search.search, name='search')
 ]
