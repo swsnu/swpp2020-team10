@@ -10,6 +10,7 @@ const initialState = {
     isAuthorized: false,
     id: null,
     name: null,
+    noti: null,
   }
 };
 
@@ -49,4 +50,16 @@ describe('user action creators', () => {
     await mockStore.dispatch(actionCreators.signout());
   });
 
+  it('notification', async () => {
+    jest.spyOn(axios, 'get')
+      .mockImplementation(() => Promise.resolve({ data: {  } }));
+
+    await mockStore.dispatch(actionCreators.notification(1));
+  });
+
+  it('notification failure', async () => {
+    jest.spyOn(axios, 'get')
+      .mockImplementation(() => Promise.reject());
+    await mockStore.dispatch(actionCreators.notification(1));
+  });
 });

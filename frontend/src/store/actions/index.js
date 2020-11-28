@@ -2,6 +2,7 @@ export {
   signin,
   checkUserStatus,
   signout,
+  notification,
 } from './user';
 
 export {

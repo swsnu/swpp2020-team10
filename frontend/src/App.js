@@ -103,7 +103,7 @@ function App() {
         <Route exact path='/recipe/:recipe_id' component={RecipeDetail} />
         <Route exact path='/review/:review_id' component={ReviewDetail} />
         <Route exact path='/review/:recipe_id/create' component={ReviewCreator} />
-        <Route exact path='/review/:review_id/edit' component={ReviewEditor} />
+        <Route exact path='/review/:review_id/editor' component={ReviewEditor} />
         <Route exact path='/' component={FrontPage} />
         <Redirect to='/' />
       </Switch>

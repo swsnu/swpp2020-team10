@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Card, Container, Dimmer, Form, Grid, Header, Icon, Image, Message, Rating, Segment } from 'semantic-ui-react';
-
+import { Button, Card, Container, Dimmer, Form, Grid, Header, Icon, Image, Rating, Segment } from 'semantic-ui-react';
+import { Notification } from './Notification';
 import * as actionCreators from '../store/actions/index';
 
 
@@ -112,7 +112,8 @@ export const FrontPage = () => {
           </Segment>
           <Segment>
             <Header content='Notifications' />
-            <Message color='red'>
+            <Notification userId={userId}/>
+            {/*<Message color='red'>
               Your review on <b>Spam</b> has been reported.
             </Message>
             <Message color='orange'>
@@ -121,7 +122,7 @@ export const FrontPage = () => {
             <Message color='olive'>
               <b>Toirdhealbhach</b> has commented to your review on <b>Bouillabaisse</b>.
             </Message>
-            {dimmer}
+            {dimmer}*/}
           </Segment>
         </Grid.Column>
       </Grid>

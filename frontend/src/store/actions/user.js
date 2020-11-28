@@ -43,3 +43,18 @@ export const signout = () => {
       });
   };
 };
+
+export const notification_ = (noti) => {
+  return {type: actionTypes.GET_NOTIFICATION, noti : noti};
+};
+
+export const notification = (userId) => {
+  return dispatch => {
+    return axios.get(`/api/user/${userId}/notification/`)
+      .then(response => {
+        dispatch(notification_(response.data));
+        return response;
+      })
+      .catch(response => response);
+  };
+};
