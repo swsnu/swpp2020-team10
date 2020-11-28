@@ -1,9 +1,9 @@
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import { Notification } from './Notification'
+import { Notification } from './Notification';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 
@@ -74,7 +74,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../store/actions/index', () => ({
-  notification: jest.fn((userId) => {return notiJSON;}),
+  notification: jest.fn(() => {return notiJSON;}),
 }));
 
 
