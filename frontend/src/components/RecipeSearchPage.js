@@ -134,7 +134,7 @@ export const RecipeSearchPage = ({ match }) => {
           setRecipes(recipes_new);
         } else {
           setPageCount(pageCount + 1);
-          setRecipes(recipes + recipes_new);
+          setRecipes(recipes.concat(recipes_new));
         }
 
         return response;
