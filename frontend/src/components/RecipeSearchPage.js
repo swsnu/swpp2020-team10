@@ -127,8 +127,7 @@ export const RecipeSearchPage = ({ match }) => {
         }
 
         return response;
-      })
-      .catch(error => { /* 401 */ return error; });
+      });
   };
 
   const saveSetting = () => {
@@ -184,7 +183,7 @@ export const RecipeSearchPage = ({ match }) => {
       });
   };
 
-  if (!hasSetting) {
+  if (userIsAuthorized && !hasSetting) {
     fetchSetting().finally(() => setHasSetting(true));
   }
 
@@ -193,7 +192,6 @@ export const RecipeSearchPage = ({ match }) => {
       <Form>
         <Form.Field>
           <Checkbox
-            disabled  // temporarily unavailable
             id='enableFridge'
             label='Check availability from My Fridge'
             checked={enableFridge}
@@ -280,6 +278,7 @@ export const RecipeSearchPage = ({ match }) => {
             <Button
               basic
               color='blue'
+              id='applyFilterButton'
               content='Apply'
               onClick={() => fetchResults(true)}
             />
@@ -287,6 +286,7 @@ export const RecipeSearchPage = ({ match }) => {
           <Form.Field>
             <Button
               basic
+              id='saveFilterButton'
               content='Save preferences'
               onClick={() => saveSetting()}
               disabled={userIsAuthorized !== true}
@@ -362,6 +362,7 @@ export const RecipeSearchPage = ({ match }) => {
         button
         basic
         clearable
+        id='sortOption'
         placeholder='Sort by...'
         options={sortOptions}
         value={sortBy}
