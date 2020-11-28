@@ -30,7 +30,7 @@ test_recipe_rating_wrong = {
 }
 test_user = {
     "username" : "unit-tester",
-    "password" : "p3141592",
+    "password" : "unit-tester-password",
     "email" : "unit-tester-email@snu.ac.kr"
 }
 test_user_2 = {

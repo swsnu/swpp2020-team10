@@ -10,9 +10,7 @@ from backend.models import Food, FridgeItem
 # checks for authentication is not needed here
 
 def json_default(value):
-    if isinstance(value, datetime.date):
-        return value.strftime('%Y-%m-%d')
-    raise TypeError('not JSON serializable')
+    return value.strftime('%Y-%m-%d')
 
 # Fetches all food info and returns JSON object
 def manage_food(request):
