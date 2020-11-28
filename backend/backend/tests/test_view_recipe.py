@@ -1,11 +1,22 @@
 import json
 from django.test import TestCase, Client
-from .data_for_testing import test_recipe_rating as rtest, test_recipe_rating_wrong as rtestf
+from .data_for_testing import test_recipe_rating as rtest, test_recipe_rating_wrong as rtestf, test_user
+from ..models import *
 
-FIRST_RECIPE_URL = '/api/recipe/1/'
-WRONG_RECIPE_URL = '/api/recipe/999999999/'
+
 class RecipeTestCase(TestCase):
-    fixtures = ['test_db.json',]
+    def setUp(self):
+        self.user = User.objects.create_user(username=test_user['username'], password=test_user['password'])
+        self.second_user = User.objects.create_user(username="some-other-user", password='password')
+        self.food = Food.objects.create(name='food_name')
+        self.recipe = Recipe.objects.create(food=self.food, title="plz kill me")
+        self.review = Review.objects.create(recipe=self.recipe, user=self.user, title="title", content="content")
+        self.revid = self.review.id
+        self.fridgeItem = FridgeItem.objects.create(user=self.user, food=self.food)
+        self.second_item = FridgeItem.objects.create(user=self.second_user, food=self.food)
+        self.item_id = self.fridgeItem.id
+        self.user_id = self.user.id
+
     def test_recipe_list(self):
         client = Client()
         response = client.get('/api/recipe/')
@@ -15,6 +26,8 @@ class RecipeTestCase(TestCase):
 
 
     def test_recipe_by_id(self):
+        FIRST_RECIPE_URL = f'/api/recipe/{self.recipe.id}/'
+        WRONG_RECIPE_URL = '/api/recipe/999999999/'
         client = Client()
         response = client.get(FIRST_RECIPE_URL)
         self.assertEqual(response.status_code, 200)

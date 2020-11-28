@@ -8,16 +8,16 @@ from django.utils.timezone import now
 
 class SearchSetting(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    diet_labels = ArrayField(models.CharField(max_length=15), default=[], blank=True)
-    health_labels = ArrayField(models.CharField(max_length=20), default=[], blank=True)
+    diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
+    health_labels = ArrayField(models.CharField(max_length=20), default=list, blank=True)
     calories = models.IntegerField(default=0)
     cooking_time = models.IntegerField(default=0)
     rating = models.FloatField(default=0.0)
 
 class Food(models.Model):
     name = models.CharField(max_length=80, default='')
-    nutrition = models.JSONField(default=None)
-    tag = models.JSONField(default=None)
+    nutrition = models.JSONField(default=None, null=True)
+    tag = models.JSONField(default=None, null=True)
     unit = models.CharField(max_length=10, blank=True, default='')
 
 class FridgeItem(models.Model):
@@ -54,9 +54,9 @@ class Recipe(models.Model):
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
-    ingredients = models.JSONField(default=None)
-    diet_labels = ArrayField(models.CharField(max_length=15), default=[], blank=True)
-    health_labels = ArrayField(models.CharField(max_length=20), default=[], blank=True)
+    ingredients = models.JSONField(default=None, null=True)
+    diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
+    health_labels = ArrayField(models.CharField(max_length=20), default=list, blank=True)
     calories = models.IntegerField(default=0)
     cooking_time = models.IntegerField(default=0)
     serving = models.IntegerField(default=0)
