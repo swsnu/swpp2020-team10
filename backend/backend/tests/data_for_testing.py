@@ -1,3 +1,10 @@
+test_search_setting = {
+    "diet_labels": ['balanced', 'high-fiber'],
+    "health_labels": ['alcohol-free', 'immuno-supportive', 'celery-free', 'crustacean-free'],
+    "calories": 800,
+    "cooking_time": 5,
+    "rating": 3
+}
 test_recipe_data_1 = {
     "id": 1,
     "food_id": 3,
@@ -8,10 +15,10 @@ test_recipe_data_1 = {
     "ingredients": {
         "cabbage": "100"
     },
+    "diet_labels": [],
+    "health_labels": [],
+    "calories": 300,
     "cooking_time": 120,
-    "tag": {
-        "difficulty": "hard"
-    },
     "serving": 1
 }
 test_recipe_rating = {
