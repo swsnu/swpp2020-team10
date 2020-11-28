@@ -15,6 +15,7 @@ export const RecipeSearchPage = ({ match }) => {
 
   // search result
   const [recipes, setRecipes] = useState([]);
+  const [hasRecipes, setHasRecipes] = useState(false);
 
   // number of currently loaded pages (pageCount * pageSize recipes)
   const [pageCount, setPageCount] = useState(0);
@@ -143,6 +144,11 @@ export const RecipeSearchPage = ({ match }) => {
 
   if (userIsAuthorized && !hasSetting) {
     fetchSetting().finally(() => setHasSetting(true));
+  }
+
+  if (!hasRecipes) {
+    fetchResults();
+    setHasRecipes(true);
   }
 
   const filterTab = (
@@ -310,6 +316,7 @@ export const RecipeSearchPage = ({ match }) => {
                   placeholder='Search recipes...'
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
+                  onKeyDown={() => fetchResults()}
                 />
               </Form.Field>
             </Form>
