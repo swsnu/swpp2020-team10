@@ -71,7 +71,7 @@ export default function MyFridge() {
   const fridgeItemButtons = fridgeItems.map((fridgeItem) => {
     return (
       <Grid.Column key={fridgeItem.id}>
-        <Card onClick={() => onClickFridgeItemButton(fridgeItem)}>
+        <Card onClick={() => onClickFridgeItemButton()}>
           <Reveal animated='move up'>
             <Reveal.Content visible>
               <Image src='https://source.unsplash.com/512x512/?soup' alt='Fridge Item' rounded></Image>
