@@ -87,16 +87,19 @@ function RecipeDetail(props) {
     //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
-  let title, rating, serving, cooking_time, content, ingredients;
+  let title = '', rating = 0, serving = 0, cooking_time = 0, content = 0, ingredients = null;
+  //if(storedRecipe !== null){
   title = storedRecipe.title;
   rating = storedRecipe.rating;
   serving = storedRecipe.serving;
   cooking_time = storedRecipe.cooking_time;
   content = storedRecipe.content;
   ingredients = storedRecipe.ingredients;
+  //}
 
 
-  let ingredient;
+  let ingredient = null;
+  //if(ingredients !== null){
   ingredient = Object.keys(ingredients).map((key) => {
     return (
       <p key={key}>
@@ -104,6 +107,7 @@ function RecipeDetail(props) {
       </p>
     );
   });
+  //}
 
 
   /*<div className='row'>
