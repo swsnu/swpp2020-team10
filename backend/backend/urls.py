@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/user/status/', view_user.status, name='status'),
     path('api/user/profile/', view_user.profile, name='profile'),
     path('api/user/setting/', view_setting.setting, name='setting'),
+    path('api/user/<int:_id>/notification/', view_user.notification, name='notification'),
     path('api/recipe/', view_recipe.recipes, name='recipes'),
     path('api/recipe/<int:_id>/', view_recipe.recipe_by_id, name='recipe_by_id'),
     path('api/recipe/<int:_id>/review/', view_review.recipe_review, name='recipe_review'),
@@ -34,5 +35,7 @@ urlpatterns = [
     path('api/comment/<int:_id>/', view_comment.comment_by_id, name='comment_by_id'),
     path('api/comment/<int:_id>/reaction/', view_comment.reaction, name='comment_reaction'),
     path('api/food/', view_food.manage_food, name='manage_food'),
-    path('api/search/', view_search.search, name='search')
+    path('api/search/', view_search.search, name='search'),
+    path('api/fridge/<int:_id>/user/', view_food.manage_fridge, name='manage_fridge'),
+    path('api/fridge/item/<int:_id>/', view_food.fridge_by_id, name='fridge_by_id'),
 ]

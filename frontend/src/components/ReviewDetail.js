@@ -49,19 +49,24 @@ function ReviewDetail(props) {
     setHasComment(true);
   }
 
-  let userId, recipeId;
-  let title, content, likes, dislikes, reports;
+  let userId = 0, recipeId = 0;
+  let title = '', author = '', content = '', likes = 0, dislikes = 0, reports = 0;
+  //if(storedReview !== null){
   userId = storedReview.user_id;
   recipeId = storedReview.recipe_id;
   title = storedReview.title;
+  author = storedReview.author_name;
   content = storedReview.content;
   likes = storedReview.likes;
   dislikes = storedReview.dislikes;
   reports = storedReview.reports;
+  //}
 
 
-  let thisUserId;
+  let thisUserId = 0;
+  //if(storedUser !== null){
   thisUserId = storedUser.id;
+  //}
 
   /*// move to 'Settings' page
   const onClickSettingsButton = () => {};
@@ -252,6 +257,7 @@ function ReviewDetail(props) {
         <Grid.Row>
           <Segment attached='top'>
             <Header textAlign='center'>{title}</Header>
+            <p>{author}</p>
           </Segment>
           <Segment attached='bottom'>
             <Container textAlign='center'>

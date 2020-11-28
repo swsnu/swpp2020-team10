@@ -2,13 +2,13 @@ import json
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
-from backend.models import Comment
-
+from ..models import Comment
+from .util import json_default
 # Fetches comment by id
 # JSON format follows design document - modelscd
 def comment_by_id(request, _id):
     try:
-        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0])
+        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0],default=json_default)
     except IndexError:
         return HttpResponseBadRequest(status=404)
     if request.method == 'GET':
@@ -38,7 +38,7 @@ def comment_by_id(request, _id):
 # GET : Fetches comment with given review id
 # PUT : Creates new comment on given review
 def review_comment(request, _id):
-    comments = json.dumps(list(Comment.objects.filter(review_id=_id).all().values()))
+    comments = json.dumps(list(Comment.objects.filter(review_id=_id).all().values()),default=json_default)
     if request.method == 'GET':
         return HttpResponse(comments, status=200, content_type='application/json')
     # POST requires login
@@ -53,7 +53,7 @@ def review_comment(request, _id):
         new_comment = Comment(review_id=_id, content=content, user=request.user)
         new_comment.save()
         new_comment_dict = model_to_dict(new_comment)
-        return HttpResponse(json.dumps(new_comment_dict), status=201)
+        return HttpResponse(json.dumps(new_comment_dict,default=json_default), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
 
@@ -65,7 +65,7 @@ def reaction(request, _id):
     if not request.user.is_authenticated:
         return HttpResponse("You are not logged in\n",status=401)
     try:
-        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0])
+        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0],default=json_default)
     except IndexError:
         return HttpResponseBadRequest(status=404)
     comment = json.loads(comment)
@@ -81,7 +81,7 @@ def reaction(request, _id):
         cur_dislike += req_dislike
         cur_report += req_report
         Comment.objects.filter(id=_id).update(likes=cur_like, dislikes=cur_dislike, reports=cur_report)
-        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0])
+        comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0],default=json_default)
         return HttpResponse(comment, status=200, content_type='application/json')
 
     return HttpResponseNotAllowed(["PUT"])

@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from backend.models import Recipe
+from ..models import Recipe
 
 # Auth : Anyone can search and request for recipes
 
