@@ -3,7 +3,7 @@ import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
-from backend.models import Food, FridgeItem
+from backend.models import FridgeItem
 
 # Users cannot send request to here without authentication
 # -> authentication already ensured by frontend, so
@@ -12,12 +12,14 @@ from backend.models import Food, FridgeItem
 def json_default(value):
     return value.strftime('%Y-%m-%d')
 
+'''
 # Fetches all food info and returns JSON object
 def manage_food(request):
     if request.method == "GET":
         food_list = json.dumps(list(Food.objects.all().values()))
         return HttpResponse(food_list, status=200, content_type='application/json')
     return HttpResponseNotAllowed(["GET"])
+'''
 
 # GET: fetches all fridgeItems with given user id
 # POST: creates new fridgeItem on given user id

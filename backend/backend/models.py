@@ -14,42 +14,24 @@ class SearchSetting(models.Model):
     cooking_time = models.IntegerField(default=0)
     rating = models.FloatField(default=0.0)
 
-class Food(models.Model):
-    name = models.CharField(max_length=80, default='')
-    nutrition = models.JSONField(default=None, null=True)
-    tag = models.JSONField(default=None, null=True)
-    unit = models.CharField(max_length=10, blank=True, default='')
-
 class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='fridgeitem_user_id',
     )
-    food = models.ForeignKey(
-        Food,
-        on_delete=models.CASCADE,
-        related_name='fridgeitem_food_type',
-    )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
     expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
-    nutrition_facts = models.JSONField(null=True, blank=True, default=None)
 
+    '''
     def save(self, *args, **kwargs):
-        if self.nutrition_facts is None:
-            self.nutrition_facts = self.food.nutrition
         if len(self.name) == 0:
             self.name = self.food.name
         super(FridgeItem, self).save(*args, **kwargs)
-
+    '''
 
 class Recipe(models.Model):
-    food = models.ForeignKey(
-        Food,
-        on_delete=models.CASCADE,
-        related_name='recipe_food_type',
-    )
     title = models.CharField(max_length=80)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
@@ -84,7 +66,6 @@ class Review(models.Model):
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Review, self).save(*args, **kwargs)
 
-
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
@@ -108,4 +89,30 @@ class Comment(models.Model):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
-        
+
+class Preference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='preference_user',
+    )
+    label_norm = models.FloatField(default = 0.0)
+    ingredient_norm = models.FloatField(default = 0.0)
+
+class LabelPreference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='label_preference_user',
+    )
+    name = models.CharField(max_length=20, default='')
+    score = models.FloatField(default=0.0)
+
+class IngredientPreference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='ing_pref_user',
+    )
+    name = models.CharField(max_length=30, default='')
+    score = models.FloatField(default=0.0)
