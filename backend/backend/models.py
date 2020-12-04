@@ -14,34 +14,48 @@ class SearchSetting(models.Model):
     cooking_time = models.IntegerField(default=0)
     rating = models.FloatField(default=0.0)
 
+class Ingredient(models.Model):
+    name = models.CharField(blank=True, default='', max_length=80)
+
 class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='fridgeitem_user_id',
     )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete= models.CASCADE,
+        related_name='fridgeitem_ingrdient',
+    )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
     expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
 
-    '''
-    def save(self, *args, **kwargs):
-        if len(self.name) == 0:
-            self.name = self.food.name
-        super(FridgeItem, self).save(*args, **kwargs)
-    '''
-
 class Recipe(models.Model):
     title = models.CharField(max_length=80)
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
-    ingredients = models.JSONField(default=None, null=True)
     diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
     health_labels = ArrayField(models.CharField(max_length=20), default=list, blank=True)
     calories = models.IntegerField(default=0)
     cooking_time = models.IntegerField(default=0)
     serving = models.IntegerField(default=0)
+
+class IngredientIncidence(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete= models.CASCADE,
+        related_name='fridgeitem_ingrdient',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='review_recipe_id',
+    )
+    quantity = models.IntegerField(default = 0)
 
 class Review(models.Model):
     recipe = models.ForeignKey(

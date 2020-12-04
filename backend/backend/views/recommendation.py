@@ -96,6 +96,7 @@ def recommend_recipe(request):
     if sqscs == 0:
         return choice(feasible_list)
     # Probability ~ (Score)^2
+    
     for r in feasible_list:
         if r['score'] < 0:
             pr = 0
