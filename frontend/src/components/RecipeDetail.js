@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
@@ -14,6 +14,11 @@ function RecipeDetail(props) {
   const [hasRecipe, setHasRecipe] = useState(false);
   const [hasReviews, setHasReviews] = useState(false);
   const [hasRated, setRated] = useState(false);
+
+  useEffect(() => {
+    actionCreators.selectRecipeById(recipeId);
+    actionCreators.getReviewList(recipeId);
+  });
   // check
   if(!hasRecipe) {
     dispatch(actionCreators.selectRecipeById(recipeId));
@@ -82,32 +87,32 @@ function RecipeDetail(props) {
 
   // should be commented out until testing issues are solved
   const onChangeRatingInput = () => {
-    //const ratedRecipe = { ...storedRecipe, rating: rating };
+    const ratedRecipe = { ...storedRecipe, rating: rating };
     setRated(true);
-    //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
+    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
   };
 
   let title = '', rating = 0, serving = 0, cooking_time = 0, content = 0, ingredients = null;
-  //if(storedRecipe !== null){
-  title = storedRecipe.title;
-  rating = storedRecipe.rating;
-  serving = storedRecipe.serving;
-  cooking_time = storedRecipe.cooking_time;
-  content = storedRecipe.content;
-  ingredients = storedRecipe.ingredients;
-  //}
+  if(storedRecipe !== null){
+    title = storedRecipe.title;
+    rating = storedRecipe.rating;
+    serving = storedRecipe.serving;
+    cooking_time = storedRecipe.cooking_time;
+    content = storedRecipe.content;
+    ingredients = storedRecipe.ingredients;
+  }
 
 
   let ingredient = null;
-  //if(ingredients !== null){
-  ingredient = Object.keys(ingredients).map((key) => {
-    return (
-      <p key={key}>
-        {key}: {ingredients[key]}
-      </p>
-    );
-  });
-  //}
+  if(ingredients !== null){
+    ingredient = Object.keys(ingredients).map((key) => {
+      return (
+        <p key={key}>
+          {key}: {ingredients[key]}
+        </p>
+      );
+    });
+  }
 
 
   /*<div className='row'>

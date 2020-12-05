@@ -6,8 +6,8 @@ import { createBrowserHistory } from 'history';
 import { getMockStore } from '../test-utils/mocks';
 
 import RecipeDetail from './RecipeDetail';
-//import * as recipeActionCreators from '../store/actions/recipe';
-//import * as reviewActionCreators from '../store/actions/review';
+import * as recipeActionCreators from '../store/actions/recipe';
+import * as reviewActionCreators from '../store/actions/review';
 
 const stubInitialState = {
   'user': {
@@ -75,7 +75,7 @@ const mockStore = getMockStore(stubInitialState);
 
 
 describe('<RecipeDetail />', () => {
-  let recipeDetail; //spySelectRecipeById, spyGetReviewList, spyAddRecipeRatingById;
+  let recipeDetail, spySelectRecipeById, spyGetReviewList, spyAddRecipeRatingById;
   const history = createBrowserHistory();
   let spyPush = jest.spyOn(history, 'push')
     .mockImplementation(() => {});
@@ -90,12 +90,12 @@ describe('<RecipeDetail />', () => {
         </Router>
       </Provider>
     );
-    /*spySelectRecipeById = jest.spyOn(recipeActionCreators, 'selectRecipeById')
+    spySelectRecipeById = jest.spyOn(recipeActionCreators, 'selectRecipeById')
       .mockImplementation(() => {return () => {};});
     spyGetReviewList = jest.spyOn(reviewActionCreators, 'getReviewList')
       .mockImplementation(() => {return () => {};});
     spyAddRecipeRatingById = jest.spyOn(recipeActionCreators, 'addRecipeRatingById')
-      .mockImplementation(() => {return () => {};});*/
+      .mockImplementation(() => {return () => {};});
       
   });
 

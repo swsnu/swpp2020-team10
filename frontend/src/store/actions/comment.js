@@ -48,15 +48,15 @@ export const postComment = (id, comment) => {
   };
 };
 
-export const editComment_ = (id) => {
-  return { type: actionTypes.EDIT_COMMENT, targetId: id };
+export const editComment_ = (id, content) => {
+  return { type: actionTypes.EDIT_COMMENT, targetId: id, content: content };
 };
 
 export const editComment = (id, comment) => {
   return dispatch => {
     return axios.put('/api/comment/' + id + '/', {'content': comment.content})
       .then(() => {
-        dispatch(editComment_(id));
+        dispatch(editComment_(id, comment.content));
       });
   };
 };
