@@ -70,8 +70,9 @@ class FoodTestCase(TestCase):
         response = client.post(f'/api/fridge/{user_id}/user/', json.dumps(test_user),
             content_type='applications/json')
         self.assertEqual(response.status_code, 400)
-        # DELETE is invalid action: should return 405
-        response = client.delete(f'/api/fridge/{user_id}/user/')
+        # PUT is invalid action: should return 405
+        response = client.put(f'/api/fridge/{user_id}/user/',
+            json.dumps(test_post_fridge_item_2), content_type='applications/json')
         self.assertEqual(response.status_code, 405)
 
         # Now get & modify fridgeItem
@@ -99,4 +100,8 @@ class FoodTestCase(TestCase):
 
         # Delete the new fridgeItem
         response = client.delete(f'/api/fridge/item/{new_id}/')
+        self.assertEqual(response.status_code, 200)
+
+        # Clear fridgeItems of users
+        response = client.delete(f'/api/fridge/{user_id}/user/')
         self.assertEqual(response.status_code, 200)

@@ -173,21 +173,24 @@ describe('<ReviewDetail />', () => {
     const component = mount(reviewDetail);
     const wrapper = component.find('#likeReviewButton').at(0);
     wrapper.simulate('click');
-    expect(spyLikeReview).toBeCalledTimes(1);
+    wrapper.simulate('click');
+    expect(spyLikeReview).toBeCalledTimes(2);
   });
 
   it('should dislike review', () => {
     const component = mount(reviewDetail);
     const wrapper = component.find('#dislikeReviewButton').at(0);
     wrapper.simulate('click');
-    expect(spyDislikeReview).toBeCalledTimes(1);
+    wrapper.simulate('click');
+    expect(spyDislikeReview).toBeCalledTimes(2);
   });
 
   it('should report review', () => {
     const component = mount(reviewDetail);
     const wrapper = component.find('#reportReviewButton').at(0);
     wrapper.simulate('click');
-    expect(spyReportReview).toBeCalledTimes(1);
+    wrapper.simulate('click');
+    expect(spyReportReview).toBeCalledTimes(2);
   });
 
   it('should like comment', () => {

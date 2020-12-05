@@ -21,6 +21,7 @@ def manage_food(request):
 
 # GET: fetches all fridgeItems with given user id
 # POST: creates new fridgeItem on given user id
+# DELETE: clears all fridgeItems with given user id
 def manage_fridge(request, _id):
     if request.method == "GET":
         fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()),
@@ -42,7 +43,11 @@ def manage_fridge(request, _id):
         new_fridge_item.save()
         new_fridge_item_dict = model_to_dict(new_fridge_item)
         return HttpResponse(json.dumps(new_fridge_item_dict, default=json_default), status=201)
-    return HttpResponseNotAllowed(['GET', 'POST'])
+    
+    if request.method == "DELETE":
+        FridgeItem.objects.filter(user_id=_id).delete()
+        return HttpResponse("FridgeItem Deleted", status=200)
+    return HttpResponseNotAllowed(['GET', 'POST', 'DELETE'])
 
 # GET: fetches fridgeItem by id
 # PUT: updates fridgeItem by id
