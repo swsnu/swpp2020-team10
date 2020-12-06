@@ -14,11 +14,11 @@ class SearchSetting(models.Model):
     cooking_time = models.IntegerField(default=0)
     rating = models.FloatField(default=0.0)
 
-class Food(models.Model):
-    name = models.CharField(max_length=80, default='')
-    nutrition = models.JSONField(default=None, null=True)
-    tag = models.JSONField(default=None, null=True)
-    unit = models.CharField(max_length=10, blank=True, default='')
+class Ingredient(models.Model):
+    name = models.CharField(blank=True, default='', max_length=80)
+
+    def __str__(self):
+        return self.name
 
 class FridgeItem(models.Model):
     user = models.ForeignKey(
@@ -26,40 +26,40 @@ class FridgeItem(models.Model):
         on_delete=models.CASCADE,
         related_name='fridgeitem_user_id',
     )
-    food = models.ForeignKey(
-        Food,
-        on_delete=models.CASCADE,
-        related_name='fridgeitem_food_type',
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete= models.CASCADE,
+        related_name='fridgeitem_ingrdient',
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
+    unit = models.CharField(max_length=10, blank=True, default='')
     expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
-    nutrition_facts = models.JSONField(null=True, blank=True, default=None)
-
-    def save(self, *args, **kwargs):
-        if self.nutrition_facts is None:
-            self.nutrition_facts = self.food.nutrition
-        if len(self.name) == 0:
-            self.name = self.food.name
-        super(FridgeItem, self).save(*args, **kwargs)
-
 
 class Recipe(models.Model):
-    food = models.ForeignKey(
-        Food,
-        on_delete=models.CASCADE,
-        related_name='recipe_food_type',
-    )
     title = models.CharField(max_length=80)
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
-    ingredients = models.JSONField(default=None, null=True)
     diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
     health_labels = ArrayField(models.CharField(max_length=20), default=list, blank=True)
     calories = models.IntegerField(default=0)
     cooking_time = models.IntegerField(default=0)
     serving = models.IntegerField(default=0)
+
+class IngredientIncidence(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete= models.CASCADE,
+        related_name='ingredientincidence_ingrdient',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredientincidence_recipe_id',
+    )
+    quantity = models.IntegerField(default = 0)
 
 class Review(models.Model):
     recipe = models.ForeignKey(
@@ -94,7 +94,7 @@ class Comment(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='review_comment_id',
+        related_name='comment_user_id',
         default=None
     )
     author_name = models.CharField(max_length=80, default='', blank=True, null = True)

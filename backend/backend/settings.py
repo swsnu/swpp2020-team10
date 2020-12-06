@@ -78,7 +78,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'fridge_db',
         'USER': 'postgres',
-        'PASSWORD': 'some_pass',
+        'PASSWORD': 'swpp2020',
         'HOST': 'localhost',
         'PORT': '5432'
     }
