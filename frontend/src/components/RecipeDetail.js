@@ -99,11 +99,7 @@ function RecipeDetail(props) {
     serving = storedRecipe.serving;
     cooking_time = storedRecipe.cooking_time;
     content = storedRecipe.content;
-<<<<<<< HEAD
-    ingredients = storedRecipe.ingredients;
-=======
     ingredients = storedRecipe.ingredient_lines;
->>>>>>> 4b540b79f3e6f51418ac56c49cdbc6d0690c5b6a
   }
 
 

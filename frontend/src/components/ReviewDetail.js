@@ -302,11 +302,7 @@ function ReviewDetail(props) {
           </Segment>
         </Grid.Row>
         <Grid.Row>
-<<<<<<< HEAD
-          <Button labelPosition='right'>
-=======
           <Button as='div' labelPosition='right'>
->>>>>>> 4b540b79f3e6f51418ac56c49cdbc6d0690c5b6a
             <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton(numLikes)}>
               <Icon name='thumbs up' />
                 Like
@@ -315,11 +311,7 @@ function ReviewDetail(props) {
               {(liked) ? likes : numLikes }
             </Label>
           </Button>
-<<<<<<< HEAD
-          <Button labelPosition='right'>
-=======
           <Button as='div' labelPosition='right'>
->>>>>>> 4b540b79f3e6f51418ac56c49cdbc6d0690c5b6a
             <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton(numDislikes)}>
               <Icon name='thumbs down' />
                 Dislike
@@ -328,11 +320,7 @@ function ReviewDetail(props) {
               {(disliked) ? dislikes : numDislikes }
             </Label>
           </Button>
-<<<<<<< HEAD
-          <Button labelPosition='right'>
-=======
           <Button as='div' labelPosition='right'>
->>>>>>> 4b540b79f3e6f51418ac56c49cdbc6d0690c5b6a
             <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton(numReports)}>
               <Icon name='exclamation circle' />
                 Report
