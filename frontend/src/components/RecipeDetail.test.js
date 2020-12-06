@@ -75,7 +75,7 @@ const mockStore = getMockStore(stubInitialState);
 
 
 describe('<RecipeDetail />', () => {
-  let recipeDetail; //spySelectRecipeById, spyGetReviewList, spyAddRecipeRatingById;
+  let recipeDetail;//, spySelectRecipeById, spyGetReviewList, spyAddRecipeRatingById;
   const history = createBrowserHistory();
   let spyPush = jest.spyOn(history, 'push')
     .mockImplementation(() => {});
