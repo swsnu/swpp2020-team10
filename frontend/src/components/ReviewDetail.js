@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Button, Icon, Label, Header, Container, Grid, Segment } from 'semantic-ui-react';
@@ -16,12 +16,26 @@ function ReviewDetail(props) {
   const [comment, setComment] = useState('');
   const [hasReview, setReview] = useState(false);
   const [hasComment, setHasComment] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const [reported, setReported] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [editedComment, setEditedComment] = useState(0);
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+  const [reports, setReports] = useState(0);
 
-  const storedComments = useSelector(state => state.comment.comments);
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const reviewId = props.match.params.review_id;
+
+  useEffect(() => {
+    actionCreators.getReview(reviewId);
+    actionCreators.getCommentList(reviewId);
+    //setReview(true);
+    //setHasComment(true);
+  });
 
   const storedReview = /*{
     'id': 1,
@@ -32,13 +46,14 @@ function ReviewDetail(props) {
     'likes': 5,
     'reports': 3
   };//*/useSelector(state => state.review.selectedReview);
+
+  const storedComments = useSelector(state => state.comment.comments);
+
   const storedUser = /*{
     'id': 1,
     'name': 'John',
     'isAuthorized': true
   };//*/useSelector(state => state.user);
-
-  const reviewId = props.match.params.review_id;
 
   if(!hasReview){
     dispatch(actionCreators.getReview(reviewId));
@@ -50,23 +65,22 @@ function ReviewDetail(props) {
   }
 
   let userId = 0, recipeId = 0;
-  let title = '', author = '', content = '', likes = 0, dislikes = 0, reports = 0;
-  //if(storedReview !== null){
-  userId = storedReview.user_id;
-  recipeId = storedReview.recipe_id;
-  title = storedReview.title;
-  author = storedReview.author_name;
-  content = storedReview.content;
-  likes = storedReview.likes;
-  dislikes = storedReview.dislikes;
-  reports = storedReview.reports;
-  //}
-
+  let title = '', author = '', content = '', numLikes = 0, numDislikes = 0, numReports = 0;
+  if(storedReview !== null){
+    userId = storedReview.user_id;
+    recipeId = storedReview.recipe_id;
+    title = storedReview.title;
+    author = storedReview.author_name;
+    content = storedReview.content;
+    numLikes = storedReview.likes;
+    numDislikes = storedReview.dislikes;
+    numReports = storedReview.reports;
+  }
 
   let thisUserId = 0;
-  //if(storedUser !== null){
-  thisUserId = storedUser.id;
-  //}
+  if(storedUser !== null){
+    thisUserId = storedUser.id;
+  }
 
   /*// move to 'Settings' page
   const onClickSettingsButton = () => {};
@@ -81,8 +95,10 @@ function ReviewDetail(props) {
 
   // delete the review and go back to 'Recipe Details' page
   const onClickDeleteReviewButton = (id) => {
-    dispatch(actionCreators.deleteReview(id));
-    history.push('/recipe/' + recipeId);
+    dispatch(actionCreators.deleteReview(id))
+      .then(() => {
+        history.push('/recipe/' + recipeId);
+      });
   };
 
   // move to 'Recipe Details' page
@@ -105,19 +121,37 @@ function ReviewDetail(props) {
   };
 
   // increment likes count for the review
-  const onClickLikeReviewButton = () => {
+  const onClickLikeReviewButton = (likeCount) => {
+    if(!liked){
+      setLikes(likeCount + 1);
+      setLiked(true);
+    }else{
+      setLikes(likes + 1);
+    }
     dispatch(actionCreators.likeReview(reviewId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
   // increment dislikes count for the review
-  const onClickDislikeReviewButton = () => {
+  const onClickDislikeReviewButton = (dislikeCount) => {
+    if(!disliked){
+      setDislikes(dislikeCount + 1);
+      setDisliked(true);
+    }else{
+      setDislikes(dislikes + 1);
+    }
     dispatch(actionCreators.dislikeReview(reviewId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
   // increment reports count for the review
-  const onClickReportReviewButton = () => {
+  const onClickReportReviewButton = (reportCount) => {
+    if(!reported){
+      setReports(reportCount + 1);
+      setReported(true);
+    }else{
+      setReports(reports + 1);
+    }
     dispatch(actionCreators.reportReview(reviewId));
     dispatch(actionCreators.getReview(reviewId));
     //this.props.onReportReview(reviewId, thisReview);
@@ -128,6 +162,7 @@ function ReviewDetail(props) {
     dispatch(actionCreators.editComment(commentId, comment));
     dispatch(actionCreators.getCommentList(reviewId));
     setEditedComment(0);
+    setNewComment('');
   };
 
   // delete the comment
@@ -182,13 +217,13 @@ function ReviewDetail(props) {
               </Button>
             </Grid.Row>
             <Grid.Row>
-              <input id='editCommentInput' rows='4' type='text' disabled={comment.id !== editedComment} value={comment.value}
+              <input id='editCommentInput' rows='4' type='text' disabled={comment.id !== editedComment} value={newComment}
                 onChange={(event) => setNewComment(event.target.value)}>
               </input>
             </Grid.Row>
             <Grid.Row>
               <Button id='editCommentConfirmButton'
-                onClick={() => onClickEditCommentConfirmButton(comment.id, {...comment, content: newComment})}>
+                onClick={() => onClickEditCommentConfirmButton(editedComment, {...comment, content: newComment})}>
                 Confirm
               </Button>
               <Button id='editCommentCancelButton' 
@@ -209,7 +244,7 @@ function ReviewDetail(props) {
                   Author: {comment.author_name}
                 </Grid.Column>
                 <Grid.Column width={5}>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='likeCommentButton' color='blue' size='tiny' onClick={() => onClickLikeCommentButton(comment.id)}>
                       <Icon size='tiny' name='thumbs up' />
                         Like
@@ -218,7 +253,7 @@ function ReviewDetail(props) {
                       {comment.likes}
                     </Label>
                   </Button>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='dislikeCommentButton' color='red' size='tiny' onClick={() => onClickDislikeCommentButton(comment.id)}>
                       <Icon size='tiny' name='thumbs down' />
                         Dislike
@@ -227,7 +262,7 @@ function ReviewDetail(props) {
                       {comment.dislikes}
                     </Label>
                   </Button>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='reportCommentButton' color='red' size='tiny' onClick={() => onClickReportCommentButton(comment.id)}>
                       <Icon size='tiny' name='exclamation circle' />
                         Report
@@ -249,7 +284,6 @@ function ReviewDetail(props) {
       );
     }
   });
-
   
   return(
     <div className='ReviewDetail'>
@@ -268,31 +302,31 @@ function ReviewDetail(props) {
           </Segment>
         </Grid.Row>
         <Grid.Row>
-          <Button labelPosition='right'>
-            <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton()}>
+          <Button as='div' labelPosition='right'>
+            <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton(numLikes)}>
               <Icon name='thumbs up' />
                 Like
             </Button>
             <Label id='likeLabel' basic color='blue' pointing='left'>
-              {likes}
+              {(liked) ? likes : numLikes }
             </Label>
           </Button>
-          <Button labelPosition='right'>
-            <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton()}>
+          <Button as='div' labelPosition='right'>
+            <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton(numDislikes)}>
               <Icon name='thumbs down' />
-                Disike
+                Dislike
             </Button>
             <Label id='dislikeLabel' basic color='red' pointing='left'>
-              {dislikes}
+              {(disliked) ? dislikes : numDislikes }
             </Label>
           </Button>
-          <Button labelPosition='right'>
-            <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton()}>
+          <Button as='div' labelPosition='right'>
+            <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton(numReports)}>
               <Icon name='exclamation circle' />
                 Report
             </Button>
             <Label id='reportLabel' basic color='red' pointing='left'>
-              {reports}
+              {(reported) ? reports : numReports }
             </Label>
           </Button>
         </Grid.Row>

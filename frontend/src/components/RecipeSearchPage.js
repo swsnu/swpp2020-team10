@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
@@ -15,14 +15,12 @@ export const RecipeSearchPage = ({ match }) => {
 
   // search result
   const [recipes, setRecipes] = useState([]);
-  const [hasRecipes, setHasRecipes] = useState(false);
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+  const [hasFetchedAll, setHasFetchedAll] = useState(false);
 
   // number of currently loaded pages (pageCount * pageSize recipes)
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
-
-  // flag indicating whether search results have been exhausted
-  const [hasFetchedAll, setHasFetchedAll] = useState(false);
 
   // filter attributes
   const [enableFridge, setEnableFridge] = useState(false);
@@ -101,8 +99,16 @@ export const RecipeSearchPage = ({ match }) => {
   };
 
   const fetchResults = (reset) => {
+    setHasFetchedAll(false);
+
+    if (reset) {
+      setPageCount(0);
+      setRecipes([]);
+    }
+
     let fromParam = 'from=' + pageCount * pageSize;
     let toParam = 'to=' + (pageCount + 1) * pageSize;
+    let qParam = 'q=' + searchInput;
     let sortParam = sortBy ? 'sort=' + sortBy : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
@@ -113,6 +119,7 @@ export const RecipeSearchPage = ({ match }) => {
     let params = [
       fromParam,
       toParam,
+      qParam,
       sortParam,
       timeParam,
       ratingParam,
@@ -121,35 +128,33 @@ export const RecipeSearchPage = ({ match }) => {
       healthParam,
     ].filter(Boolean).join('&');
 
-    setHasFetchedAll(false);
-
     return axios.get('/api/search/?' + params)
       .then(response => {
+        console.log(response);
         const recipes_new = response.data.recipes;
+
         if (!recipes_new.length) {
           setHasFetchedAll(true);
-        }
-
-        if (reset) {
-          setPageCount(0);
-          setRecipes(recipes_new);
         } else {
-          setPageCount(pageCount + 1);
           setRecipes(recipes.concat(recipes_new));
+          setPageCount(pageCount + 1);
         }
 
         return response;
       });
   };
 
-  if (userIsAuthorized && !hasSetting) {
-    fetchSetting().finally(() => setHasSetting(true));
-  }
+  useEffect(() => {
+    if (userIsAuthorized && !hasSetting) {
+      fetchSetting().finally(() => setHasSetting(true));
+    }
+  }, [userIsAuthorized, hasSetting]);
 
-  if (!hasRecipes) {
-    fetchResults();
-    setHasRecipes(true);
-  }
+  useEffect(() => {
+    if (!hasFetchedOnce) {
+      fetchResults(true).finally(() => setHasFetchedOnce(true));
+    }
+  }, [hasFetchedOnce]);
 
   const filterTab = (
     <Segment>
@@ -316,7 +321,7 @@ export const RecipeSearchPage = ({ match }) => {
                   placeholder='Search recipes...'
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
-                  onKeyDown={() => fetchResults()}
+                  onKeyDown={e => { if (e.key === 'Enter') fetchResults(true); }}
                 />
               </Form.Field>
             </Form>
