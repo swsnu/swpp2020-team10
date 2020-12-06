@@ -144,6 +144,7 @@ export const RecipeSearchPage = ({ match }) => {
 
     return axios.get('/api/search/?' + params)
       .then(response => {
+        console.log(response);
         const recipes_new = response.data.recipes;
 
         if (recipes_new.length < pageSize) {

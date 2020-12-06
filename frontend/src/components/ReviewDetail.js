@@ -95,8 +95,10 @@ function ReviewDetail(props) {
 
   // delete the review and go back to 'Recipe Details' page
   const onClickDeleteReviewButton = (id) => {
-    dispatch(actionCreators.deleteReview(id));
-    history.push('/recipe/' + recipeId);
+    dispatch(actionCreators.deleteReview(id))
+      .then(() => {
+        history.push('/recipe/' + recipeId);
+      });
   };
 
   // move to 'Recipe Details' page
@@ -242,7 +244,7 @@ function ReviewDetail(props) {
                   Author: {comment.author_name}
                 </Grid.Column>
                 <Grid.Column width={5}>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='likeCommentButton' color='blue' size='tiny' onClick={() => onClickLikeCommentButton(comment.id)}>
                       <Icon size='tiny' name='thumbs up' />
                         Like
@@ -251,7 +253,7 @@ function ReviewDetail(props) {
                       {comment.likes}
                     </Label>
                   </Button>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='dislikeCommentButton' color='red' size='tiny' onClick={() => onClickDislikeCommentButton(comment.id)}>
                       <Icon size='tiny' name='thumbs down' />
                         Dislike
@@ -260,7 +262,7 @@ function ReviewDetail(props) {
                       {comment.dislikes}
                     </Label>
                   </Button>
-                  <Button size='tiny' labelPosition='right'>
+                  <Button as='div' size='tiny' labelPosition='right'>
                     <Button id='reportCommentButton' color='red' size='tiny' onClick={() => onClickReportCommentButton(comment.id)}>
                       <Icon size='tiny' name='exclamation circle' />
                         Report
@@ -300,7 +302,7 @@ function ReviewDetail(props) {
           </Segment>
         </Grid.Row>
         <Grid.Row>
-          <Button labelPosition='right'>
+          <Button as='div' labelPosition='right'>
             <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton(numLikes)}>
               <Icon name='thumbs up' />
                 Like
@@ -309,7 +311,7 @@ function ReviewDetail(props) {
               {(liked) ? likes : numLikes }
             </Label>
           </Button>
-          <Button labelPosition='right'>
+          <Button as='div' labelPosition='right'>
             <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton(numDislikes)}>
               <Icon name='thumbs down' />
                 Dislike
@@ -318,7 +320,7 @@ function ReviewDetail(props) {
               {(disliked) ? dislikes : numDislikes }
             </Label>
           </Button>
-          <Button labelPosition='right'>
+          <Button as='div' labelPosition='right'>
             <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton(numReports)}>
               <Icon name='exclamation circle' />
                 Report

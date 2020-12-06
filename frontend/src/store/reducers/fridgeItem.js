@@ -2,51 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
   fridgeItems: [
-    {
-      id: 1,
-      name: 'beef',
-      type: 'meat',
-      quantity: '3',
-      unit: 'kg',
-      expiryDate: '2020-11-09',
-      nutritionFacts: ['beef_calorie', 'beef_sodium', 'beef_protein'],
-    },
-    {
-      id: 2,
-      name: 'seoul milk',
-      type: 'milk',
-      quantity: '1000',
-      unit: 'mL',
-      expiryDate: '2020-11-20',
-      nutritionFacts: ['milk_calorie', 'milk_sodium', 'milk_protein'],
-    },
-    {
-      id: 3,
-      name: 'seoul milk',
-      type: 'milk',
-      quantity: '1000',
-      unit: 'mL',
-      expiryDate: '2020-11-20',
-      nutritionFacts: ['milk_calorie', 'milk_sodium', 'milk_protein'],
-    },
-    {
-      id: 4,
-      name: 'seoul milk',
-      type: 'milk',
-      quantity: '1000',
-      unit: 'mL',
-      expiryDate: '2020-11-20',
-      nutritionFacts: ['milk_calorie', 'milk_sodium', 'milk_protein'],
-    },
-    {
-      id: 5,
-      name: 'seoul milk',
-      type: 'milk',
-      quantity: '1000',
-      unit: 'mL',
-      expiryDate: '2020-11-20',
-      nutritionFacts: ['milk_calorie', 'milk_sodium', 'milk_protein'],
-    },
+    
   ],
   selectedFridgeItem: null,
 };

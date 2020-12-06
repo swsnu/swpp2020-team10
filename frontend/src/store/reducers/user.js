@@ -27,8 +27,6 @@ const reducer = (state = initialState, action) => {
     case actionTypes.GET_NOTIFICATION:
       return {
         ...state,
-        id : action.id,
-        name : action.name,
         noti : action.noti,
       };
     default:

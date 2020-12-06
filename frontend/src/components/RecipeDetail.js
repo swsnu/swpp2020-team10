@@ -99,7 +99,7 @@ function RecipeDetail(props) {
     serving = storedRecipe.serving;
     cooking_time = storedRecipe.cooking_time;
     content = storedRecipe.content;
-    ingredients = storedRecipe.ingredients;
+    ingredients = storedRecipe.ingredient_lines;
   }
 
 
