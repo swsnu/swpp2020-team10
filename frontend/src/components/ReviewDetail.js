@@ -47,6 +47,8 @@ function ReviewDetail(props) {
     'reports': 3
   };//*/useSelector(state => state.review.selectedReview);
 
+  //const storedReviews = useSelector(state => state.review.reviews);
+
   const storedComments = useSelector(state => state.comment.comments);
 
   const storedUser = /*{
@@ -57,6 +59,7 @@ function ReviewDetail(props) {
 
   if(!hasReview){
     dispatch(actionCreators.getReview(reviewId));
+    //dispatch(actionCreators.getReviewList(recipeId));
     setReview(true);
   }
   if(!hasComment){
@@ -95,10 +98,8 @@ function ReviewDetail(props) {
 
   // delete the review and go back to 'Recipe Details' page
   const onClickDeleteReviewButton = (id) => {
-    dispatch(actionCreators.deleteReview(id))
-      .then(() => {
-        history.push('/recipe/' + recipeId);
-      });
+    dispatch(actionCreators.deleteReview(id));
+    history.push('/recipe/' + recipeId);
   };
 
   // move to 'Recipe Details' page
@@ -129,6 +130,7 @@ function ReviewDetail(props) {
       setLikes(likes + 1);
     }
     dispatch(actionCreators.likeReview(reviewId));
+    dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
@@ -141,6 +143,7 @@ function ReviewDetail(props) {
       setDislikes(dislikes + 1);
     }
     dispatch(actionCreators.dislikeReview(reviewId));
+    dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
@@ -153,6 +156,7 @@ function ReviewDetail(props) {
       setReports(reports + 1);
     }
     dispatch(actionCreators.reportReview(reviewId));
+    dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
     //this.props.onReportReview(reviewId, thisReview);
   };
@@ -192,6 +196,88 @@ function ReviewDetail(props) {
     dispatch(actionCreators.getCommentList(reviewId));
     //this.props.onReportComment(commentId, comment);
   };
+
+  /*const review = storedReviews.map((review) => {
+    if(review.id == reviewId) {
+      return (
+        <div className='ReviewPart' key={review.id}>
+          <Grid centered>
+            <Grid.Row>
+              <Segment attached='top'>
+                <Header textAlign='center'>{review.title}</Header>
+                <p>{review.author}</p>
+              </Segment>
+              <Segment attached='bottom'>
+                <Container textAlign='center'>
+                  <p>
+                    {review.content}
+                  </p>
+                </Container>
+              </Segment>
+            </Grid.Row>
+            <Grid.Row>
+              <Button as='div' labelPosition='right'>
+                <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton(0)}>
+                  <Icon name='thumbs up' />
+                    Like
+                </Button>
+                <Label id='likeLabel' basic color='blue' pointing='left'>
+                  { review.likes }
+                </Label>
+              </Button>
+              <Button as='div' labelPosition='right'>
+                <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton(0)}>
+                  <Icon name='thumbs down' />
+                    Dislike
+                </Button>
+                <Label id='dislikeLabel' basic color='red' pointing='left'>
+                  { review.dislikes }
+                </Label>
+              </Button>
+              <Button as='div' labelPosition='right'>
+                <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton(0)}>
+                  <Icon name='exclamation circle' />
+                    Report
+                </Button>
+                <Label id='reportLabel' basic color='red' pointing='left'>
+                  { review.reports }
+                </Label>
+              </Button>
+            </Grid.Row>
+          </Grid>
+          <Grid centered>
+            <Grid.Row>
+              <Button id='editReviewButton' 
+                onClick={() => onClickEditReviewButton(reviewId)}>
+                Edit
+              </Button>
+              <Button id='deleteReviewButton'  
+                onClick={() => onClickDeleteReviewButton(reviewId)}>
+                Delete
+              </Button>
+            </Grid.Row>
+            <Button id='backButton' onClick={() => onClickBackButton(recipeId)}>
+              Back
+            </Button>
+            <div className='row'>
+              <Header textAlign='center'>Comments</Header>
+            </div>
+            <div className='row'>
+              <input id='newCommentInput' rows='4' type='text' value={comment}
+                onChange={(event) => setComment(event.target.value)}>
+              </input>
+            </div>
+            <div className='row'>
+              <Button id='writeCommentButton' 
+                onClick={() => onClickWriteButton()}>
+                Write
+              </Button>
+            </div>
+          </Grid>
+        </div>
+      );
+    }
+  });*/
 
   const commentList = storedComments.map((comment) => {
     if(comment.user_id === thisUserId) {
@@ -308,7 +394,7 @@ function ReviewDetail(props) {
                 Like
             </Button>
             <Label id='likeLabel' basic color='blue' pointing='left'>
-              {(liked) ? likes : numLikes }
+              {numLikes }
             </Label>
           </Button>
           <Button as='div' labelPosition='right'>
@@ -317,7 +403,7 @@ function ReviewDetail(props) {
                 Dislike
             </Button>
             <Label id='dislikeLabel' basic color='red' pointing='left'>
-              {(disliked) ? dislikes : numDislikes }
+              {numDislikes }
             </Label>
           </Button>
           <Button as='div' labelPosition='right'>
@@ -326,7 +412,7 @@ function ReviewDetail(props) {
                 Report
             </Button>
             <Label id='reportLabel' basic color='red' pointing='left'>
-              {(reported) ? reports : numReports }
+              {numReports }
             </Label>
           </Button>
         </Grid.Row>
