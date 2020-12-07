@@ -92,7 +92,7 @@ def recommend_recipe(request):
         # 1 negative => Out of recommendation seems wrong.
         # Possible fix : exclude only when score <= crit (crit might be -10 or something)
         # Also, give 'small probability' for might-dislikes.
-        recipe['score'] = LS + IS
+        recipe['score'] = 0.1 + LS + IS
         if recipe['score'] >= 0:
             sqscs += pow(recipe['score'], 2)
 
