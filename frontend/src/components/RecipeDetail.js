@@ -15,26 +15,29 @@ export const RecipeDetail = ({ match }) => {
   const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
   const storedReviews = useSelector(state => state.review.reviews);
 
-  let ingredients;
-  let directions;
+  // fetch recipe and reviews on initial mount
+  useEffect(() => {
+    dispatch(actionCreators.selectRecipeById(recipeId));
+    dispatch(actionCreators.getReviewList(recipeId));
+  }, []);
 
-  if (storedRecipe) {
-    ingredients = (
-      <Table striped>
-        <Table.Body>
-          {storedRecipe.ingredient_lines.map((ingredient_line, key) => {
-            return (
-              <Table.Row key={key}>
-                <Table.Cell content={ingredient_line} />
-              </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table>
-    );
-
-    directions = storedRecipe.content;
+  if (!storedRecipe || !storedReviews) {
+    return null;
   }
+
+  const ingredients = (
+    <Table striped>
+      <Table.Body>
+        {storedRecipe.ingredient_lines.map((ingredient_line, key) => {
+          return (
+            <Table.Row key={key}>
+              <Table.Cell content={ingredient_line} />
+            </Table.Row>
+          );
+        })}
+      </Table.Body>
+    </Table>
+  );
 
   const panes = [
     {
@@ -49,7 +52,7 @@ export const RecipeDetail = ({ match }) => {
       menuItem: 'Directions',
       pane: (
         <Tab.Pane key='1' attached={false}>
-          {directions}
+          {storedRecipe.content}
         </Tab.Pane>
       )
     },
@@ -62,16 +65,6 @@ export const RecipeDetail = ({ match }) => {
       )
     }
   ];
-
-  // fetch recipes and reviews on initial mount
-  useEffect(() => {
-    dispatch(actionCreators.selectRecipeById(recipeId));
-    dispatch(actionCreators.getReviewList(recipeId));
-  }, []);
-
-  if (!storedRecipe || !storedReviews) {
-    return null;
-  }
 
   return (
     <Container text className='RecipeDetail'>
