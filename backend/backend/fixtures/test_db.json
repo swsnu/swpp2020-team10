@@ -1,0 +1,25 @@
+[
+{
+  "model": "backend.searchsetting",
+  "pk": 3,
+  "fields": {
+    "user": 4,
+    "diet_labels": "[]",
+    "health_labels": "[\"alcohol-free\", \"celery-free\"]",
+    "calories": 600,
+    "cooking_time": 30,
+    "rating": 0.0
+  }
+},
+{
+  "model": "backend.searchsetting",
+  "pk": 4,
+  "fields": {
+    "user": 5,
+    "diet_labels": "[]",
+    "health_labels": "[]",
+    "calories": 0,
+    "cooking_time": 0,
+    "rating": 0.0
+  }
+}

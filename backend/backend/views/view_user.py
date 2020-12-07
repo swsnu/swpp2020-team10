@@ -23,11 +23,11 @@ def signup(request):
         new_user.save()
         new_setting = SearchSetting(user=new_user)
         new_setting.save()
-        
+
         return HttpResponse(status=201)
 
     return HttpResponseNotAllowed(["POST"])
-
+@csrf_exempt
 def signin(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())

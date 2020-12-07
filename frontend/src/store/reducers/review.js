@@ -25,7 +25,7 @@ const reducer = (state=initialState, action) => {
     case actionTypes.LIKE_REVIEW:
       var modifiedLikeReview = state.reviews.map((review) => {
         if (review.id === action.targetId) {
-          return {...review, likes: review.likes + 1};
+          return {...review, likes: (review.likes + 1)};
         } else {
           return {...review};
         }
@@ -34,7 +34,7 @@ const reducer = (state=initialState, action) => {
     case actionTypes.DISLIKE_REVIEW:
       var modifiedDislikeReview = state.reviews.map((review) => {
         if (review.id === action.targetId) {
-          return {...review, dislikes: review.dislikes + 1};
+          return {...review, dislikes: (review.dislikes + 1)};
         } else {
           return {...review};
         }
@@ -43,7 +43,7 @@ const reducer = (state=initialState, action) => {
     case actionTypes.REPORT_REVIEW:
       var modifiedReportReview = state.reviews.map((review) => {
         if (review.id === action.targetId) {
-          return {...review, reports: review.reports + 1};
+          return {...review, reports: (review.reports + 1)};
         } else {
           return {...review};
         }

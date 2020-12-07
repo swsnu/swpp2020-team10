@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { /*useDispatch,*/ useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import * as actionCreators from '../../store/actions/index';
 import FoodCreate from './FoodCreate';
@@ -9,14 +9,11 @@ import { Button, Card, Grid, Image, List, Reveal } from 'semantic-ui-react';
 import './MyFridge.css';
 
 export default function MyFridge() {
-  //const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const history = useHistory();
   const params = useParams();
 
   const userId = params.user_id;
-  useEffect(() => {
-    actionCreators.getFridgeItemList(userId);
-  });
 
   // redux store state
   const userName = useSelector(state => state.user.name);
@@ -27,6 +24,10 @@ export default function MyFridge() {
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [popup, setPopup] = useState(null);
+
+  useEffect(() => {
+    dispatch(actionCreators.getFridgeItemList(userId));
+  }, []);
 
   // callback function to come back from FoodCreate page
   const onFoodCreateEnd = () => {
@@ -51,27 +52,22 @@ export default function MyFridge() {
 
   // clear fridge items
   const onClickClearFridgeButton = () => {
-    //dispatch(actionCreators.clearFridgeItems(userId));
-    ////dispatch(actionCreators.clearFridgeItems_());
+    dispatch(actionCreators.clearFridgeItems(userId));
   };
   
   // open FoodDetail page
-  const onClickFridgeItemButton = (/*fridgeItem*/) => {
-    /*dispatch(actionCreators.getFridgeItem(fridgeItem.id))
+  const onClickFridgeItemButton = (fridgeItem) => {
+    dispatch(actionCreators.getFridgeItem(fridgeItem.id))
       .then(() => {
         setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
         setIsEdit(true);
-      });*/
-    //
-    //dispatch(actionCreators.getFridgeItem_(fridgeItem));
-    setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
-    setIsEdit(true);
+      });
   };
 
   const fridgeItemButtons = fridgeItems.map((fridgeItem) => {
     return (
       <Grid.Column key={fridgeItem.id}>
-        <Card onClick={() => onClickFridgeItemButton()}>
+        <Card onClick={() => onClickFridgeItemButton(fridgeItem)}>
           <Reveal animated='move up'>
             <Reveal.Content visible>
               <Image src='https://source.unsplash.com/512x512/?soup' alt='Fridge Item' rounded></Image>
@@ -80,7 +76,7 @@ export default function MyFridge() {
               <List verticalAlign='middle' size='huge'>
                 <List.Item>{fridgeItem.name}</List.Item>
                 <List.Item>{fridgeItem.quantity + fridgeItem.unit}</List.Item>
-                <List.Item>{fridgeItem.expiryDate}</List.Item>
+                <List.Item>{fridgeItem.expiry_date}</List.Item>
               </List>
             </Reveal.Content>
           </Reveal>

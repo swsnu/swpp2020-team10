@@ -1,30 +1,30 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
 
 
 export const RecipeSearchPage = ({ match }) => {
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
+  const [hasSettings, setHasSettings] = useState(false);
+
   const [searchInput, setSearchInput] = useState(match.params.q);
-  const [showFilterTab, setShowFilterTab] = useState(false);
-  const [sortBy, setSortBy] = useState('');
-  const [hasSetting, setHasSetting] = useState(false);
 
   // search result
   const [recipes, setRecipes] = useState([]);
-  const [hasRecipes, setHasRecipes] = useState(false);
+  const [loadingRecipes, setLoadingRecipes] = useState(true);
+  const [hasFetchedAll, setHasFetchedAll] = useState(false);
 
-  // number of currently loaded pages (pageCount * pageSize recipes)
+  // number of currently loaded pages
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
 
-  // flag indicating whether search results have been exhausted
-  const [hasFetchedAll, setHasFetchedAll] = useState(false);
-
   // filter attributes
+  const [showFilterTab, setShowFilterTab] = useState(false);
+
   const [enableFridge, setEnableFridge] = useState(false);
 
   const [enableMaxCookingTime, setEnableMaxCookingTime] = useState(false);
@@ -41,7 +41,15 @@ export const RecipeSearchPage = ({ match }) => {
   const [dietLabels, setDietLabels] = useState('');
   const [healthLabels, setHealthLabels] = useState('');
 
+  // sort criteria
+  const [sortBy, setSortBy] = useState('');
+
   const sortOptions = [
+    {
+      key: 0,
+      text: 'None',
+      value: '',
+    },
     {
       key: 1,
       text: 'Rating',
@@ -71,12 +79,15 @@ export const RecipeSearchPage = ({ match }) => {
         } = response.data;
 
         if (cooking_time) {
-          setEnableMaxCookingTime(cooking_time);
+          setEnableMaxCookingTime(true);
+          setMaxCookingTime(cooking_time);
         }
         if (rating) {
+          setEnableMinRating(true);
           setMinRating(rating);
         }
         if (calorie) {
+          setEnableMaxCalorie(true);
           setMaxCalorie(calorie);
         }
         if (diet_labels.length) {
@@ -92,27 +103,37 @@ export const RecipeSearchPage = ({ match }) => {
 
   const saveSetting = () => {
     return axios.put('/api/user/setting/', {
-      cooking_time: enableMaxCookingTime ? maxCookingTime : null,
-      rating: enableMinRating ? minRating : null,
-      calorie: enableMaxCalorie ? maxCalorie : null,
-      diet_labels: dietLabels.trim().split(/\s+/),
-      health_labels: healthLabels.trim().split(/\s+/),
+      cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
+      rating: enableMinRating ? minRating : 0,
+      calories: enableMaxCalorie ? maxCalorie : 0,
+      diet_labels: dietLabels.split(/\s+/).filter(Boolean),
+      health_labels: healthLabels.split(/\s+/).filter(Boolean),
     });
   };
 
-  const fetchResults = (reset) => {
-    let fromParam = 'from=' + pageCount * pageSize;
-    let toParam = 'to=' + (pageCount + 1) * pageSize;
-    let sortParam = sortBy ? 'sort=' + sortBy : '';
+  const fetchResults = (reset, sort = sortBy) => {
+    setHasFetchedAll(false);
+    setLoadingRecipes(true);
+
+    if (reset) {
+      setRecipes([]);
+      setPageCount(0);
+    }
+
+    let fromParam = 'from=' + (reset ? 0 : pageCount) * pageSize;
+    let toParam = 'to=' + (reset ? 1 : pageCount + 1) * pageSize;
+    let qParam = 'q=' + searchInput;
+    let sortParam = sort ? 'sort=' + sort : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
     let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
-    let dietParam = dietLabels.trim().split(/\s+/).map(label => 'diet_labels=' + label).join('&');
-    let healthParam = healthLabels.trim().split(/\s+/).map(label => 'health_labels=' + label).join('&');
+    let dietParam = dietLabels.split(/\s+/).filter(Boolean).map(label => 'diet_labels=' + label).join('&');
+    let healthParam = healthLabels.split(/\s+/).filter(Boolean).map(label => 'health_labels=' + label).join('&');
 
     let params = [
       fromParam,
       toParam,
+      qParam,
       sortParam,
       timeParam,
       ratingParam,
@@ -121,35 +142,36 @@ export const RecipeSearchPage = ({ match }) => {
       healthParam,
     ].filter(Boolean).join('&');
 
-    setHasFetchedAll(false);
-
     return axios.get('/api/search/?' + params)
       .then(response => {
+        console.log(response);
         const recipes_new = response.data.recipes;
-        if (!recipes_new.length) {
+
+        if (recipes_new.length < pageSize) {
           setHasFetchedAll(true);
         }
 
-        if (reset) {
-          setPageCount(0);
-          setRecipes(recipes_new);
-        } else {
-          setPageCount(pageCount + 1);
-          setRecipes(recipes.concat(recipes_new));
-        }
+        setRecipes(prevRecipes => prevRecipes.concat(recipes_new));
+        setPageCount(prevPageCount => prevPageCount + 1);
+        setLoadingRecipes(false);
 
         return response;
       });
   };
 
-  if (userIsAuthorized && !hasSetting) {
-    fetchSetting().finally(() => setHasSetting(true));
-  }
+  useEffect(() => {
+    if (userIsAuthorized) {
+      fetchSetting().finally(() => setHasSettings(true));
+    } else {
+      setHasSettings(true);
+    }
+  }, []);
 
-  if (!hasRecipes) {
-    fetchResults();
-    setHasRecipes(true);
-  }
+  useEffect(() => {
+    if (hasSettings) {
+      fetchResults(true);
+    }
+  }, [hasSettings]);
 
   const filterTab = (
     <Segment>
@@ -245,6 +267,7 @@ export const RecipeSearchPage = ({ match }) => {
               id='applyFilterButton'
               content='Apply'
               onClick={() => fetchResults(true)}
+              disabled={loadingRecipes}
             />
           </Form.Field>
           <Form.Field>
@@ -252,8 +275,8 @@ export const RecipeSearchPage = ({ match }) => {
               basic
               id='saveFilterButton'
               content='Save preferences'
-              onClick={() => saveSetting()}
-              disabled={userIsAuthorized !== true}
+              onClick={() => { saveSetting(); fetchResults(true); }}
+              disabled={userIsAuthorized !== true || loadingRecipes}
             />
           </Form.Field>
         </Form.Group>
@@ -284,15 +307,15 @@ export const RecipeSearchPage = ({ match }) => {
         <Item.Meta>
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-          {recipe.calorie}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          {recipe.calories}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Item.Meta>
         <Item.Description>
           {recipe.content.substr(0, 160)}
           {recipe.content.length > 160 ? '...' : ''}
         </Item.Description>
         <Item.Extra>
-          {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
-          {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+          {recipe.diet_labels.map((tag, labelKey) => <span key={labelKey}>{tag}&emsp;</span>)}
+          {recipe.health_labels.map((tag, labelKey) => <span key={labelKey}>{tag}&emsp;</span>)}
         </Item.Extra>
       </Item.Content>
     </Item>
@@ -316,7 +339,7 @@ export const RecipeSearchPage = ({ match }) => {
                   placeholder='Search recipes...'
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
-                  onKeyDown={() => fetchResults()}
+                  onKeyDown={e => { if (searchInput && e.key === 'Enter') fetchResults(true); }}
                 />
               </Form.Field>
             </Form>
@@ -326,15 +349,11 @@ export const RecipeSearchPage = ({ match }) => {
       <Dropdown
         button
         basic
-        clearable
         id='sortOption'
         placeholder='Sort by...'
         options={sortOptions}
         value={sortBy}
-        onChange={(e, { value }) => {
-          setSortBy(value);
-          fetchResults(true);
-        }}
+        onChange={(e, { value }) => { setSortBy(value); fetchResults(true, value); }}
         style={{ width: '11em' }}
       />
       <Button
@@ -342,16 +361,23 @@ export const RecipeSearchPage = ({ match }) => {
         onClick={() => setShowFilterTab(!showFilterTab)}
         content='Filter'
       />
-      { showFilterTab &&
+      {
+        showFilterTab &&
         filterTab
       }
-      <Visibility onBottomVisible={() => fetchResults(false)}>
-        <Item.Group divided>
-          {searchResults}
-        </Item.Group>
+      <Item.Group divided>
+        {searchResults}
+      </Item.Group>
+      <Visibility
+        once={false}
+        onTopVisible={() => { if (!loadingRecipes && !hasFetchedAll) fetchResults(false); }}
+      >
+        <Loader
+          active={!hasFetchedAll}
+          content='Loading...'
+          inline='centered'
+        />
       </Visibility>
-      <br />
-      <Loader active={!hasFetchedAll} inline='centered' />
     </Container >
   );
 };

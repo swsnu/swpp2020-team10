@@ -17,6 +17,9 @@ class SearchSetting(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(blank=True, default='', max_length=80)
 
+    def __str__(self):
+        return self.name
+
 class FridgeItem(models.Model):
     user = models.ForeignKey(
         User,
@@ -39,6 +42,14 @@ class FridgeItem(models.Model):
 class Recipe(models.Model):
     title = models.CharField(max_length=80)
     ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True, null=True)
+    name = models.CharField(blank=True, default='', max_length=80)
+    quantity = models.IntegerField(default=0)
+    unit = models.CharField(max_length=10, blank=True, default='')
+    expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
+
+class Recipe(models.Model):
+    title = models.CharField(max_length=80)
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
@@ -52,12 +63,12 @@ class IngredientIncidence(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete= models.CASCADE,
-        related_name='incidence_ingredient',
+        related_name='ingredientincidence_ingrdient',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='incidence_recipe',
+        related_name='ingredientincidence_recipe_id',
     )
     quantity = models.IntegerField(default = 0)
 
@@ -93,7 +104,7 @@ class Comment(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='review_comment_id',
+        related_name='comment_user_id',
         default=None
     )
     author_name = models.CharField(max_length=80, default='', blank=True, null = True)
