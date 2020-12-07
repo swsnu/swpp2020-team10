@@ -22,19 +22,23 @@ class FridgeItem(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='fridgeitem_user_id',
+        null=True,
+        blank=True
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete= models.CASCADE,
         related_name='fridgeitem_ingrdient',
+        null=True,
+        blank=True
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
-    expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
+    expiry_date = models.DateTimeField(blank=True, null=True, default=now())
 
 class Recipe(models.Model):
     title = models.CharField(max_length=80)
-    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True, null=True)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
@@ -48,12 +52,12 @@ class IngredientIncidence(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete= models.CASCADE,
-        related_name='fridgeitem_ingrdient',
+        related_name='incidence_ingredient',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='review_recipe_id',
+        related_name='incidence_recipe',
     )
     quantity = models.IntegerField(default = 0)
 

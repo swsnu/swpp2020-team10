@@ -13,7 +13,7 @@ TOTAL_NUMBER_OF_INGS = 1e4
 # Very inefficient implementation (Proof of concept)
 def recommend_recipe(request):
     request_user_id = request.user.id
-
+    rec_ing_list = dict()
     # Create if this is first time
     try:
         pref = Preference.objects.filter(user_id=request_user_id).all().values()[0]
@@ -24,9 +24,9 @@ def recommend_recipe(request):
         pref = Preference.objects.filter(user_id=request_user_id).all().values()[0]
     lab_norm, ing_norm = pref['label_norm'], pref['ingredient_norm']
 
-    my_ingredients, my_label_preference, my_ing_preference = dict(), dict(), dict()
+    my_ingredients, my_label_preference, my_ing_preference = set(), dict(), dict()
     for it in FridgeItem.objects.filter(user_id=request_user_id).all().values():
-        my_ingredients[it['name']] = it['quantity']
+        my_ingredients.add(it['id'])
 
     # If giant JsonField is better, we will go with that
     # Then load jsons to my_label_preference, my_ing_preference
@@ -36,16 +36,18 @@ def recommend_recipe(request):
     for it in IngredientPreference.objects.filter(user_id=request_user_id).all().values():
         my_ing_preference[it['name']] = it['score']
 
-    #print(my_ingredients)
+    for it in IngredientIncidence.objects.all().values():
+        if it['recipe_id'] in rec_ing_list:
+            rec_ing_list[it['recipe_id']].append(it['ingredient_id'])
+        else:
+            rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
+
     feasible_list = list()
     for r in Recipe.objects.all().values():
-        ing_json = r['ingredients']
+        r_ing = rec_ing_list[r['id']]
         flag = True
-        for ing in ing_json.keys():
-            if ing not in my_ingredients.keys():
-                flag = False
-                break
-            if ing_json[ing] > my_ingredients[ing]:
+        for ing in r_ing:
+            if ing not in my_ingredients:
                 flag = False
                 break
         if flag is True:
@@ -78,7 +80,7 @@ def recommend_recipe(request):
                 LS += (my_label_preference[label]/max(1.0, lab_norm))
         # Ingredient score
         IS = 0.0
-        for ing in recipe['ingredients'].keys():
+        for ing in rec_ing_list[recipe['id']]:
             if ing not in my_ing_preference:
                 my_ing_preference[ing] = 0.0
                 ip = IngredientPreference(user=request.user, name=ing, score=0.0)
@@ -93,6 +95,7 @@ def recommend_recipe(request):
         recipe['score'] = LS + IS
         if recipe['score'] >= 0:
             sqscs += pow(recipe['score'], 2)
+
     if sqscs == 0:
         return choice(feasible_list)
     # Probability ~ (Score)^2
@@ -106,9 +109,8 @@ def recommend_recipe(request):
             cdf = [pr]
         else:
             cdf.append(cdf[-1] + pr)
+        print(f"{r} : {pr}")
 
     rec_ind = bisect(cdf,random())
     recipe = feasible_list[rec_ind]
-    print(my_ing_preference)
-    print(my_label_preference)
     return recipe
