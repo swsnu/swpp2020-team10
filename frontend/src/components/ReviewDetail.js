@@ -16,14 +16,14 @@ function ReviewDetail(props) {
   const [comment, setComment] = useState('');
   const [hasReview, setReview] = useState(false);
   const [hasComment, setHasComment] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
-  const [reported, setReported] = useState(false);
+  //const [liked, setLiked] = useState(false);
+  //const [disliked, setDisliked] = useState(false);
+  //const [reported, setReported] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [editedComment, setEditedComment] = useState(0);
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
-  const [reports, setReports] = useState(0);
+  //const [likes, setLikes] = useState(0);
+  //const [dislikes, setDislikes] = useState(0);
+  //const [reports, setReports] = useState(0);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -122,39 +122,39 @@ function ReviewDetail(props) {
   };
 
   // increment likes count for the review
-  const onClickLikeReviewButton = (likeCount) => {
-    if(!liked){
+  const onClickLikeReviewButton = () => {
+    /*if(!liked){
       setLikes(likeCount + 1);
       setLiked(true);
     }else{
       setLikes(likes + 1);
-    }
+    }*/
     dispatch(actionCreators.likeReview(reviewId));
     dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
   // increment dislikes count for the review
-  const onClickDislikeReviewButton = (dislikeCount) => {
-    if(!disliked){
+  const onClickDislikeReviewButton = () => {
+    /*if(!disliked){
       setDislikes(dislikeCount + 1);
       setDisliked(true);
     }else{
       setDislikes(dislikes + 1);
-    }
+    }*/
     dispatch(actionCreators.dislikeReview(reviewId));
     dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
   };
 
   // increment reports count for the review
-  const onClickReportReviewButton = (reportCount) => {
-    if(!reported){
+  const onClickReportReviewButton = () => {
+    /*if(!reported){
       setReports(reportCount + 1);
       setReported(true);
     }else{
       setReports(reports + 1);
-    }
+    }*/
     dispatch(actionCreators.reportReview(reviewId));
     dispatch(actionCreators.getReviewList(recipeId));
     dispatch(actionCreators.getReview(reviewId));
@@ -389,7 +389,7 @@ function ReviewDetail(props) {
         </Grid.Row>
         <Grid.Row>
           <Button as='div' labelPosition='right'>
-            <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton(numLikes)}>
+            <Button id='likeReviewButton' color='blue' onClick={() => onClickLikeReviewButton()}>
               <Icon name='thumbs up' />
                 Like
             </Button>
@@ -398,7 +398,7 @@ function ReviewDetail(props) {
             </Label>
           </Button>
           <Button as='div' labelPosition='right'>
-            <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton(numDislikes)}>
+            <Button id='dislikeReviewButton' color='red' onClick={() => onClickDislikeReviewButton()}>
               <Icon name='thumbs down' />
                 Dislike
             </Button>
@@ -407,7 +407,7 @@ function ReviewDetail(props) {
             </Label>
           </Button>
           <Button as='div' labelPosition='right'>
-            <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton(numReports)}>
+            <Button id='reportReviewButton' color='red' onClick={() => onClickReportReviewButton()}>
               <Icon name='exclamation circle' />
                 Report
             </Button>
