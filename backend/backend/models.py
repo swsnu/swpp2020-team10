@@ -119,6 +119,34 @@ class Comment(models.Model):
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
 
+class ReviewProfile(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='review_profile_user_id',
+        default=None,
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comment_profile_review_id',
+        default=None,
+    )
+
+class CommentProfile(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='profile_user_id',
+        default=None,
+    )
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name='profile_comment_id',
+        default=None,
+    )
+
 class Preference(models.Model):
     user = models.ForeignKey(
         User,
