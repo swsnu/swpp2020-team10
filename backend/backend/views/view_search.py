@@ -7,24 +7,22 @@ from backend.models import Recipe
 # Fetches setting by user id
 def search(request):
     if request.method == 'GET':
-        search_query = request.GET.get('q', None)
-        filter_rating = request.GET.get('rating', None)
-        filter_sort = request.GET.get('sort', None)
-        filter_from = int(request.GET.get('from', None))
-        filter_to = int(request.GET.get('to', None))
+        search_query = request.GET.get('q')
+        filter_rating = request.GET.get('rating')
+        filter_sort = request.GET.get('sort')
+        filter_from = int(request.GET.get('from'))
+        filter_to = int(request.GET.get('to'))
 
-        diet_labels = request.GET.getlist('diet_labels', None)
-        health_labels = request.GET.getlist('health_labels', None)
-        calories = request.GET.get('calorie', None)
-        cooking_time = request.GET.get('time', None)
-
+        diet_labels = request.GET.getlist('diet_labels')
+        health_labels = request.GET.getlist('health_labels')
+        calories = request.GET.get('calorie')
+        cooking_time = request.GET.get('time')
+        
         query = Recipe.objects
 
         filter_q = Q()
-        if diet_labels is not None and diet_labels[0]:
-            filter_q &= Q(diet_labels__contains=diet_labels)
-        if health_labels is not None and health_labels[0]:
-            filter_q &= Q(health_labels__contains=health_labels)
+        filter_q &= Q(diet_labels__contains=diet_labels)
+        filter_q &= Q(health_labels__contains=health_labels)
         if calories is not None:
             filter_q &= Q(calories__lte=int(calories))
         if cooking_time is not None:

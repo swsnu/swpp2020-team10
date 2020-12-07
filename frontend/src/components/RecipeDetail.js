@@ -108,6 +108,7 @@ export const RecipeDetail = ({ match }) => {
         panes={panes}
         renderActiveOnly={false}
       />
+      <br />
     </Container>
   );
 };
@@ -116,20 +117,24 @@ export const RecipeDetail = ({ match }) => {
 const ReviewTab = ({ reviews, recipeId }) => {
   const history = useHistory();
 
+  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
+
   if (!reviews) {
     return null;
   }
 
   return (
     <div className='review'>
-      <Button
-        id='writeButton'
-        content='Write a review'
-        onClick={() => history.push(`/review/${recipeId}/create`)}
-        fluid
-        basic
-        color='blue'
-      />
+      <div>
+        <Button
+          id='writeButton'
+          content='Write a review'
+          onClick={() => history.push(`/review/${recipeId}/create`)}
+          disabled={!userIsAuthorized}
+          basic
+          color='blue'
+        />
+      </div>
       <br />
       <Card.Group>
         {reviews.map((review, key) => (
@@ -159,5 +164,6 @@ const ReviewTab = ({ reviews, recipeId }) => {
     </div>
   );
 };
+
 
 export default RecipeDetail;

@@ -10,6 +10,7 @@ export const getCommentList = (id) => {
     return axios.get('/api/review/' + id + '/comment/')
       .then(response => {
         dispatch(getCommentList_(response.data));
+        return response;
       });
   };
 };
@@ -44,6 +45,7 @@ export const postComment = (id, comment) => {
     return axios.post('/api/review/' + id + '/comment/', {'content': comment.content})
       .then(response => {
         dispatch(postComment_(response.data));
+        return response;
       });
   };
 };

@@ -24,14 +24,14 @@ export const FrontPage = () => {
 
   const fridgeItems = useSelector(state => state.fridgeItem.fridgeItems);
 
-  const fridgeItemList = fridgeItems.map(item =>
-    <div key={item.name}>
+  const fridgeItemList = fridgeItems.map((item, key) =>
+    <div key={key}>
       {item.name}&ensp;x&ensp;{item.quantity}
     </div>
   );
 
-  const recommendations = recipes.slice(-2).map(recipe => (
-    <Card key={recipe.id} fluid>
+  const recommendations = recipes.slice(-2).map((recipe, key) => (
+    <Card key={key} fluid>
       <Image src={`https://source.unsplash.com/512x512/?food,${recipe.id}`} />
       <Card.Content>
         <Card.Header>

@@ -1,6 +1,7 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
+
 const selectRecipeById_ = (recipe) => {
   return { type: actionTypes.GET_RECIPE, target: recipe };
 };
@@ -10,6 +11,7 @@ export const selectRecipeById = (id) => {
     return axios.get('/api/recipe/' + id + '/')
       .then(response => {
         dispatch(selectRecipeById_(response.data));
+        return response;
       });
   };
 };
@@ -22,8 +24,9 @@ const addRecipeRatingById_ = (id) => {
 export const addRecipeRatingById = (id, recipe) => {
   return dispatch => {
     return axios.put('/api/recipe/' + id + '/', {'recipe_id': recipe.id, 'rating': recipe.rating})
-      .then(() => {
+      .then(response => {
         dispatch(addRecipeRatingById_(id));
+        return response;
       });
   };
 };

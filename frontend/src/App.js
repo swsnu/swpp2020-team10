@@ -64,7 +64,11 @@ function App() {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
-  if (!userIsAuthorized) {
+  if (userIsAuthorized === null) {
+    return null;
+  }
+
+  if (userIsAuthorized === false) {
     return (
       <Router>
         <Switch>

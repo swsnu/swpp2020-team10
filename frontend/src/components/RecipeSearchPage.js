@@ -295,7 +295,7 @@ export const RecipeSearchPage = ({ match }) => {
           {recipe.title}
         </Item.Header>
         <Item.Meta>
-          {recipe.rating.toFixed(1)}&ensp;
+          ({recipe.rating.toFixed(1)})&ensp;
           <Rating
             rating={recipe.rating}
             maxRating={5}

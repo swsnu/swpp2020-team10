@@ -1,6 +1,7 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
+
 export const getReviewList_ = (reviews) => {
   return {type: actionTypes.GET_RECIPE_REVIEWS, reviews: reviews};
 };
@@ -10,9 +11,11 @@ export const getReviewList = (id) => {
     return axios.get('/api/recipe/' + id + '/review/')
       .then(response => {
         dispatch(getReviewList_(response.data));
+        return response;
       });
   };
 };
+
 
 export const getReview_ = (review) => {
   return {type: actionTypes.GET_REVIEW, target: review};
@@ -23,9 +26,11 @@ export const getReview = (id) => {
     return axios.get('/api/review/' + id)
       .then(response => {
         dispatch(getReview_(response.data));
+        return response;
       });
   };
 };
+
 
 export const postReview_ = (review) => {
   return {type: actionTypes.ADD_REVIEW, review};
@@ -40,6 +45,7 @@ export const postReview = (recipeId, review) => {
   };
 };
 
+
 export const editReview_ = (review) => {
   return {type: actionTypes.EDIT_REVIEW, review};
 };
@@ -52,6 +58,7 @@ export const editReview = (reviewId, review) => {
       });
   };
 };
+
 
 export const likeReview_ = (id) => {
   return {type: actionTypes.LIKE_REVIEW, targetId: id};
@@ -67,6 +74,7 @@ export const likeReview = (id) => {
   };
 };
 
+
 export const dislikeReview_ = (id) => {
   return {type: actionTypes.DISLIKE_REVIEW, targetId: id};
 };
@@ -80,6 +88,7 @@ export const dislikeReview = (id) => {
       });
   };
 };
+
 
 export const reportReview_ = (id) => {
   return {type: actionTypes.LIKE_REVIEW, targetId: id};
@@ -95,6 +104,7 @@ export const reportReview = (id) => {
   };
 };
 
+
 export const deleteReview_ = (reviewId) => {
   return {type: actionTypes.DELETE_REVIEW, targetId: reviewId};
 };
@@ -102,8 +112,9 @@ export const deleteReview_ = (reviewId) => {
 export const deleteReview = (reviewId) => {
   return dispatch => {
     return axios.delete(`/api/review/${reviewId}/`)
-      .then(() => {
+      .then(response => {
         dispatch(deleteReview_(reviewId));
+        return response;
       });
   };
 };
