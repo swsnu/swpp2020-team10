@@ -1,241 +1,170 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { Rating, Image, Container, Header, Grid, Button, Segment } from 'semantic-ui-react';
 import * as actionCreators from '../store/actions/index';
 
-function RecipeDetail(props) {
+import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon } from 'semantic-ui-react';
 
-  const history = useHistory();
+
+export const RecipeDetail = ({ match }) => {
+  const recipeId = match.params.recipe_id;
+
   const dispatch = useDispatch();
-  const recipeId = props.match.params.recipe_id;
 
-  const [hasRecipe, setHasRecipe] = useState(false);
-  const [hasReviews, setHasReviews] = useState(false);
-  const [hasRated, setRated] = useState(false);
+  const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
+  const storedReviews = useSelector(state => state.review.reviews);
 
+  let ingredients;
+  let directions;
+
+  if (storedRecipe) {
+    ingredients = (
+      <Table striped>
+        <Table.Body>
+          {storedRecipe.ingredient_lines.map((ingredient_line, key) => {
+            return (
+              <Table.Row key={key}>
+                <Table.Cell content={ingredient_line} />
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table>
+    );
+
+    directions = storedRecipe.content;
+  }
+
+  const panes = [
+    {
+      menuItem: 'Ingredients',
+      pane: (
+        <Tab.Pane key='0' attached={false}>
+          {ingredients}
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: 'Directions',
+      pane: (
+        <Tab.Pane key='1' attached={false}>
+          {directions}
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: 'Reviews',
+      pane: (
+        <Tab.Pane key='2' attached={false}>
+          <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+        </Tab.Pane>
+      )
+    }
+  ];
+
+  // fetch recipes and reviews on initial mount
   useEffect(() => {
-    actionCreators.selectRecipeById(recipeId);
-    actionCreators.getReviewList(recipeId);
-  });
-  // check
-  if(!hasRecipe) {
     dispatch(actionCreators.selectRecipeById(recipeId));
-    setHasRecipe(true);
-  }
-  if(!hasReviews){
     dispatch(actionCreators.getReviewList(recipeId));
-    setHasReviews(true);
+  }, []);
+
+  if (!storedRecipe || !storedReviews) {
+    return null;
   }
-
-  let storedRecipe = /*{
-    'id': 1,
-    'food_id': 3,
-    'title': 'Kimchi',
-    'content': 'K-food Kimchi recipe blahblah',
-    'rating': 3.44,
-    'count_ratings': 1,
-    'ingredients': {
-      'cabbage': '100'
-    },
-    'cooking_time': 120,
-    'tag': {
-      'difficulty': 'hard'
-    },
-    'serving': 1
-  };//*/useSelector(state => state.recipe.selectedRecipe);
-
-  const storedReviews = /*[{
-    'id': 1,
-    'recipe_id': 1,
-    'user_id': 1,
-    'title': 'Kimchi review!!!',
-    'content': 'Kimchi is good modify content',
-    'likes': 5,
-    'reports': 3
-  },
-  {
-    'id': 2,
-    'recipe_id': 1,
-    'user_id': 1,
-    'title': 'Review 2',
-    'content': 'Review 22',
-    'likes': 3,
-    'reports': 0
-  }];//*/useSelector(state => state.review.reviews);
-
-  const userId = useSelector(state => state.user.id);
-
-  // move to 'My Fridge' page
-  const onClickMyFridgeButton = () => {
-    history.push('/fridge/' + userId);
-  };
-
-  /*// move to 'Settings' page
-  const onClickSettingsButton = () => {
-    history.push('/settings/' + this.props.user.id);
-  };
-
-  // logout and go to index page
-  const onClickSignOutButton = () => {};
-  */
-  // move to 'Review Editor' page
-  const onClickWriteButton = () => {
-    history.push('/review/' + recipeId + '/create');
-  };
-
-  // should be commented out until testing issues are solved
-  const onChangeRatingInput = () => {
-    const ratedRecipe = { ...storedRecipe, rating: rating };
-    setRated(true);
-    dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
-  };
-
-  let title = '', rating = 0, serving = 0, cooking_time = 0, content = 0, ingredients = null;
-  if(storedRecipe !== null){
-    title = storedRecipe.title;
-    rating = storedRecipe.rating;
-    serving = storedRecipe.serving;
-    cooking_time = storedRecipe.cooking_time;
-    content = storedRecipe.content;
-    ingredients = storedRecipe.ingredient_lines;
-  }
-
-
-  let ingredient = null;
-  if(ingredients !== null){
-    ingredient = Object.keys(ingredients).map((key) => {
-      return (
-        <p key={key}>
-          {key}: {ingredients[key]}
-        </p>
-      );
-    });
-  }
-
-
-  /*<div className='row'>
-        <Button id='settingsButton' onClick={onClickSettingsButton()}>
-          To Settings
-        </Button>
-        <Button id='signOutButton' onClick={onClickSignOutButton()}>
-          Sign Out
-        </Button>
-      </div>
-  */ 
 
   return (
-    <div className='RecipeDetail'>
-      <Grid centered>
-        <Grid.Row>
-          <Image size='medium' src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Various_kimchi.jpg/330px-Various_kimchi.jpg' centered/>
-        </Grid.Row>
-        <Grid.Row>
-          <Container textalign='center'>
-            <Header textalign='center'>{title}</Header>
-            <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={onChangeRatingInput} disabled={hasRated} />
-            <p>Rating: {rating}</p>
-            <Segment.Group horizontal  attached='top'>
-              <Segment>
-                <p>Ingredients</p>
-              </Segment>
-              <Segment>
-                {ingredient}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal>
-              <Segment>
-                <p>Serving</p>
-              </Segment> 
-              <Segment>
-                {serving}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal>
-              <Segment>
-                <p>Cooking time</p>
-              </Segment> 
-              <Segment>
-                {cooking_time}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal attached='bottom'>
-              <Segment>
-                {content}
-              </Segment>
-            </Segment.Group>
-          </Container>
-        </Grid.Row>
-        <Grid.Row>
-          <Button id='myFridgeButton' align='center' onClick={() => onClickMyFridgeButton()}>
-            My Fridge
-          </Button>
-        </Grid.Row>
-        <Grid.Row>
-          <h2 textalign='justified'> Reviews </h2>
-        </Grid.Row>
-      </Grid>
-      <ReviewPart storedReviews={storedReviews}/>
-      <Grid centered>
-        <Grid.Row>
-          <Button id='writeButton' onClick={() => onClickWriteButton()}>
-            Write Review
-          </Button>
-        </Grid.Row>
-      </Grid>
-    </div>
+    <Container text className='RecipeDetail'>
+      <Item.Group>
+        <Item>
+          <Item.Image
+            size='medium'
+            src={`https://source.unsplash.com/512x512/?soup`} />
+          <Item.Content>
+            <Item.Header>
+              <Header as='h1' content={storedRecipe.title} />
+            </Item.Header>
+            <Item.Meta>
+              ({storedRecipe.rating.toFixed(1)})&ensp;
+              <Rating
+                id='ratingInput'
+                rating={storedRecipe.rating}
+                maxRating={5}
+                icon='star'
+                size='small'
+                disabled
+              />
+            </Item.Meta>
+            <Item.Description>
+              <b>{storedRecipe.serving}</b>&ensp;serving{storedRecipe.serving == 1 ? '' : 's'}
+              <br />
+              <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
+              <br />
+              <b>{storedRecipe.calories}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
+            </Item.Description>
+            <Item.Extra>
+              {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
+              <br />
+              {storedRecipe.health_labels.map((label, key) => <span key={key}>{label}</span>)}
+            </Item.Extra>
+          </Item.Content>
+        </Item>
+      </Item.Group>
+      <Tab
+        menu={{ color: 'blue', secondary: true, pointing: true }}
+        panes={panes}
+        renderActiveOnly={false}
+      />
+    </Container>
   );
-}
-
-// return information about the recipe. Image should be inserted in future implementation.
-// Rating should be inserted after confirming the use of external libraries.
-
-
-// return list of reviews of this recipe w/ headerlines
-function ReviewPart(props) {
-  const reviewList = props.storedReviews.map((review) => {
-    return (
-      <div className='review' key={review.id}>
-        <Grid centered>
-          <Grid.Row>
-            <Segment>
-              <Grid.Column width={4}>
-                <NavLink id='review-link' to={'/review/' + review.id}>
-                  {review.title}
-                </NavLink>
-              </Grid.Column>
-              <Grid.Column width={3}>
-              Author: {review.author_name} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
-              </Grid.Column>
-            </Segment>
-          </Grid.Row>
-        </Grid>
-      </div>
-    );
-  });
-  return reviewList;
-}
-
-/*const mapStateToProps = (state) => {
-  return {
-    storedRecipe: state.recipe.selectedRecipe,
-    storedReviews: state.review.reviews,
-  };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onGetRecipe: (recipeId) => 
-      dispatch(actionCreators.selectRecipeById(recipeId)),
-    onGetReviews: (recipeId) => 
-      dispatch(actionCreators.getReviewList(recipeId)),
-    onRateRecipe: (recipeId, recipe) => 
-      dispatch(actionCreators.addRecipeRatingById(recipeId, recipe)),
-    onDeleteReview: (reviewId) => 
-      dispatch(actionCreators.deleteReview(reviewId)),
-  };
-};*/
 
-//export default connect(mapStateToProps, mapDispatchToProps)(RecipeDetail);
+const ReviewTab = ({ reviews, recipeId }) => {
+  const history = useHistory();
+
+  if (!reviews) {
+    return null;
+  }
+
+  return (
+    <div className='review'>
+      <Button
+        id='writeButton'
+        content='Write a review'
+        onClick={() => history.push(`/review/${recipeId}/create`)}
+        fluid
+        basic
+        color='blue'
+      />
+      <br />
+      <Card.Group>
+        {reviews.map((review, key) => (
+          <Card key={key} fluid>
+            <Card.Content>
+              <Card.Header>
+                <Link id='review-link' to={`/review/${review.id}`}>
+                  {review.title}
+                </Link>
+              </Card.Header>
+              <Card.Meta>
+                By {review.author_name}
+              </Card.Meta>
+              <Card.Description>
+                {review.content.substr(0, 70)}
+                {review.content.length > 70 ? '...' : ''}
+              </Card.Description>
+            </Card.Content>
+            <Card.Content extra>
+              <Icon name='thumbs up' /> {review.likes}&emsp;
+              <Icon name='thumbs down' /> {review.dislikes}&emsp;
+              <Icon name='warning circle' /> {review.reports}
+            </Card.Content>
+          </Card>
+        ))}
+      </Card.Group>
+    </div>
+  );
+};
+
 export default RecipeDetail;
