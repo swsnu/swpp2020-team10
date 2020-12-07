@@ -3,7 +3,7 @@ from datetime import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
-from ..models import Review
+from ..models import Review, ReviewProfile
 from .util import json_default
 # Fetches review by id
 # JSON format follows design document - modelscd
@@ -74,6 +74,10 @@ def reaction(request, _id):
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
     except IndexError:
         return HttpResponseBadRequest(status=404)
+    # User cannot react twice to same review
+    profile = ReviewProfile.objects.filter(review_id=_id, user_id=request.user.id).all()
+    if len(profile) != 0:
+        return HttpResponse("You already reacted to this review.\n", status=403)
     review = json.loads(review)
     cur_like = review['likes']
     cur_dislike = review['dislikes']
@@ -86,6 +90,8 @@ def reaction(request, _id):
         cur_like += req_like
         cur_dislike += req_dislike
         cur_report += req_report
+        new_profile = ReviewProfile(review_id=_id, user=request.user)
+        new_profile.save()
         Review.objects.filter(id=_id).update(likes=cur_like, dislikes=cur_dislike, reports=cur_report)
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
         return HttpResponse(review, status=200, content_type='application/json')
