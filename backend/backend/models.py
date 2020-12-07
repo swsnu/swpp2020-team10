@@ -16,6 +16,7 @@ class SearchSetting(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(blank=True, default='', max_length=80)
+    image = models.TextField(default='', blank=True)
 
     def __str__(self):
         return self.name
@@ -51,6 +52,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=80)
     ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
+    image = models.TextField(default='', blank=True)
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
     diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
@@ -71,6 +73,7 @@ class IngredientIncidence(models.Model):
         related_name='ingredientincidence_recipe_id',
     )
     quantity = models.IntegerField(default = 0)
+    unit = models.CharField(max_length=10, null = True)
 
 class Review(models.Model):
     recipe = models.ForeignKey(
