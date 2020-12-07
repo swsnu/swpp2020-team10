@@ -11,6 +11,7 @@ from backend.models import FridgeItem
 
 def json_default(value):
     return value.strftime('%Y-%m-%d')
+
 '''
 # Fetches all food info and returns JSON object
 def manage_food(request):

@@ -25,12 +25,23 @@ class FridgeItem(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='fridgeitem_user_id',
+        null=True,
+        blank=True
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete= models.CASCADE,
         related_name='fridgeitem_ingrdient',
+        null=True,
+        blank=True
     )
+    name = models.CharField(blank=True, default='', max_length=80)
+    quantity = models.IntegerField(default=0)
+    expiry_date = models.DateTimeField(blank=True, null=True, default=now())
+
+class Recipe(models.Model):
+    title = models.CharField(max_length=80)
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True, null=True)
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
     unit = models.CharField(max_length=10, blank=True, default='')
@@ -84,7 +95,6 @@ class Review(models.Model):
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Review, self).save(*args, **kwargs)
 
-
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
@@ -108,4 +118,30 @@ class Comment(models.Model):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
-        
+
+class Preference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='preference_user',
+    )
+    label_norm = models.FloatField(default = 0.0)
+    ingredient_norm = models.FloatField(default = 0.0)
+
+class LabelPreference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='label_preference_user',
+    )
+    name = models.CharField(max_length=20, default='')
+    score = models.FloatField(default=0.0)
+
+class IngredientPreference(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='ing_pref_user',
+    )
+    name = models.CharField(max_length=30, default='')
+    score = models.FloatField(default=0.0)
