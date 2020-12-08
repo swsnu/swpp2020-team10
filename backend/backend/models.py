@@ -37,7 +37,7 @@ class FridgeItem(models.Model):
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
-    expiry_date = models.DateTimeField(blank=True, null=True, default=now())
+    expiry_date = models.DateTimeField(blank=True, null=True, default=now)
 
 class Recipe(models.Model):
     title = models.CharField(max_length=80)
@@ -81,7 +81,7 @@ class Review(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
-    time_posted = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    time_posted = models.DateTimeField(default=now, blank=True, null=True)
     def save(self, *args, **kwargs):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
@@ -104,7 +104,7 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
-    time_posted = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    time_posted = models.DateTimeField(default=now, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.author_name is None or len(self.author_name) == 0:
