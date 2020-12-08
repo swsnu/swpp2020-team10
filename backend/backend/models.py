@@ -41,14 +41,6 @@ class FridgeItem(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(max_length=80)
-    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True, null=True)
-    name = models.CharField(blank=True, default='', max_length=80)
-    quantity = models.IntegerField(default=0)
-    unit = models.CharField(max_length=10, blank=True, default='')
-    expiry_date = models.DateTimeField(auto_now_add=True, blank=True)
-
-class Recipe(models.Model):
-    title = models.CharField(max_length=80)
     ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
     rating = models.FloatField(default=0.0)
@@ -119,6 +111,20 @@ class Comment(models.Model):
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
 
+class RecipeProfile(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipe_profile_user_id',
+        default=None,
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_profile_review_id',
+        default=None,
+    )
+
 class ReviewProfile(models.Model):
     user = models.ForeignKey(
         User,
@@ -129,7 +135,7 @@ class ReviewProfile(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comment_profile_review_id',
+        related_name='review_profile_review_id',
         default=None,
     )
 
@@ -137,13 +143,13 @@ class CommentProfile(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='profile_user_id',
+        related_name='comment_profile_user_id',
         default=None,
     )
     comment = models.ForeignKey(
         Comment,
         on_delete=models.CASCADE,
-        related_name='profile_comment_id',
+        related_name='comment_profile_comment_id',
         default=None,
     )
 
