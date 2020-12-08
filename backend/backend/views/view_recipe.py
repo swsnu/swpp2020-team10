@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from ..models import Recipe
+from backend.models import Recipe, RecipeProfile
 
 # Auth : Anyone can search and request for recipes
 
@@ -21,7 +21,11 @@ def recipe_by_id(request, _id):
         except IndexError:
             return HttpResponseBadRequest(status=404)
         return HttpResponse(recipe, status=200, content_type='application/json')
+
     if request.method == 'PUT':
+        if not request.user.is_authenticated:
+            return HttpResponse("You are not logged in\n",status=401)
+
         req_data = json.loads(request.body.decode())
 
         try:
