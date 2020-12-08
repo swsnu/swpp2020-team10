@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
@@ -15,15 +15,23 @@ export const RecipeDetail = ({ match }) => {
   const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
   const storedReviews = useSelector(state => state.review.reviews);
 
+  const [enableRating, setEnableRating] = useState(true);
+
   // fetch recipe and reviews on initial mount
   useEffect(() => {
     dispatch(actionCreators.selectRecipeById(recipeId));
     dispatch(actionCreators.getReviewList(recipeId));
   }, []);
 
-  if (!storedRecipe || !storedReviews) {
+  if (!storedRecipe) {
     return null;
   }
+
+  const onRate = (e, { rating }) => {
+    setEnableRating(false);
+    dispatch(actionCreators.addRecipeRatingById(recipeId, rating))
+      .catch(error => error);
+  };
 
   const ingredients = (
     <Table striped>
@@ -83,9 +91,10 @@ export const RecipeDetail = ({ match }) => {
                 id='ratingInput'
                 rating={storedRecipe.rating}
                 maxRating={5}
+                onRate={onRate}
+                disabled={!enableRating}
                 icon='star'
                 size='small'
-                disabled
               />
             </Item.Meta>
             <Item.Description>
@@ -119,7 +128,7 @@ const ReviewTab = ({ reviews, recipeId }) => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
-  if (!reviews) {
+  if (reviews.length === 0) {
     return null;
   }
 
@@ -137,8 +146,8 @@ const ReviewTab = ({ reviews, recipeId }) => {
       </div>
       <br />
       <Card.Group>
-        {reviews.map((review, key) => (
-          <Card key={key} fluid>
+        {reviews.map(review => (
+          <Card key={review.id} fluid>
             <Card.Content>
               <Card.Header>
                 <Link id='review-link' to={`/review/${review.id}`}>
@@ -149,8 +158,8 @@ const ReviewTab = ({ reviews, recipeId }) => {
                 By {review.author_name}
               </Card.Meta>
               <Card.Description>
-                {review.content.substr(0, 70)}
-                {review.content.length > 70 ? '...' : ''}
+                {review.content.substr(0, 100)}
+                {review.content.length > 100 ? '...' : ''}
               </Card.Description>
             </Card.Content>
             <Card.Content extra>
