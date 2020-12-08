@@ -144,7 +144,6 @@ export const RecipeSearchPage = ({ match }) => {
 
     return axios.get('/api/search/?' + params)
       .then(response => {
-        console.log(response);
         const recipes_new = response.data.recipes;
 
         if (recipes_new.length < pageSize) {
@@ -284,10 +283,10 @@ export const RecipeSearchPage = ({ match }) => {
     </Segment>
   );
 
-  const searchResults = recipes.map((recipe, key) => (
-    <Item key={key} as={Link} to={`/recipe/${recipe.id}`}>
+  const searchResults = recipes.map(recipe => (
+    <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
       <Item.Image
-        src={`https://source.unsplash.com/512x512/?soup,${key}`}
+        src={`https://source.unsplash.com/512x512/?soup,${recipe.id}`}
         size='small'
       />
       <Item.Content>
@@ -310,12 +309,12 @@ export const RecipeSearchPage = ({ match }) => {
           {recipe.calories}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Item.Meta>
         <Item.Description>
-          {recipe.content.substr(0, 160)}
-          {recipe.content.length > 160 ? '...' : ''}
+          {recipe.content.substr(0, 200)}
+          {recipe.content.length > 200 ? '...' : ''}
         </Item.Description>
         <Item.Extra>
-          {recipe.diet_labels.map((tag, labelKey) => <span key={labelKey}>{tag}&emsp;</span>)}
-          {recipe.health_labels.map((tag, labelKey) => <span key={labelKey}>{tag}&emsp;</span>)}
+          {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+          {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
         </Item.Extra>
       </Item.Content>
     </Item>
@@ -354,8 +353,8 @@ export const RecipeSearchPage = ({ match }) => {
         options={sortOptions}
         value={sortBy}
         onChange={(e, { value }) => { setSortBy(value); fetchResults(true, value); }}
-        style={{ width: '11em' }}
-      />
+        style={{ width: '11em', textAlign: 'right' }}
+      />&ensp;
       <Button
         id='showFilterTabButton'
         onClick={() => setShowFilterTab(!showFilterTab)}
