@@ -8,7 +8,7 @@ const selectRecipeById_ = (recipe) => {
 
 export const selectRecipeById = (id) => {
   return dispatch => {
-    return axios.get('/api/recipe/' + id + '/')
+    return axios.get(`/api/recipe/${id}/`)
       .then(response => {
         dispatch(selectRecipeById_(response.data));
         return response;
@@ -17,15 +17,15 @@ export const selectRecipeById = (id) => {
 };
 
 
-const addRecipeRatingById_ = (id) => {
-  return { type: actionTypes.RATE_RECIPE, targetId: id };
+const addRecipeRatingById_ = (rating) => {
+  return { type: actionTypes.RATE_RECIPE, rating };
 };
 
-export const addRecipeRatingById = (id, recipe) => {
+export const addRecipeRatingById = (id, rating) => {
   return dispatch => {
-    return axios.put('/api/recipe/' + id + '/', {'recipe_id': recipe.id, 'rating': recipe.rating})
+    return axios.put(`/api/recipe/${id}/`, { rating })
       .then(response => {
-        dispatch(addRecipeRatingById_(id));
+        dispatch(addRecipeRatingById_(rating));
         return response;
       });
   };
@@ -41,6 +41,7 @@ export const fetchAllRecipes = () => {
     return axios.get('/api/recipe/')
       .then(response => {
         dispatch(fetchAllRecipes_(response.data));
+        return response;
       });
   };
 };
