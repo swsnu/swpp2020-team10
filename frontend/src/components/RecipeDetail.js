@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import * as actionCreators from '../store/actions/index';
 
 import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon } from 'semantic-ui-react';
+
+import * as actionCreators from '../store/actions/index';
 
 
 export const RecipeDetail = ({ match }) => {
@@ -15,15 +16,20 @@ export const RecipeDetail = ({ match }) => {
   const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
   const storedReviews = useSelector(state => state.review.reviews);
 
+  const [hasRecipe, setHasRecipe] = useState(false);
+  const [hasReviews, setHasReviews] = useState(false);
+
   const [enableRating, setEnableRating] = useState(true);
 
   // fetch recipe and reviews on initial mount
   useEffect(() => {
-    dispatch(actionCreators.selectRecipeById(recipeId));
-    dispatch(actionCreators.getReviewList(recipeId));
+    dispatch(actionCreators.selectRecipeById(recipeId))
+      .then(() => setHasRecipe(true));
+    dispatch(actionCreators.getReviewList(recipeId))
+      .then(() => setHasReviews(true));
   }, []);
 
-  if (!storedRecipe) {
+  if (!hasRecipe) {
     return null;
   }
 
@@ -51,7 +57,7 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Ingredients',
       pane: (
-        <Tab.Pane key='0' attached={false}>
+        <Tab.Pane key={0} attached={false}>
           {ingredients}
         </Tab.Pane>
       )
@@ -59,7 +65,7 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Directions',
       pane: (
-        <Tab.Pane key='1' attached={false}>
+        <Tab.Pane key={1} attached={false}>
           {storedRecipe.content}
         </Tab.Pane>
       )
@@ -67,11 +73,14 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Reviews',
       pane: (
-        <Tab.Pane key='2' attached={false}>
-          <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+        <Tab.Pane key={2} attached={false}>
+          {
+            hasReviews &&
+            <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+          }
         </Tab.Pane>
       )
-    }
+    },
   ];
 
   return (
@@ -128,17 +137,13 @@ const ReviewTab = ({ reviews, recipeId }) => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
-  if (reviews.length === 0) {
-    return null;
-  }
-
   return (
     <div className='review'>
       <div>
         <Button
           id='writeButton'
           content='Write a review'
-          onClick={() => history.push(`/review/${recipeId}/create`)}
+          onClick={() => history.push(`/recipe/${recipeId}/create-review`)}
           disabled={!userIsAuthorized}
           basic
           color='blue'
