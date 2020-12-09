@@ -234,6 +234,12 @@ export const ReviewDetail = ({ match }) => {
         <Card.Content>
           <Card.Header>
             {storedReview.title}
+            <Icon
+              id='backToRecipeButton'
+              link 
+              name='triangle left'
+              onClick={() => history.push(`/recipe/${storedReview.recipe_id}/`)} 
+            />
           </Card.Header>
           <Card.Meta>
             {storedReview.author_name}&emsp;
