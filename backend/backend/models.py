@@ -37,6 +37,7 @@ class FridgeItem(models.Model):
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
+    unit = models.CharField(blank=True, default='', max_length=80)
     expiry_date = models.DateTimeField(blank=True, null=True, default=now)
 
 class Recipe(models.Model):
