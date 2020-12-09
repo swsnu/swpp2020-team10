@@ -1,6 +1,7 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
+
 export const getFridgeItemList_ = (fridgeItems) => {
   return { type: actionTypes.GET_FRIDGE_ITEMS, fridgeItems };
 };
@@ -10,6 +11,7 @@ export const getFridgeItemList = (userId) => {
     return axios.get(`/api/fridge/${userId}/user/`)
       .then(response => {
         dispatch(getFridgeItemList_(response.data));
+        return response;
       });
   };
 };
@@ -23,6 +25,7 @@ export const getFridgeItem = (fridgeItemId) => {
     return axios.get(`/api/fridge/item/${fridgeItemId}/`)
       .then(response => {
         dispatch(getFridgeItem_(response.data));
+        return response;
       });
   };
 };
@@ -36,6 +39,7 @@ export const postFridgeItem = (userId, fridgeItem) => {
     return axios.post(`/api/fridge/${userId}/user/`, fridgeItem)
       .then(response => {
         dispatch(postFridgeItem_(response.data));
+        return response;
       });
   };
 };
@@ -47,8 +51,9 @@ export const editFridgeItem_ = (fridgeItem) => {
 export const editFridgeItem = (fridgeItemId, fridgeItem) => {
   return dispatch => {
     return axios.put(`/api/fridge/item/${fridgeItemId}/`, fridgeItem)
-      .then(() => {
-        dispatch(editFridgeItem_(fridgeItem));
+      .then(response => {
+        dispatch(editFridgeItem_(response.data));
+        return response;
       });
   };
 };
@@ -60,8 +65,9 @@ export const deleteFridgeItem_ = (fridgeItemId) => {
 export const deleteFridgeItem = (fridgeItemId) => {
   return dispatch => {
     return axios.delete(`/api/fridge/item/${fridgeItemId}/`)
-      .then(() => {
+      .then(response => {
         dispatch(deleteFridgeItem_(fridgeItemId));
+        return response;
       });
   };
 };
@@ -73,8 +79,9 @@ export const clearFridgeItems_ = () => {
 export const clearFridgeItems = (userId) => {
   return dispatch => {
     return axios.delete(`/api/fridge/${userId}/user/`)
-      .then(() => {
+      .then(response => {
         dispatch(clearFridgeItems_());
+        return response;
       });
   };
 };
