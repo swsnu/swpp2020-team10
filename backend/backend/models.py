@@ -77,6 +77,7 @@ class Review(models.Model):
     )
     author_name = models.CharField(max_length=80, default='', blank=True, null = True)
     title = models.CharField(max_length=80)
+    image_url = models.TextField(blank=True)
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
