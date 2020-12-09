@@ -21,7 +21,7 @@ export const WriteTab = ({
           id='titleInput'
           value={title}
           onChange={onChangeTitle}
-          label={{ basic: true, content: 'Title' }}
+          label={{ basic: true, content: 'Title', style: {width: '6em'} }}
           labelPosition='left'
         />
       </Form.Field>
@@ -31,7 +31,7 @@ export const WriteTab = ({
           value={imageUrl}
           onChange={onChangeImageUrl}
           placeholder='https://'
-          label={{ basic: true, content: 'Image url' }}
+          label={{ basic: true, content: 'Image url', style: {width: '6em'} }}
           labelPosition='left'
         />
       </Form.Field>
