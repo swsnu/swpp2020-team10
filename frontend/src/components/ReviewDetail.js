@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { Button, Icon, Image, Container, Card, Form } from 'semantic-ui-react';
+
 import * as actionCreators from '../store/actions/index';
-
-import { Button, Icon, Container, Card, Form } from 'semantic-ui-react';
-
-
-const getFormattedDate = () => {
-  const dateObject = new Date();
-  const year = dateObject.getFullYear();
-  const month = ('0' + (dateObject.getMonth() + 1)).slice(-2);
-  const date = ('0' + dateObject.getDate()).slice(-2);
-
-  return `${year}-${month}-${date}`;
-};
+import { getFormattedDate } from '../misc';
 
 
 const CommentCard = ({ comment }) => {
@@ -21,29 +13,32 @@ const CommentCard = ({ comment }) => {
 
   const currentUser = useSelector(state => state.user);
 
-  const [editMode, setEditMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editCommentInput, setEditCommentInput] = useState('');
-  const [enableEditConfirmButton, setEnableEditConfirmButton] = useState(true);
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
 
   const onClickEditCommentButton = () => {
     setEditCommentInput(comment.content);
-    setEditMode(true);
+    setIsEditing(true);
   };
 
+  // set waiting flag to disallow multiple submits before response arrives
+  // leave editing mode on success
   const onClickEditCommentConfirmButton = () => {
-    setEnableEditConfirmButton(false);
+    setIsWaitingResponse(true);
     dispatch(actionCreators.editComment(comment.id, editCommentInput))
       .then(() => {
-        setEditMode(false);
-        setEnableEditConfirmButton(true);
+        setIsEditing(false);
+        setIsWaitingResponse(false);
       });
   };
 
   const onClickEditCommentCancelButton = () => {
-    setEditMode(false);
+    setIsEditing(false);
   };
 
   const onClickDeleteCommentButton = () => {
+    setIsWaitingResponse(true);
     dispatch(actionCreators.deleteComment(comment.id));
   };
 
@@ -62,97 +57,101 @@ const CommentCard = ({ comment }) => {
       .catch(error => error);
   };
 
-  if (editMode) {
-    return (
-      <Card.Group>
-        <Card fluid>
-          <Card.Content>
-            <Card.Meta>
-              {comment.author_name}&emsp;
-              {comment.time_posted}
-            </Card.Meta>
-            <Form>
-              <Form.Field>
-                <textarea
-                  id='editCommentInput'
-                  value={editCommentInput}
-                  onChange={e => setEditCommentInput(e.target.value)}
-                  disabled={!enableEditConfirmButton}
-                  style={{ height: 100, minHeight: 100 }}
-                />
-              </Form.Field>
-            </Form>
-          </Card.Content>
-          <Card.Content extra>
-            <Button
-              id='editCommentConfirmButton'
-              onClick={onClickEditCommentConfirmButton}
-              content='Submit'
-              disabled={!enableEditConfirmButton || !editCommentInput}
-              basic
-              primary
-            />&ensp;
-            <Button
-              id='editCommentCancelButton'
-              onClick={onClickEditCommentCancelButton}
-              content='Cancel'
-              disabled={!enableEditConfirmButton}
-              basic
-              primary
-            />
-          </Card.Content>
-        </Card>
-      </Card.Group>
-    );
+  const editCommentCard = (
+    <Card.Group>
+      <Card fluid>
+        <Card.Content>
+          <Card.Meta>
+            {comment.author_name}&emsp;
+            {comment.time_posted}
+          </Card.Meta>
+          <Form>
+            <Form.Field>
+              <textarea
+                id='editCommentInput'
+                value={editCommentInput}
+                onChange={e => setEditCommentInput(e.target.value)}
+                disabled={isWaitingResponse}
+                rows={5}
+                style={{ resize: 'none' }}
+              />
+            </Form.Field>
+          </Form>
+        </Card.Content>
+        <Card.Content extra>
+          <Button
+            id='editCommentConfirmButton'
+            onClick={onClickEditCommentConfirmButton}
+            content='Submit'
+            disabled={isWaitingResponse || !editCommentInput}
+            basic
+            primary
+          />&ensp;
+          <Button
+            id='editCommentCancelButton'
+            onClick={onClickEditCommentCancelButton}
+            content='Cancel'
+            disabled={isWaitingResponse}
+            basic
+          />
+        </Card.Content>
+      </Card>
+    </Card.Group>
+  );
+
+  const viewCommentCard = (
+    <Card.Group>
+      <Card fluid>
+        <Card.Content>
+          <Card.Meta>
+            {comment.author_name}&emsp;
+            {comment.time_posted}&emsp;
+            {
+              currentUser.id === comment.user_id &&
+              <span style={isWaitingResponse ? { pointerEvents: 'none' } : {}}>
+                <a id='editCommentButton' onClick={onClickEditCommentButton}>Edit</a>&ensp;
+                <a id='deleteCommentButton' onClick={onClickDeleteCommentButton}>Delete</a>
+              </span>
+            }
+          </Card.Meta>
+          <Card.Description>
+            {comment.content}
+          </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+          <Icon
+            id='likeCommentButton'
+            onClick={onClickLikeCommentButton}
+            name='thumbs up'
+            link
+            color='blue'
+          />
+          {comment.likes}&emsp;
+          <Icon
+            id='dislikeCommentButton'
+            onClick={onClickDislikeCommentButton}
+            name='thumbs down'
+            link
+            color='red'
+          />
+          {comment.dislikes}&emsp;
+          <Icon
+            id='reportCommentButton'
+            onClick={onClickReportCommentButton}
+            name='warning circle'
+            link
+            color='red'
+          />
+          {comment.reports}
+        </Card.Content>
+      </Card>
+    </Card.Group >
+  );
+
+  if (isEditing) {
+    return editCommentCard;
   } else {
-    return (
-      <Card.Group>
-        <Card fluid>
-          <Card.Content>
-            <Card.Meta>
-              {comment.author_name}&emsp;
-              {comment.time_posted}&emsp;
-              {
-                currentUser.id === comment.user_id &&
-                <span>
-                  <a id='editCommentButton' onClick={onClickEditCommentButton}>Edit</a>&ensp;
-                  <a id='deleteCommentButton' onClick={onClickDeleteCommentButton}>Delete</a>
-                </span>
-              }
-            </Card.Meta>
-            <Card.Description>
-              {comment.content}
-            </Card.Description>
-          </Card.Content>
-          <Card.Content extra>
-            <Icon
-              id='likeCommentButton'
-              onClick={onClickLikeCommentButton}
-              name='thumbs up'
-              link
-              color='blue'
-            />
-            {comment.likes}&emsp;
-            <Icon
-              id='dislikeCommentButton'
-              onClick={onClickDislikeCommentButton}
-              name='thumbs down'
-              link
-              color='red'
-            />
-            {comment.dislikes}&emsp;
-            <Icon
-              id='reportCommentButton'
-              onClick={onClickReportCommentButton}
-              name='warning circle'
-              link
-              color='red'
-            />
-            {comment.reports}
-          </Card.Content>
-        </Card>
-      </Card.Group>
-    );
+    return viewCommentCard;
   }
 };
 
@@ -171,7 +170,7 @@ export const ReviewDetail = ({ match }) => {
   const [hasComments, setHasComments] = useState(false);
 
   const [newCommentInput, setNewCommentInput] = useState('');
-  const [enableWriteCommentButton, setEnableWriteCommentButton] = useState(true);
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
 
   // fetch review and comments on initial mount
   useEffect(() => {
@@ -190,6 +189,7 @@ export const ReviewDetail = ({ match }) => {
   };
 
   const onClickDeleteReviewButton = () => {
+    setIsWaitingResponse(true);
     dispatch(actionCreators.deleteReview(reviewId))
       .then(() => history.push(`/recipe/${storedReview.recipe_id}`));
   };
@@ -209,12 +209,14 @@ export const ReviewDetail = ({ match }) => {
       .catch(error => error);
   };
 
+  // set waiting flag to disallow multiple submits before response arrives
+  // clear comment input on success
   const onClickWriteCommentButton = () => {
-    setEnableWriteCommentButton(false);
+    setIsWaitingResponse(true);
     dispatch(actionCreators.postComment(reviewId, newCommentInput))
       .then(() => {
         setNewCommentInput('');
-        setEnableWriteCommentButton(true);
+        setIsWaitingResponse(false);
       });
   };
 
@@ -222,93 +224,104 @@ export const ReviewDetail = ({ match }) => {
     return <CommentCard comment={comment} key={comment.id} />;
   });
 
+  const reviewCard = (
+    <Card.Group>
+      <Card fluid>
+        {
+          storedReview.image_url &&
+          <Image src={storedReview.image_url} />
+        }
+        <Card.Content>
+          <Card.Header>
+            {storedReview.title}
+          </Card.Header>
+          <Card.Meta>
+            {storedReview.author_name}&emsp;
+            {storedReview.time_posted}&emsp;
+            {
+              currentUser.id === storedReview.user_id &&
+              <span style={isWaitingResponse ? { pointerEvents: 'none' } : {}}>
+                <a id='editReviewButton' onClick={onClickEditReviewButton}>Edit</a>&ensp;
+                <a id='deleteReviewButton' onClick={onClickDeleteReviewButton}>Delete</a>
+              </span>
+            }
+          </Card.Meta>
+          <Card.Description>
+            {storedReview.content}
+          </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+          <Icon
+            id='likeReviewButton'
+            onClick={onClickLikeReviewButton}
+            name='thumbs up'
+            link
+            color='blue'
+          />
+          {storedReview.likes}&emsp;
+          <Icon
+            id='dislikeReviewButton'
+            onClick={onClickDislikeReviewButton}
+            name='thumbs down'
+            link
+            color='red'
+          />
+          {storedReview.dislikes}&emsp;
+          <Icon
+            id='reportReviewButton'
+            onClick={onClickReportReviewButton}
+            name='warning circle'
+            link
+            color='red'
+          />
+          {storedReview.reports}
+        </Card.Content>
+      </Card>
+    </Card.Group>
+  );
+
+  const writeCommentCard = (
+    <Card.Group>
+      <Card fluid>
+        <Card.Content>
+          <Card.Meta>
+            {currentUser.name}&emsp;
+            {getFormattedDate()}
+          </Card.Meta>
+          <Form>
+            <Form.Field>
+              <textarea
+                id='newCommentInput'
+                value={newCommentInput}
+                onChange={e => setNewCommentInput(e.target.value)}
+                disabled={isWaitingResponse}
+                rows={5}
+                style={{ resize: 'none' }}
+                placeholder='Comment'
+              />
+            </Form.Field>
+          </Form>
+        </Card.Content>
+        <Card.Content extra>
+          <Button
+            id='writeCommentButton'
+            onClick={onClickWriteCommentButton}
+            content='Submit'
+            disabled={isWaitingResponse || !newCommentInput}
+            basic
+            primary
+          />
+        </Card.Content>
+      </Card>
+    </Card.Group>
+  );
+
   return (
     <Container text>
-      {/* review */}
-      <Card.Group>
-        <Card fluid>
-          <Card.Content>
-            <Card.Header>
-              {storedReview.title}
-            </Card.Header>
-            <Card.Meta>
-              {storedReview.author_name}&emsp;
-              {storedReview.time_posted}&emsp;
-              {
-                currentUser.id === storedReview.user_id &&
-                <span>
-                  <a id='editReviewButton' onClick={onClickEditReviewButton}>Edit</a>&ensp;
-                  <a id='deleteReviewButton' onClick={onClickDeleteReviewButton}>Delete</a>
-                </span>
-              }
-            </Card.Meta>
-            <Card.Description>
-              {storedReview.content}
-            </Card.Description>
-          </Card.Content>
-          <Card.Content extra>
-            <Icon
-              id='likeReviewButton'
-              onClick={onClickLikeReviewButton}
-              name='thumbs up'
-              link
-              color='blue'
-            />
-            {storedReview.likes}&emsp;
-            <Icon
-              id='dislikeReviewButton'
-              onClick={onClickDislikeReviewButton}
-              name='thumbs down'
-              link
-              color='red'
-            />
-            {storedReview.dislikes}&emsp;
-            <Icon
-              id='reportReviewButton'
-              onClick={onClickReportReviewButton}
-              name='warning circle'
-              link
-              color='red'
-            />
-            {storedReview.reports}
-          </Card.Content>
-        </Card>
-      </Card.Group>
+      {reviewCard}
       {
         currentUser.isAuthorized &&
-        /* write comment */
-        <Card.Group>
-          <Card fluid>
-            <Card.Content>
-              <Card.Meta>
-                {currentUser.name}&emsp;
-                {getFormattedDate()}
-              </Card.Meta>
-              <Form>
-                <Form.Field>
-                  <textarea
-                    id='newCommentInput'
-                    value={newCommentInput}
-                    onChange={e => setNewCommentInput(e.target.value)}
-                    disabled={!enableWriteCommentButton}
-                    style={{ height: 100, minHeight: 100 }}
-                    placeholder='Comment'
-                  />
-                </Form.Field>
-              </Form>
-            </Card.Content>
-            <Card.Content extra>
-              <Button
-                id='writeCommentButton'
-                onClick={onClickWriteCommentButton}
-                content='Submit'
-                disabled={!enableWriteCommentButton || !newCommentInput}
-                basic
-                primary
-              />
-            </Card.Content>
-          </Card>
-        </Card.Group>
+        writeCommentCard
       }
       {
         hasComments &&
