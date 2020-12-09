@@ -57,7 +57,7 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Ingredients',
       pane: (
-        <Tab.Pane key={0} attached={false}>
+        <Tab.Pane key={0}>
           {ingredients}
         </Tab.Pane>
       )
@@ -65,7 +65,7 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Directions',
       pane: (
-        <Tab.Pane key={1} attached={false}>
+        <Tab.Pane key={1}>
           {storedRecipe.content}
         </Tab.Pane>
       )
@@ -73,7 +73,7 @@ export const RecipeDetail = ({ match }) => {
     {
       menuItem: 'Reviews',
       pane: (
-        <Tab.Pane key={2} attached={false}>
+        <Tab.Pane key={2}>
           {
             hasReviews &&
             <ReviewTab reviews={storedReviews} recipeId={recipeId} />
@@ -122,7 +122,6 @@ export const RecipeDetail = ({ match }) => {
         </Item>
       </Item.Group>
       <Tab
-        menu={{ color: 'blue', secondary: true, pointing: true }}
         panes={panes}
         renderActiveOnly={false}
       />
