@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Card, Container, Dimmer, Form, Grid, Header, Icon, Image, Rating, Segment } from 'semantic-ui-react';
@@ -9,16 +9,18 @@ import * as actionCreators from '../store/actions/index';
 export const FrontPage = () => {
   const [searchInput, setSearchInput] = useState('');
 
+  const user = useSelector(state => state.user);
+
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // checks if recipes have been fetched
-  const [hasRecipes, setHasRecipes] = useState(false);
-
-  if (!hasRecipes) {
-    dispatch(actionCreators.fetchAllRecipes())
-      .then(() => { setHasRecipes(true); });
-  }
+  // fetch fridge items on initial mount
+  useEffect(() => {
+    dispatch(actionCreators.fetchAllRecipes());
+    if (user.isAuthorized) {
+      dispatch(actionCreators.getFridgeItemList(user.id));
+    }
+  }, []);
 
   const recipes = useSelector(state => state.recipe.recipes);
 
@@ -30,12 +32,12 @@ export const FrontPage = () => {
     </div>
   );
 
-  const recommendations = recipes.slice(-2).map((recipe, key) => (
-    <Card key={key} fluid>
+  const recommendations = recipes.slice(-2).map(recipe => (
+    <Card key={recipe.id} fluid>
       <Image src={`https://source.unsplash.com/512x512/?food,${recipe.id}`} />
       <Card.Content>
         <Card.Header>
-          <Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link>
+          <Link to={`/recipe/${recipe.id}/`}>{recipe.title}</Link>
         </Card.Header>
         <Card.Meta>
           {recipe.rating.toFixed(1)}&ensp;
@@ -105,14 +107,14 @@ export const FrontPage = () => {
               {fridgeItemList}
             </Segment>
             <Button primary
-              as={Link} to={`fridge/${userId}`}
+              as={Link} to={'/fridge/'}
               content='Go to My Fridge'
             />
             {dimmer}
           </Segment>
           <Segment>
             <Header content='Notifications' />
-            <Notification userId={userId}/>
+            <Notification userId={userId} />
             {/*<Message color='red'>
               Your review on <b>Spam</b> has been reported.
             </Message>

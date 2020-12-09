@@ -101,7 +101,7 @@ function App() {
       </Menu>
       <Switch>
         <Route exact path='/search/:q' component={RecipeSearchPage} />
-        <Route exact path='/fridge/:user_id' component={MyFridge} />
+        <Route exact path='/fridge/' component={MyFridge} />
         <Route exact path='/recipe/:recipe_id' component={RecipeDetail} />
         <Route exact path='/recipe/:recipe_id/create-review' component={ReviewCreator} />
         <Route exact path='/review/:review_id' component={ReviewDetail} />
