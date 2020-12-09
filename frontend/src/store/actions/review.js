@@ -93,7 +93,7 @@ export const dislikeReview = (id) => {
 
 
 export const reportReview_ = (id) => {
-  return { type: actionTypes.LIKE_REVIEW, targetId: id };
+  return { type: actionTypes.REPORT_REVIEW, targetId: id };
 };
 
 export const reportReview = (id) => {
