@@ -14,15 +14,16 @@ const reducer = (state = initialState, action) => {
       return { ...state, selectedReview: action.target };
     case actionTypes.ADD_REVIEW:
       return { ...state, reviews: state.reviews.concat(action.review) };
-    case actionTypes.EDIT_REVIEW:
-      var modified = state.reviews.map((review) => {
+    case actionTypes.EDIT_REVIEW: {
+      const reviews = state.reviews.map(review => {
         if (review.id === action.review.id) {
           return action.review;
         } else {
           return review;
         }
       });
-      return { ...state, reviews: modified };
+      return { ...state, reviews };
+    }
     case actionTypes.LIKE_REVIEW: {
       const review = state.selectedReview;
       return {
