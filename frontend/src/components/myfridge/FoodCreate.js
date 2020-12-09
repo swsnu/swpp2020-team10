@@ -1,90 +1,125 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Input, Form, Modal, Button, Segment } from 'semantic-ui-react';
+
 import * as actionCreators from '../../store/actions/index';
+import { getFormattedDate } from '../../misc';
 
-import { Button, Input, Label, Segment, Grid, Header } from 'semantic-ui-react';
-import './FoodPopup.css';
 
-export default function FoodCreate(props) {
+export const FoodCreate = ({ open, setOpen }) => {
   const dispatch = useDispatch();
 
-  // redux store state
   const userId = useSelector(state => state.user.id);
 
-  // local states
   const [name, setName] = useState('');
   const [type, setType] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [unit, setUnit] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  //const [open, setOpen] = useState(false);
+  const [expiryDate, setExpiryDate] = useState(getFormattedDate());
 
-  // go back to MyFridge page
-  const onClickBackButton = () => {
-    props.onEnd();
-  };
+  const [isWaitingResponse, setIsWaitingResponse] = useState(true);
 
-  // add new fridge item and go to MyFridge page
+  const style = { width: '8em' };
+
+  // add new fridge item and close food create modal
   const onClickAddButton = () => {
     const newFridgeItem = {
-      name, 'ingredient_id': type, quantity, unit, 'expiry_date': expiryDate,
+      name,
+      ingredient_id: type,
+      quantity,
+      unit,
+      expiry_date: expiryDate,
     };
 
+    // disallow multiple clicks
+    setIsWaitingResponse(false);
     dispatch(actionCreators.postFridgeItem(userId, newFridgeItem))
-      .then(() => {
-        props.onEnd();
-      });
-    //dispatch(actionCreators.postFridgeItem_(newFridgeItem));
-    //props.onEnd();
+      .then(() => setOpen(false));
   };
 
-  return (
-    <div id='base'>
-      <Grid id='FoodCreate' verticalAlign='middle' centered>
-        <Grid.Row>
-          <Grid.Column>
-            <Header as='h1'>Add New Food</Header>
-            <Segment id='foodInfo'>
-              <Input id='nameInput' type='text' value={name}
-                onChange={(event) => setName(event.target.value)}>
-                <Label basic>Name</Label>
-                <input />
-              </Input>
-              <Input id='typeInput' type='text' value={type}
-                onChange={(event) => setType(event.target.value)}>
-                <Label basic>Type</Label>
-                <input />
-              </Input>
-              <Input id='quantityInput' type='text' value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}>
-                <Label basic>Quantity</Label>
-                <input />
-              </Input>
-              <Input id='unitInput' type='text' value={unit}
-                onChange={(event) => setUnit(event.target.value)}>
-                <Label basic>Unit</Label>
-                <input />
-              </Input>
-              <Input id='expiryDateInput' type='text' value={expiryDate}
-                onChange={(event) => setExpiryDate(event.target.value)}>
-                <Label basic>Expiry Date</Label>
-                <input />
-              </Input>
-            </Segment>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row id='buttons'>
-          <Button id='addButton' onClick={() => onClickAddButton()}>
-            Add
-          </Button>
-          <Button id='backButton' onClick={() => onClickBackButton()}>
-            Back
-          </Button>
-        </Grid.Row>
-      </Grid>
-    </div>
+  const form = (
+    <Form>
+      <Form.Field>
+        <Input
+          id='nameInput'
+          value={name}
+          onChange={e => setName(e.target.value)}
+          label={{ basic: true, content: 'Name', style }}
+          labelPosition='left'
+        />
+      </Form.Field>
+      <Form.Field>
+        <Input
+          id='typeInput'
+          value={type}
+          onChange={e => setType(e.target.value)}
+          label={{ basic: true, content: 'Type', style }}
+          labelPosition='left'
+        />
+      </Form.Field>
+      <Form.Field>
+        <Input
+          id='quantityInput'
+          type='number'
+          value={quantity}
+          min={1}
+          onChange={e => setQuantity(e.target.value)}
+          label={{ basic: true, content: 'Quantity', style }}
+          labelPosition='left'
+        />
+      </Form.Field>
+      <Form.Field>
+        <Input
+          id='unitInput'
+          value={unit}
+          onChange={e => setUnit(e.target.value)}
+          label={{ basic: true, content: 'Unit', style }}
+          labelPosition='left'
+        />
+      </Form.Field>
+      <Form.Field>
+        <Input
+          id='expiryDateInput'
+          type='date'
+          value={expiryDate}
+          onChange={e => setExpiryDate(e.target.value)}
+          label={{ basic: true, content: 'Expiry Date', style }}
+          labelPosition='left'
+        />
+      </Form.Field>
+    </Form>
   );
-}
+
+  return (
+    <Modal
+      open={open}
+      dimmer='inverted'
+      size='tiny'
+    >
+      <Modal.Header content='Add fridge item' />
+      <Modal.Content>
+        <Segment>
+          {form}
+        </Segment>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          id='addButton'
+          onClick={onClickAddButton}
+          content='Submit'
+          disabled={!isWaitingResponse}
+        />
+        <Button
+          id='backButton'
+          onClick={() => setOpen(false)}
+          content='Back'
+          disabled={!isWaitingResponse}
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 /*
             <Accordion>
