@@ -19,12 +19,14 @@ export const Recommendation = () => {
   const isAuthorized = useSelector(state => state.user.isAuthorized);
   const recipe = useSelector(state => state.user.recommendation);
 
+  const [hasRecommendation, setHasRecommendation] = useState(false);
   const [enableReaction, setEnableReaction] = useState(true);
   const [thumbsUpColor, setThumbsUpColor] = useState('grey');
 
   // fetch recommendation on mount
   useEffect(() => {
-    dispatch(actionCreators.getRecommendation());
+    dispatch(actionCreators.getRecommendation())
+      .then(() => setHasRecommendation(true));
   }, []);
 
   const onClickLike = () => {
@@ -40,7 +42,7 @@ export const Recommendation = () => {
       .then(() => setEnableReaction(true));
   };
 
-  if (!recipe) {
+  if (!hasRecommendation) {
     return null;
   }
 
