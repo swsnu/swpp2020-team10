@@ -19,14 +19,18 @@ export const Recommendation = () => {
   const isAuthorized = useSelector(state => state.user.isAuthorized);
   const recipe = useSelector(state => state.user.recommendation);
 
+  const [hasRecommendation, setHasRecommendation] = useState(false);
   const [enableReaction, setEnableReaction] = useState(true);
+  const [thumbsUpColor, setThumbsUpColor] = useState('grey');
 
   // fetch recommendation on mount
   useEffect(() => {
-    dispatch(actionCreators.getRecommendation());
+    dispatch(actionCreators.getRecommendation())
+      .then(() => setHasRecommendation(true));
   }, []);
 
   const onClickLike = () => {
+    setThumbsUpColor('blue');
     setEnableReaction(false);
     sendReaction(recipe.id, 1);
   };
@@ -38,9 +42,11 @@ export const Recommendation = () => {
       .then(() => setEnableReaction(true));
   };
 
-  if (!recipe) {
+  if (!hasRecommendation) {
     return null;
   }
+
+  const recipeSteps = recipe.content.join(' ');
 
   return (
     <Card key={recipe.id} fluid>
@@ -63,10 +69,11 @@ export const Recommendation = () => {
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}
           <br />
-          {recipe.calories.toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Card.Meta>
         <Card.Description>
-          {recipe.content.substr(0, 100)}
+          {recipeSteps.substr(0, 100)}
+          {recipeSteps.length > 100 ? '...' : ''}
         </Card.Description>
       </Card.Content>
       {
@@ -74,14 +81,16 @@ export const Recommendation = () => {
         <Card.Content extra>
           <Icon
             name='thumbs up'
-            link
+            link={enableReaction}
             onClick={onClickLike}
+            color={thumbsUpColor}
             disabled={!enableReaction}
           />&ensp;
           <Icon
             name='thumbs down'
-            link
+            link={enableReaction}
             onClick={onClickDislike}
+            color='grey'
             disabled={!enableReaction}
           />
         </Card.Content>

@@ -24,33 +24,17 @@ const reducer = (state = initialState, action) => {
       });
       return { ...state, reviews };
     }
-    case actionTypes.LIKE_REVIEW: {
-      const review = state.selectedReview;
-      return {
-        ...state,
-        selectedReview: {
-          ...review,
-          likes: review.likes + 1,
-        }
-      };
-    }
-    case actionTypes.DISLIKE_REVIEW: {
-      const review = state.selectedReview;
-      return {
-        ...state,
-        selectedReview: {
-          ...review,
-          dislikes: review.dislikes + 1,
-        }
-      };
-    }
+    case actionTypes.LIKE_REVIEW:
+    case actionTypes.DISLIKE_REVIEW:
     case actionTypes.REPORT_REVIEW: {
       const review = state.selectedReview;
       return {
         ...state,
         selectedReview: {
           ...review,
-          reports: review.reports + 1,
+          likes: action.likes,
+          dislikes: action.dislikes,
+          reports: action.reports,
         }
       };
     }

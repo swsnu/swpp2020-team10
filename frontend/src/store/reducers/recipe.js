@@ -16,8 +16,8 @@ const reducer = (state = initialState, action) => {
         ...state,
         selectedRecipe: {
           ...recipe,
-          rating: (recipe.rating * recipe.count_ratings + action.rating) / (recipe.count_ratings + 1),
-          count_ratings: recipe.count_ratings + 1,
+          rating: action.rating,
+          count_ratings: action.count_ratings,
         }
       };
     }

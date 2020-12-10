@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { Button, Icon, Image, Container, Card, Form } from 'semantic-ui-react';
 
@@ -234,12 +234,6 @@ export const ReviewDetail = ({ match }) => {
         <Card.Content>
           <Card.Header>
             {storedReview.title}
-            <Icon
-              id='backToRecipeButton'
-              link 
-              name='triangle left'
-              onClick={() => history.push(`/recipe/${storedReview.recipe_id}/`)} 
-            />
           </Card.Header>
           <Card.Meta>
             {storedReview.author_name}&emsp;
@@ -325,6 +319,11 @@ export const ReviewDetail = ({ match }) => {
   return (
     <Container text>
       {reviewCard}
+      <div style={{ textAlign: 'right' }}>
+        <Link to={`/recipe/${storedReview.recipe_id}/`}>
+          <Icon name='triangle left' />Back to recipe
+        </Link>
+      </div>
       {
         currentUser.isAuthorized &&
         writeCommentCard

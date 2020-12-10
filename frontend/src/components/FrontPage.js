@@ -76,8 +76,8 @@ export const FrontPage = () => {
             backgroundSize: 'cover',
           }}>
             <Header content='My Fridge' />
-            <Segment>
-              {fridgeItemList}
+            <Segment style={{ minHeight: 100 }}>
+              {fridgeItemList.length ? fridgeItemList : 'Your fridge is empty.'}
             </Segment>
             <Button primary
               as={Link}
