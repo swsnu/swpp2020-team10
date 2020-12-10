@@ -6,6 +6,7 @@ const initialState = {
   id: null,
   name: null,
   noti: null,
+  recommendation: null,
 };
 
 const reducer = (state = initialState, action) => {
@@ -29,6 +30,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         noti: action.noti,
+      };
+    case actionTypes.GET_RECOMMENDATION:
+      return {
+        ...state,
+        recommendation: action.recommendation,
       };
     default:
       return state;

@@ -52,7 +52,7 @@ export const checkUserStatus = () => {
 };
 
 
-export const notification_ = (noti) => {
+const notification_ = (noti) => {
   return {
     type: actionTypes.GET_NOTIFICATION,
     noti: noti,
@@ -64,6 +64,24 @@ export const notification = (userId) => {
     return axios.get(`/api/user/${userId}/notification/`)
       .then(response => {
         dispatch(notification_(response.data));
+        return response;
+      });
+  };
+};
+
+
+const getRecommendation_ = (recommendation) => {
+  return {
+    type: actionTypes.GET_RECOMMENDATION,
+    recommendation,
+  };
+};
+
+export const getRecommendation = () => {
+  return dispatch => {
+    return axios.get('/api/recommendation/')
+      .then(response => {
+        dispatch(getRecommendation_(response.data));
         return response;
       });
   };

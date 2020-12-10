@@ -24,9 +24,10 @@ const itemNotification = (item, key) => (
 );
 
 
-export const Notification = ({ userId }) => {
+export const Notification = () => {
   const dispatch = useDispatch();
 
+  const id = useSelector(state => state.user.id);
   const isAuthorized = useSelector(state => state.user.isAuthorized);
   const name = useSelector(state => state.user.name);
   const noti = useSelector(state => state.user.noti);
@@ -34,7 +35,7 @@ export const Notification = ({ userId }) => {
   // fetch notifications on mount
   useEffect(() => {
     if (isAuthorized) {
-      dispatch(actionCreators.notification(userId));
+      dispatch(actionCreators.notification(id));
     }
   }, []);
 
