@@ -66,7 +66,7 @@ def recommend_recipe(request):
                     feasible_list.append(r)
 
         if len(feasible_list) == 0:
-            return None
+            return random_draw(request)
 
         # For each feasible recipe, compute score
         cdf = []
@@ -109,7 +109,7 @@ def recommend_recipe(request):
                 sqscs += pow(recipe['score'], 2)
 
         if sqscs == 0:
-            return choice(feasible_list)
+            return random_draw(request)
         # Probability ~ (Score)^2
 
         for r in feasible_list:
