@@ -59,7 +59,6 @@ def recommendation_react(request):
 
     Preference.objects.filter(user_id=request_user_id) \
         .update(label_norm=lab_norm, ingredient_norm=ing_norm)
-    print("Preference updated")
     print(my_label_preference)
     print(my_ing_preference)
     print(lab_norm, ing_norm)
