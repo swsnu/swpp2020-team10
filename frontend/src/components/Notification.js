@@ -34,6 +34,8 @@ export const Notification = () => {
 
   const [hasNoti, setHasNoti] = useState(false);
 
+  const defaultMessage = 'You have no new notifications.';
+
   // fetch notifications on mount
   useEffect(() => {
     if (isAuthorized) {
@@ -42,8 +44,8 @@ export const Notification = () => {
     }
   }, []);
 
-  if (!hasNoti) {
-    return null;
+  if (!hasNoti || !noti) {
+    return defaultMessage;
   }
 
   const itemNotifications =
@@ -63,6 +65,6 @@ export const Notification = () => {
   if (notifications.length) {
     return notifications;
   } else {
-    return 'You have no new notifications.';
+    return defaultMessage;
   }
 };
