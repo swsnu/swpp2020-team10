@@ -32,8 +32,6 @@ def recommend_recipe(request):
     for it in FridgeItem.objects.filter(user_id=request_user_id).all().values():
         my_ingredients.add(it['id'])
 
-    # If giant JsonField is better, we will go with that
-    # Then load jsons to my_label_preference, my_ing_preference
     for it in LabelPreference.objects.filter(user_id=request_user_id).all().values():
         my_label_preference[it['name']] = it['score']
 
@@ -96,6 +94,7 @@ def recommend_recipe(request):
         # 1 negative => Out of recommendation seems wrong.
         # Possible fix : exclude only when score <= crit (crit might be -10 or something)
         # Also, give 'small probability' for might-dislikes.
+        # Does 0.1 work?
         recipe['score'] = 0.1 + LS + IS
         if recipe['score'] >= 0:
             sqscs += pow(recipe['score'], 2)
