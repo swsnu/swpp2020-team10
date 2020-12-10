@@ -138,6 +138,34 @@ const ReviewTab = ({ reviews, recipeId }) => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
+  const reviewCards = (
+    <Card.Group>
+      {reviews.map(review => (
+        <Card key={review.id} fluid>
+          <Card.Content>
+            <Card.Header>
+              <Link id='review-link' to={`/review/${review.id}`}>
+                {review.title}
+              </Link>
+            </Card.Header>
+            <Card.Meta>
+              By {review.author_name}
+            </Card.Meta>
+            <Card.Description>
+              {review.content.substr(0, 100)}
+              {review.content.length > 100 ? '...' : ''}
+            </Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+            <Icon name='thumbs up' /> {review.likes}&emsp;
+            <Icon name='thumbs down' /> {review.dislikes}&emsp;
+            <Icon name='warning circle' /> {review.reports}
+          </Card.Content>
+        </Card>
+      ))}
+    </Card.Group>
+  );
+
   return (
     <div className='review'>
       <div>
@@ -151,31 +179,11 @@ const ReviewTab = ({ reviews, recipeId }) => {
         />
       </div>
       <br />
-      <Card.Group>
-        {reviews.map(review => (
-          <Card key={review.id} fluid>
-            <Card.Content>
-              <Card.Header>
-                <Link id='review-link' to={`/review/${review.id}`}>
-                  {review.title}
-                </Link>
-              </Card.Header>
-              <Card.Meta>
-                By {review.author_name}
-              </Card.Meta>
-              <Card.Description>
-                {review.content.substr(0, 100)}
-                {review.content.length > 100 ? '...' : ''}
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              <Icon name='thumbs up' /> {review.likes}&emsp;
-              <Icon name='thumbs down' /> {review.dislikes}&emsp;
-              <Icon name='warning circle' /> {review.reports}
-            </Card.Content>
-          </Card>
-        ))}
-      </Card.Group>
+      {
+        reviews.length
+          ? reviewCards
+          : 'No reviews yet.'
+      }
     </div>
   );
 };

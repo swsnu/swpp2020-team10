@@ -80,9 +80,9 @@ export const MyFridge = () => {
             textAlign='center'
           />
         </Segment>
-        <Segment>
+        <Segment style={{minHeight: 350}}>
           <Grid padded verticalAlign='bottom'>
-            {fridgeItemRows}
+            {fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.'}
           </Grid>
         </Segment>
         <Segment textAlign='right' color='blue' inverted tertiary>

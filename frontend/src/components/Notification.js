@@ -57,6 +57,12 @@ export const Notification = () => {
       .map((comment, key) =>
         commentNotification(comment, key + itemNotification.length)
       );
+    
+  const notifications = itemNotifications.concat(commentNotifications);
 
-  return itemNotifications.concat(commentNotifications);
+  if (notifications.length) {
+    return notifications;
+  } else {
+    return 'You have no new notifications.';
+  }
 };

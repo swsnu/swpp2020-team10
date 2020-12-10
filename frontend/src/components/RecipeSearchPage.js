@@ -370,7 +370,11 @@ export const RecipeSearchPage = ({ match }) => {
         filterTab
       }
       <Item.Group divided>
-        {searchResults}
+        {
+          searchResults.length
+            ? searchResults
+            : !loadingRecipes && 'No results found.'
+        }
       </Item.Group>
       <Visibility
         once={false}
