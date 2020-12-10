@@ -42,7 +42,7 @@ class FridgeItem(models.Model):
     expiry_date = models.DateTimeField(blank=True, null=True, default=now)
 
 class Recipe(models.Model):
-    title = models.CharField(max_length=80)
+    title = models.TextField()
     ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
     content = models.TextField(default='')
     image = models.TextField(default='', blank=True)
