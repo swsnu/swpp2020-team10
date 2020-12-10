@@ -285,42 +285,45 @@ export const RecipeSearchPage = ({ match }) => {
     </Segment>
   );
 
-  const searchResults = recipes.map(recipe => (
-    <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
-      <Item.Image
-        src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
-        size='small'
-      />
-      <Item.Content>
-        <Item.Header>
-          {recipe.title}
-        </Item.Header>
-        <Item.Meta>
-          ({recipe.rating.toFixed(1)})&ensp;
-          <Rating
-            rating={recipe.rating}
-            maxRating={5}
-            icon='star'
-            size='mini'
-            disabled
-          />
-        </Item.Meta>
-        <Item.Meta>
-          {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
-          {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-          {recipe.calories.toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
-        </Item.Meta>
-        <Item.Description>
-          {recipe.content.substr(0, 200)}
-          {recipe.content.length > 200 ? '...' : ''}
-        </Item.Description>
-        <Item.Extra>
-          {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
-          {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
-        </Item.Extra>
-      </Item.Content>
-    </Item>
-  ));
+  const searchResults = recipes.map(recipe => {
+    const recipeSteps = recipe.content.join(' ');
+    return (
+      <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
+        <Item.Image
+          src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
+          size='small'
+        />
+        <Item.Content>
+          <Item.Header>
+            {recipe.title}
+          </Item.Header>
+          <Item.Meta>
+            ({recipe.rating.toFixed(1)})&ensp;
+            <Rating
+              rating={recipe.rating}
+              maxRating={5}
+              icon='star'
+              size='mini'
+              disabled
+            />
+          </Item.Meta>
+          <Item.Meta>
+            {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
+            {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
+            {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          </Item.Meta>
+          <Item.Description>
+            {recipeSteps.substr(0, 200)}
+            {recipeSteps.length > 200 ? '...' : ''}
+          </Item.Description>
+          <Item.Extra>
+            {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+            {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+          </Item.Extra>
+        </Item.Content>
+      </Item>
+    );
+  });
 
   return (
     <Container text>

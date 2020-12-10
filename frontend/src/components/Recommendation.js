@@ -42,6 +42,8 @@ export const Recommendation = () => {
     return null;
   }
 
+  const recipeSteps = recipe.content.join(' ');
+
   return (
     <Card key={recipe.id} fluid>
       <Image src={recipe.image || `https://source.unsplash.com/512x512/?food,${recipe.id}`} />
@@ -63,10 +65,11 @@ export const Recommendation = () => {
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}
           <br />
-          {recipe.calories.toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Card.Meta>
         <Card.Description>
-          {recipe.content.substr(0, 100)}
+          {recipeSteps.substr(0, 100)}
+          {recipeSteps.length > 100 ? '...' : ''}
         </Card.Description>
       </Card.Content>
       {
