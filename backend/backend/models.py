@@ -43,8 +43,8 @@ class FridgeItem(models.Model):
 
 class Recipe(models.Model):
     title = models.TextField()
-    ingredient_lines = ArrayField(models.TextField(default='', blank=True),default=list, blank=True)
-    content = models.TextField(default='')
+    ingredient_lines = ArrayField(models.TextField(default='', blank=True), default=list, blank=True)
+    content = ArrayField(models.TextField(default='', blank=True), default=list, blank=True)
     image = models.TextField(default='', blank=True)
     rating = models.FloatField(default=0.0)
     count_ratings = models.IntegerField(default=0)
@@ -129,6 +129,7 @@ class RecipeProfile(models.Model):
         related_name='recipe_profile_review_id',
         default=None,
     )
+    rating = models.FloatField(default=0.0)
 
 class ReviewProfile(models.Model):
     user = models.ForeignKey(
@@ -143,6 +144,9 @@ class ReviewProfile(models.Model):
         related_name='review_profile_review_id',
         default=None,
     )
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
+    reports = models.IntegerField(default=0)
 
 class CommentProfile(models.Model):
     user = models.ForeignKey(
@@ -157,6 +161,9 @@ class CommentProfile(models.Model):
         related_name='comment_profile_comment_id',
         default=None,
     )
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
+    reports = models.IntegerField(default=0)
 
 class Preference(models.Model):
     user = models.ForeignKey(

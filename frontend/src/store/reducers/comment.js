@@ -24,30 +24,17 @@ const reducer = (state = initialState, action) => {
       });
       return { ...state, comments };
     }
-    case actionTypes.LIKE_COMMENT: {
-      const comments = state.comments.map(comment => {
-        if (comment.id === action.targetId) {
-          return { ...comment, likes: comment.likes + 1 };
-        } else {
-          return comment;
-        }
-      });
-      return { ...state, comments };
-    }
-    case actionTypes.DISLIKE_COMMENT: {
-      const comments = state.comments.map(comment => {
-        if (comment.id === action.targetId) {
-          return { ...comment, dislikes: comment.dislikes + 1 };
-        } else {
-          return comment;
-        }
-      });
-      return { ...state, comments };
-    }
+    case actionTypes.LIKE_COMMENT:
+    case actionTypes.DISLIKE_COMMENT:
     case actionTypes.REPORT_COMMENT: {
       const comments = state.comments.map(comment => {
         if (comment.id === action.targetId) {
-          return { ...comment, reports: comment.reports + 1 };
+          return {
+            ...comment,
+            likes: action.likes,
+            dislikes: action.dislikes,
+            reports: action.reports,
+          };
         } else {
           return comment;
         }

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 
-import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon } from 'semantic-ui-react';
+import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon, List } from 'semantic-ui-react';
 
 import * as actionCreators from '../store/actions/index';
 
@@ -36,7 +36,7 @@ export const RecipeDetail = ({ match }) => {
   const onRate = (e, { rating }) => {
     setEnableRating(false);
     dispatch(actionCreators.addRecipeRatingById(recipeId, rating))
-      .catch(error => error);
+      .then(() => setEnableRating(true));
   };
 
   const ingredients = (
@@ -66,7 +66,9 @@ export const RecipeDetail = ({ match }) => {
       menuItem: 'Directions',
       pane: (
         <Tab.Pane key={1}>
-          {storedRecipe.content}
+          <List ordered relaxed>
+            {storedRecipe.content.map((line, key) => <List.Item content={line} key={key} />)}
+          </List>
         </Tab.Pane>
       )
     },
