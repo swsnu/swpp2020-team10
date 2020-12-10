@@ -33,12 +33,16 @@ def recommendation_react(request):
     # Label preference update
 
     for label in target_recipe['diet_labels']:
+        if label not in my_label_preference:
+            continue
         my_label_preference[label] += reaction
         lab_norm += my_label_preference[label] * 2 * reaction - 1
         print(f"{my_label_preference[label]-reaction} => {my_label_preference[label]} : add {my_label_preference[label] * 2 * reaction - 1}")
         LabelPreference.objects.filter(user_id=request_user_id, name=label).update(score=my_label_preference[label])
 
     for label in target_recipe['health_labels']:
+        if label not in my_label_preference:
+            continue
         my_label_preference[label] += reaction
         lab_norm += my_label_preference[label] * 2 * reaction - 1
         print(f"{my_label_preference[label]-reaction} => {my_label_preference[label]} : add {my_label_preference[label] * 2 * reaction - 1}")
@@ -46,6 +50,8 @@ def recommendation_react(request):
 
     for it in IngredientIncidence.objects.filter(recipe_id=target_recipe['id']).values():
         ing = Ingredient.objects.filter(id=it['ingredient_id']).all().values()[0]['id']
+        if ing not in my_ing_preference:
+            continue
         my_ing_preference[ing] += reaction
         ing_norm += my_ing_preference[ing] * 2 * reaction - 1
         IngredientPreference.objects.filter(user_id=request_user_id, name=ing) \
