@@ -2,10 +2,13 @@ import json
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
+from django.views.decorators.csrf import csrf_exempt
+
 from ..models import Comment, CommentProfile
 from .util import json_default
 # Fetches comment by id
 # JSON format follows design document - modelscd
+@csrf_exempt
 def comment_by_id(request, _id):
     try:
         comment = json.dumps(Comment.objects.filter(id=_id).all().values()[0],default=json_default)
@@ -37,6 +40,7 @@ def comment_by_id(request, _id):
 
 # GET : Fetches comment with given review id
 # PUT : Creates new comment on given review
+@csrf_exempt
 def review_comment(request, _id):
     comments = json.dumps(list(Comment.objects.filter(review_id=_id).all().values()),default=json_default)
     if request.method == 'GET':
@@ -60,6 +64,7 @@ def review_comment(request, _id):
 # Give Reaction
 # PUT : Updates reaction, given {"like" : 1, "report" : 0} for like, (-1, 0) for dislike,
 # (0, 1) for report. Other values shall not be feeded.
+@csrf_exempt
 def reaction(request, _id):
     # Reaction needs login
     if not request.user.is_authenticated:
