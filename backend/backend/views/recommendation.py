@@ -5,13 +5,17 @@ from django.forms.models import model_to_dict
 from ..models import *
 from .util import json_default
 from bisect import bisect
-from random import random, choice
+from random import random, choice, sample
 
 
 TOTAL_NUMBER_OF_LABELS = 50
 TOTAL_NUMBER_OF_INGS = 1e4
-# Very inefficient implementation (Proof of concept)
+
 def recommend_recipe(request):
+    if not request.user.is_authenticated:
+        all_recipes = list(Recipe.objects.all().values())
+        random_recipes = sample(all_recipes, 3)
+        return list(random_recipes)
     request_user_id = request.user.id
     rec_ing_list = dict()
     # Create if this is first time
@@ -111,6 +115,8 @@ def recommend_recipe(request):
             cdf.append(cdf[-1] + pr)
         print(f"{r} : {pr}")
 
-    rec_ind = bisect(cdf,random())
-    recipe = feasible_list[rec_ind]
-    return recipe
+    chosen_recipes = set()
+    while len(chosen_recipes) < 3:
+        rec_ind = bisect(cdf,random())
+        chosen_recipes.add(rec_ind)
+    return [feasible_list[rec_ind] for rec_ind in chosen_recipes]

@@ -1,8 +1,7 @@
 from django.contrib import admin
 from .models import SearchSetting, FridgeItem, Recipe, Review, Comment, \
-                    RecipeProfile, ReviewProfile, CommentProfile, \
-                    Preference, LabelPreference, IngredientPreference, Ingredient, \
-
+    RecipeProfile, ReviewProfile, CommentProfile, \
+    Preference, LabelPreference, IngredientPreference, Ingredient, IngredientIncidence
 
 admin.site.register(SearchSetting)
 admin.site.register(FridgeItem)
