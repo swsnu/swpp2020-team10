@@ -2,7 +2,8 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.contrib.postgres.search import SearchVector, TrigramSimilarity
 from django.db.models import Q
-from backend.models import Recipe
+from backend.models import Recipe, FridgeItem, IngredientIncidence
+
 
 # Fetches setting by user id
 def search(request):
@@ -17,6 +18,7 @@ def search(request):
         health_labels = request.GET.getlist('health_labels')
         calories = request.GET.get('calorie')
         cooking_time = request.GET.get('time')
+        fridge_able = bool(request.GET.get('fridge_able') == "True")
         
         query = Recipe.objects
 
@@ -46,7 +48,35 @@ def search(request):
                 query = query.order_by('-rating')
 
         filtered_recipes = query.all()[filter_from:filter_to].values()
-        recipes = [recipe for recipe in filtered_recipes]
+        feasible_recipes = []
+        if not fridge_able:
+            feasible_recipes = filtered_recipes
+        else:
+            try:
+                my_ingredients = set()
+                rec_ing_list = dict()
+                for it in FridgeItem.objects.filter(user_id=request.user.id).all().values():
+                    my_ingredients.add(it['id'])
+                for it in IngredientIncidence.objects.all().values():
+                    if it['recipe_id'] in rec_ing_list:
+                        rec_ing_list[it['recipe_id']].append(it['ingredient_id'])
+                    else:
+                        rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
+                for r in filtered_recipes:
+                    if r['id'] not in rec_ing_list:
+                        feasible_recipes.append(r)
+                    else:
+                        r_ing = rec_ing_list[r['id']]
+                        flag = True
+                        for ing in r_ing:
+                            if ing not in my_ingredients:
+                                flag = False
+                                break
+                        if flag is True:
+                            feasible_recipes.append(r)
+            except (KeyError, ValueError, IndexError):
+                feasible_recipes = filtered_recipes
+        recipes = [recipe for recipe in feasible_recipes]
         response_data = {
             'count': len(recipes),
             'recipes': recipes
