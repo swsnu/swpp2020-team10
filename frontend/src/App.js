@@ -64,7 +64,11 @@ function App() {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
-  if (!userIsAuthorized) {
+  if (userIsAuthorized === null) {
+    return null;
+  }
+
+  if (userIsAuthorized === false) {
     return (
       <Router>
         <Switch>
@@ -73,8 +77,6 @@ function App() {
           <WrappedRoute exact path='/search/:q' component={RecipeSearchPage} />
           <WrappedRoute exact path='/recipe/:recipe_id' component={RecipeDetail} />
           <WrappedRoute exact path='/review/:review_id' component={ReviewDetail} />
-          <WrappedRoute exact path='/review/:recipe_id/create' component={ReviewCreator} />
-          <WrappedRoute exact path='/review/:review_id/edit' component={ReviewEditor} />
           <WrappedRoute exact path='/' component={FrontPage} />
           <Redirect to='/' />
         </Switch>
@@ -99,10 +101,10 @@ function App() {
       </Menu>
       <Switch>
         <Route exact path='/search/:q' component={RecipeSearchPage} />
-        <Route exact path='/fridge/:user_id' component={MyFridge} />
+        <Route exact path='/fridge/' component={MyFridge} />
         <Route exact path='/recipe/:recipe_id' component={RecipeDetail} />
+        <Route exact path='/recipe/:recipe_id/create-review' component={ReviewCreator} />
         <Route exact path='/review/:review_id' component={ReviewDetail} />
-        <Route exact path='/review/:recipe_id/create' component={ReviewCreator} />
         <Route exact path='/review/:review_id/edit' component={ReviewEditor} />
         <Route exact path='/' component={FrontPage} />
         <Redirect to='/' />

@@ -52,7 +52,7 @@ def review_comment(request, _id):
             return HttpResponse(status=400)
         new_comment = Comment(review_id=_id, content=content, user=request.user)
         new_comment.save()
-        new_comment_dict = model_to_dict(new_comment)
+        new_comment_dict = Comment.objects.filter(id=new_comment.id).values().get()
         return HttpResponse(json.dumps(new_comment_dict,default=json_default), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
