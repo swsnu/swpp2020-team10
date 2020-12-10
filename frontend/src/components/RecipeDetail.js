@@ -89,7 +89,7 @@ export const RecipeDetail = ({ match }) => {
         <Item>
           <Item.Image
             size='medium'
-            src={`https://source.unsplash.com/512x512/?soup`} />
+            src={storedRecipe.image || `https://source.unsplash.com/512x512/?soup`} />
           <Item.Content>
             <Item.Header>
               <Header as='h1' content={storedRecipe.title} />

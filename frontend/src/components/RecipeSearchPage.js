@@ -288,7 +288,7 @@ export const RecipeSearchPage = ({ match }) => {
   const searchResults = recipes.map(recipe => (
     <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
       <Item.Image
-        src={`https://source.unsplash.com/512x512/?soup,${recipe.id}`}
+        src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
         size='small'
       />
       <Item.Content>

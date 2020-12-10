@@ -44,11 +44,7 @@ export const Recommendation = () => {
 
   return (
     <Card key={recipe.id} fluid>
-      {
-        recipe.image
-          ? <Image src={recipe.image} />
-          : <Image src={`https://source.unsplash.com/512x512/?food,${recipe.id}`} />
-      }
+      <Image src={recipe.image || `https://source.unsplash.com/512x512/?food,${recipe.id}`} />
       <Card.Content>
         <Card.Header>
           <Link to={`/recipe/${recipe.id}/`}>{recipe.title}</Link>
