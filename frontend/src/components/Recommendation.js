@@ -20,6 +20,7 @@ export const Recommendation = () => {
   const recipe = useSelector(state => state.user.recommendation);
 
   const [enableReaction, setEnableReaction] = useState(true);
+  const [thumbsUpColor, setThumbsUpColor] = useState('grey');
 
   // fetch recommendation on mount
   useEffect(() => {
@@ -27,6 +28,7 @@ export const Recommendation = () => {
   }, []);
 
   const onClickLike = () => {
+    setThumbsUpColor('blue');
     setEnableReaction(false);
     sendReaction(recipe.id, 1);
   };
@@ -77,14 +79,16 @@ export const Recommendation = () => {
         <Card.Content extra>
           <Icon
             name='thumbs up'
-            link
+            link={enableReaction}
             onClick={onClickLike}
+            color={thumbsUpColor}
             disabled={!enableReaction}
           />&ensp;
           <Icon
             name='thumbs down'
-            link
+            link={enableReaction}
             onClick={onClickDislike}
+            color='grey'
             disabled={!enableReaction}
           />
         </Card.Content>
