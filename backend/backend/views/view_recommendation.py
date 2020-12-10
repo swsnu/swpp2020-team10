@@ -3,8 +3,6 @@ from .recommendation import *
 
 
 def recommendation(request):
-    if not request.user.is_authenticated:
-        return HttpResponse("You are not logged in\n",status=401)
     if not request.method == 'GET':
         return HttpResponseNotAllowed(['GET'])
     result = recommend_recipe(request)
