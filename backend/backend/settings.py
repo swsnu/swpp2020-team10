@@ -24,7 +24,7 @@ SECRET_KEY = 'cm_ep#rwnq%-07%z@ey9mtj$0sklyvt161l25z_d59&f&63+mf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'myfridge.site']
 
 
 # Application definition
@@ -123,3 +123,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+

@@ -6,6 +6,10 @@ from backend.models import Recipe, RecipeProfile
 
 # Fetches all recipes and returns JSON object
 # JSON format follows design document - modelscd
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
 def recipes(request):
     if request.method == "GET":
         recipe_list = json.dumps(list(Recipe.objects.all().values()))
@@ -14,6 +18,7 @@ def recipes(request):
 
 # GET : Fetches recipe with given ID and returns JSON object
 # PUT : Updates Rating of recipe, given {"recipe_id":"1", "rating":"2"} style json.
+@csrf_exempt
 def recipe_by_id(request, _id):
     if request.method == 'GET':
         try:

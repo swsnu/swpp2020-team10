@@ -8,6 +8,8 @@ from backend.models import FridgeItem
 # Users cannot send request to here without authentication
 # -> authentication already ensured by frontend, so
 # checks for authentication is not needed here
+from django.views.decorators.csrf import csrf_exempt
+
 
 def json_default(value):
     return value.strftime('%Y-%m-%d')
@@ -53,6 +55,7 @@ def manage_fridge(request, _id):
 # GET: fetches fridgeItem by id
 # PUT: updates fridgeItem by id
 # DELETE: deletes fridgeItem by id
+@csrf_exempt
 def fridge_by_id(request, _id):
     try:
         fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0],

@@ -89,7 +89,7 @@ export const RecipeDetail = ({ match }) => {
         <Item>
           <Item.Image
             size='medium'
-            src={`https://source.unsplash.com/512x512/?soup`} />
+            src={storedRecipe.image || `https://source.unsplash.com/512x512/?soup`} />
           <Item.Content>
             <Item.Header>
               <Header as='h1' content={storedRecipe.title} />
@@ -111,7 +111,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{storedRecipe.calories}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
+              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}

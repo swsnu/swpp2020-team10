@@ -124,6 +124,7 @@ export const RecipeSearchPage = ({ match }) => {
     let toParam = 'to=' + (reset ? 1 : pageCount + 1) * pageSize;
     let qParam = 'q=' + searchInput;
     let sortParam = sort ? 'sort=' + sort : '';
+    let fridgeParam = enableFridge ? 'fridge_able' : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
     let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
@@ -135,6 +136,7 @@ export const RecipeSearchPage = ({ match }) => {
       toParam,
       qParam,
       sortParam,
+      fridgeParam,
       timeParam,
       ratingParam,
       calorieParam,
@@ -286,7 +288,7 @@ export const RecipeSearchPage = ({ match }) => {
   const searchResults = recipes.map(recipe => (
     <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
       <Item.Image
-        src={`https://source.unsplash.com/512x512/?soup,${recipe.id}`}
+        src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
         size='small'
       />
       <Item.Content>
@@ -306,7 +308,7 @@ export const RecipeSearchPage = ({ match }) => {
         <Item.Meta>
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-          {recipe.calories}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          {recipe.calories.toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
         </Item.Meta>
         <Item.Description>
           {recipe.content.substr(0, 200)}
@@ -321,7 +323,7 @@ export const RecipeSearchPage = ({ match }) => {
   ));
 
   return (
-    <Container text style={{ marginTop: '1em' }}>
+    <Container text>
       <Segment color='blue' inverted tertiary>
         <Grid>
           <Grid.Column verticalAlign='middle' width={1}>

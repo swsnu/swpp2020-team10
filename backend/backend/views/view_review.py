@@ -3,10 +3,13 @@ from datetime import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
+from django.views.decorators.csrf import csrf_exempt
+
 from ..models import Review, ReviewProfile
 from .util import json_default
 # Fetches review by id
 # JSON format follows design document - modelscd
+@csrf_exempt
 def review_by_id(request, _id):
     try:
         review = json.dumps(Review.objects.filter(id=_id).all().values()[0],default=json_default)
@@ -43,6 +46,7 @@ def review_by_id(request, _id):
 
 # GET : Fetches review with given recipe id
 # POST : Creates new review on given recipe
+@csrf_exempt
 def recipe_review(request, _id):
     reviews = json.dumps(list(Review.objects.filter(recipe_id=_id).all().values()),default=json_default)
     if request.method == 'GET':
@@ -70,6 +74,7 @@ def recipe_review(request, _id):
 # Give Reaction
 # PUT : Updates reaction, given {"like" : 1, "report" : 0} for like, (-1, 0) for dislike,
 # (0, 1) for report. Other values shall not be feeded.
+@csrf_exempt
 def reaction(request, _id):
     # Reaction needs login
     if not request.user.is_authenticated:

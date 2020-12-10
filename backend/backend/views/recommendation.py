@@ -14,7 +14,7 @@ TOTAL_NUMBER_OF_INGS = 1e4
 # Randomly draw recipe if error.
 def random_draw(request):
     all_recipes = list(Recipe.objects.all().values())
-    random_recipe = sample(all_recipes, 1)
+    random_recipe = choice(all_recipes)
     return random_recipe
 
 def recommend_recipe(request):
@@ -66,7 +66,7 @@ def recommend_recipe(request):
                     feasible_list.append(r)
 
         if len(feasible_list) == 0:
-            return None
+            return random_draw(request)
 
         # For each feasible recipe, compute score
         cdf = []
@@ -109,7 +109,7 @@ def recommend_recipe(request):
                 sqscs += pow(recipe['score'], 2)
 
         if sqscs == 0:
-            return choice(feasible_list)
+            return random_draw(request)
         # Probability ~ (Score)^2
 
         for r in feasible_list:

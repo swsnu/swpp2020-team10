@@ -18,7 +18,7 @@ def search(request):
         health_labels = request.GET.getlist('health_labels')
         calories = request.GET.get('calorie')
         cooking_time = request.GET.get('time')
-        fridge_able = bool(request.GET.get('fridge_able') == "True")
+        fridge_able = request.GET.get('fridge_able')
         
         query = Recipe.objects
 
