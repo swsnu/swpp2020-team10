@@ -14,7 +14,7 @@ TOTAL_NUMBER_OF_INGS = 1e4
 # Randomly draw recipe if error.
 def random_draw(request):
     all_recipes = list(Recipe.objects.all().values())
-    random_recipe = sample(all_recipes, 1)
+    random_recipe = choice(all_recipes)
     return random_recipe
 
 def recommend_recipe(request):
