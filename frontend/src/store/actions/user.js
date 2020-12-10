@@ -39,7 +39,7 @@ export const signout = () => {
 
 export const checkUserStatus = () => {
   return dispatch => {
-    return axios.get('/api/user/status')
+    return axios.get('/api/user/status/')
       .then(response => {
         dispatch(authorize(response.data));
         return response;
@@ -65,7 +65,6 @@ export const notification = (userId) => {
       .then(response => {
         dispatch(notification_(response.data));
         return response;
-      })
-      .catch(error => error);
+      });
   };
 };

@@ -23,11 +23,12 @@ const reducer = (state = initialState, action) => {
         isAuthorized: false,
         id: null,
         name: null,
+        noti: null,
       };
     case actionTypes.GET_NOTIFICATION:
       return {
         ...state,
-        noti : action.noti,
+        noti: action.noti,
       };
     default:
       return state;
