@@ -25,12 +25,14 @@ def review_by_id(request, _id):
         try:
             req_data = json.loads(request.body.decode())
             title = req_data['title'] if req_data['title'] is not None else review['title']
+            image_url = req_data['image_url'] if req_data['image_url'] is not None else review['image_url']
             content = req_data['content'] if req_data['content'] is not None else review['content']
             review['title'] = title
+            review['image_url'] = image_url
             review['content'] = content
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        Review.objects.filter(id=_id).update(title=title, content=content)
+        Review.objects.filter(id=_id).update(title=title, content=content, image_url=image_url)
         return HttpResponse(json.dumps(review), status=200, content_type='application/json')
 
     if request.method == 'DELETE':
@@ -53,12 +55,14 @@ def recipe_review(request, _id):
         try:
             req_data = json.loads(request.body.decode())
             title = req_data['title']
+            image_url = req_data['image_url']
             content = req_data['content']
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        new_review = Review(recipe_id=_id, title=title, content=content, user=request.user, time_posted=datetime.now())
+        new_review = Review(recipe_id=_id, title=title, image_url=image_url,
+                            content=content, user=request.user, time_posted=datetime.now())
         new_review.save()
-        new_review_dict = model_to_dict(new_review)
+        new_review_dict = Review.objects.filter(id=new_review.id).values().get()
         return HttpResponse(json.dumps(new_review_dict, default=json_default), status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 

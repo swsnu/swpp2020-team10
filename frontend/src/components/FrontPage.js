@@ -1,66 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Card, Container, Dimmer, Form, Grid, Header, Icon, Image, Rating, Segment } from 'semantic-ui-react';
+
+import { Button, Container, Dimmer, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+
+import { Recommendation } from './Recommendation';
 import { Notification } from './Notification';
 import * as actionCreators from '../store/actions/index';
 
 
 export const FrontPage = () => {
-  const [searchInput, setSearchInput] = useState('');
-
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // checks if recipes have been fetched
-  const [hasRecipes, setHasRecipes] = useState(false);
-
-  if (!hasRecipes) {
-    dispatch(actionCreators.fetchAllRecipes())
-      .then(() => { setHasRecipes(true); });
-  }
-
-  const recipes = useSelector(state => state.recipe.recipes);
-
+  const user = useSelector(state => state.user);
   const fridgeItems = useSelector(state => state.fridgeItem.fridgeItems);
 
-  const fridgeItemList = fridgeItems.map(item =>
-    <div key={item.name}>
-      {item.name}&ensp;x&ensp;{item.quantity}
+  const [searchInput, setSearchInput] = useState('');
+
+  // fetch fridge items on initial mount
+  useEffect(() => {
+    if (user.isAuthorized) {
+      dispatch(actionCreators.getFridgeItemList(user.id));
+    }
+  }, []);
+
+  const fridgeItemList = fridgeItems.map((item, key) =>
+    <div key={key}>
+      {`${item.name} ${item.quantity} ${item.unit}`}
     </div>
   );
 
-  const recommendations = recipes.slice(-2).map(recipe => (
-    <Card key={recipe.id} fluid>
-      <Image src={`https://source.unsplash.com/512x512/?food,${recipe.id}`} />
-      <Card.Content>
-        <Card.Header>
-          <Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link>
-        </Card.Header>
-        <Card.Meta>
-          {recipe.rating.toFixed(1)}&ensp;
-          <Rating
-            rating={recipe.rating}
-            maxRating={5}
-            clearable={false} icon='star' size='mini'
-          />
-          <br />
-          Serving&ensp;{recipe.serving}&emsp;
-          Cooking time&ensp;{recipe.cooking_time}
-        </Card.Meta>
-        <Card.Description>
-          {recipe.content.substr(0, 160)}
-        </Card.Description>
-      </Card.Content>
-    </Card>
-  ));
-
-  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
-  const userId = useSelector(state => state.user.id);
-
   const dimmer = (
     <Dimmer
-      active={userIsAuthorized !== true}
+      active={user.isAuthorized !== true}
       content='Please sign in to use this feature'
     />
   );
@@ -70,7 +43,9 @@ export const FrontPage = () => {
       <Segment color='blue' inverted tertiary>
         <Grid>
           <Grid.Column verticalAlign='middle'>
-            <label htmlFor='searchInput'><Icon name='search' size='big' /></label>
+            <label htmlFor='searchInput'>
+              <Icon name='search' size='big' />
+            </label>
           </Grid.Column>
           <Grid.Column width={15}>
             <Form>
@@ -91,8 +66,8 @@ export const FrontPage = () => {
       <Grid columns={2}>
         <Grid.Column>
           <Segment>
-            <Header content={'Recommendations'} />
-            {recommendations}
+            <Header content='Recommendation' />
+            <Recommendation />
           </Segment>
         </Grid.Column>
         <Grid.Column>
@@ -105,24 +80,16 @@ export const FrontPage = () => {
               {fridgeItemList}
             </Segment>
             <Button primary
-              as={Link} to={`fridge/${userId}`}
+              as={Link}
+              to={'/fridge/'}
               content='Go to My Fridge'
             />
             {dimmer}
           </Segment>
           <Segment>
             <Header content='Notifications' />
-            <Notification userId={userId}/>
-            {/*<Message color='red'>
-              Your review on <b>Spam</b> has been reported.
-            </Message>
-            <Message color='orange'>
-              <b>Milk</b>[3] expires in 2 days.
-            </Message>
-            <Message color='olive'>
-              <b>Toirdhealbhach</b> has commented to your review on <b>Bouillabaisse</b>.
-            </Message>
-            {dimmer}*/}
+            <Notification />
+            {dimmer}
           </Segment>
         </Grid.Column>
       </Grid>

@@ -3,6 +3,7 @@ export {
   checkUserStatus,
   signout,
   notification,
+  getRecommendation,
 } from './user';
 
 export {

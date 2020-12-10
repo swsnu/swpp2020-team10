@@ -38,7 +38,8 @@ class FridgeItem(models.Model):
     )
     name = models.CharField(blank=True, default='', max_length=80)
     quantity = models.IntegerField(default=0)
-    expiry_date = models.DateTimeField(blank=True, null=True, default=now())
+    unit = models.CharField(blank=True, default='', max_length=80)
+    expiry_date = models.DateTimeField(blank=True, null=True, default=now)
 
 class Recipe(models.Model):
     title = models.TextField()
@@ -80,11 +81,12 @@ class Review(models.Model):
     )
     author_name = models.CharField(max_length=80, default='', blank=True, null = True)
     title = models.CharField(max_length=80)
+    image_url = models.TextField(blank=True)
     content = models.TextField(default='')
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
-    time_posted = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    time_posted = models.DateTimeField(default=now, blank=True, null=True)
     def save(self, *args, **kwargs):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
@@ -107,12 +109,26 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
-    time_posted = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    time_posted = models.DateTimeField(default=now, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.author_name is None or len(self.author_name) == 0:
             self.author_name = get_object_or_404(User, pk=self.user.id).username
         super(Comment, self).save(*args, **kwargs)
+
+class RecipeProfile(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipe_profile_user_id',
+        default=None,
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_profile_review_id',
+        default=None,
+    )
 
 class ReviewProfile(models.Model):
     user = models.ForeignKey(
@@ -124,7 +140,7 @@ class ReviewProfile(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comment_profile_review_id',
+        related_name='review_profile_review_id',
         default=None,
     )
 
@@ -132,13 +148,13 @@ class CommentProfile(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='profile_user_id',
+        related_name='comment_profile_user_id',
         default=None,
     )
     comment = models.ForeignKey(
         Comment,
         on_delete=models.CASCADE,
-        related_name='profile_comment_id',
+        related_name='comment_profile_comment_id',
         default=None,
     )
 
