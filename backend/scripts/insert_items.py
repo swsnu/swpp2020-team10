@@ -51,21 +51,26 @@ def run():
             index = ingredient_line_list.index(text)
             ing_model = json.loads(ingredient_model_list[index])
             name = ing_model.get('ingredient')
+            image = ing.get('image')
 
             if name not in ingredient_set:
-                image = ing.get('image')
+                if image is None:
+                    image = ''
                 ing_item = Ingredient(name=name, image=image)
                 ing_item.save()
                 ingredient_set.add(name)
                 ingredient_instances.append(ing_item)
             else:
                 ing_item = Ingredient.objects.get(name=name)
+                if ing_item.image == '' and image is not None:
+                    ing_item.image = image
+                    ing_item.save()
                 ingredient_instances.append(ing_item)
 
         title = recipe.get('label')
         ingredient_lines = recipe.get('ingredientLines')
         content = step_dict[title]
-        image = recipe.get('img')
+        image = recipe.get('image')
         diet_labels = recipe.get('dietLabels')
         health_labels = recipe.get('healthLabels')
         calories = int(recipe.get('calories'))
