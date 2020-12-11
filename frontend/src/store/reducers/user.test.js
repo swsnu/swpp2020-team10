@@ -27,4 +27,11 @@ describe('user reducer', () => {
       noti: null
     });
   });
+
+  it('recommendation', () => {
+    reducer(undefined, {
+      type: actionTypes.GET_RECOMMENDATION,
+      recommendation: null,
+    });
+  });
 });
