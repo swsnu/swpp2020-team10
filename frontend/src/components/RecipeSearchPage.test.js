@@ -18,17 +18,24 @@ jest.mock('axios');
 
 const stubRecipes = [
   {
+    id: 1,
     title: 'Recipe 4',
     content: ['content'],
     image: '',
     rating: 3.5,
     serving: 1,
     cooking_time: 1,
-    calorie: 1,
+    calories: 1,
     diet_labels: ['diet1', 'diet2'],
     health_labels: ['health1', 'health2'],
   },
 ];
+
+let uid = 0;
+
+const getId = () => {
+  return uid++;
+};
 
 const mockStore = getMockStore({});
 
@@ -51,7 +58,7 @@ describe('<RecipeSearchPage />', () => {
             data: {
               cooking_time: 22,
               rating: 2,
-              calorie: 222,
+              calories: 222,
               diet_labels: ['d1', 'd2'],
               health_labels: ['h1', 'h2'],
             }
@@ -61,6 +68,7 @@ describe('<RecipeSearchPage />', () => {
         let recipes = [];
         for (let i = 0; i < 20; i++) {
           recipes.push({
+            id: getId(),
             title: 'Recipe 4',
             content: [
               '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
@@ -71,7 +79,7 @@ describe('<RecipeSearchPage />', () => {
             rating: 3.5,
             serving: 10,
             cooking_time: 10,
-            calorie: 10,
+            calories: 10,
             diet_labels: ['diet1', 'diet2'],
             health_labels: ['health1', 'health2'],
           });
@@ -87,58 +95,112 @@ describe('<RecipeSearchPage />', () => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
-    expect(mount(component).length).toBe(1);
-  });
-
-  it('sets search input on change', () => {
-    const value = 'apple';
-    const wrapper = mount(component);
-    wrapper.find('#searchInput').simulate('change', { target: { value } });
-    wrapper.find('#searchInput').simulate('keyDown', { key: '' });
-    wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
-  });
-
-  it('changes filter options', () => {
-    const wrapper = mount(component);
-    wrapper.find('#showFilterTabButton').first().simulate('click');
-    wrapper.find('#enableFridge').first().simulate('change');
-    wrapper.find('#enableMaxCookingTime').first().simulate('change');
-    wrapper.find('#maxCookingTimeInput').first().simulate('change', { target: { value: 90 } });
-    wrapper.find('#enableMinRating').first().simulate('change');
-    wrapper.find('#minRatingInput').first().simulate('change', { target: { value: 4.3 } });
-    wrapper.find('#enableMaxCalorie').first().simulate('change');
-    wrapper.find('#maxCalorieInput').first().simulate('change', { target: { value: 400 } });
-    wrapper.find('#dietLabelsInput').first().simulate('change', { target: { value: 'dl1 dl2' } });
-    wrapper.find('#healthLabelsInput').first().simulate('change', { target: { value: 'hl1 hl2' } });
-
-    wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
-    wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
-  });
-
-  it('changes sort options', () => {
-    const wrapper = mount(component);
-    wrapper.find('#sortOption').first().prop('onChange')(undefined, { value: ['time'] });
+  it('renders without crashing', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
     wrapper.update();
-    
-    wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
-    wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+
+    expect(wrapper.length).toBe(1);
   });
 
-  it('singular recipe attributes', () => {
+  it('sets search input on change', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#searchInput').simulate('change', { target: { value: 'apple' } });
+      wrapper.find('#searchInput').simulate('keyDown', { key: '' });
+      wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    });
+    wrapper.update();
+  });
+
+  it('changes filter options', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#showFilterTabButton').first().simulate('click');
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#enableFridge').first().simulate('change');
+      wrapper.find('#enableMaxCookingTime').first().simulate('change');
+      wrapper.find('#enableMinRating').first().simulate('change');
+      wrapper.find('#enableMaxCalorie').first().simulate('change');
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#maxCookingTimeInput').first().simulate('change', { target: { value: 90 } });
+      wrapper.find('#minRatingInput').first().simulate('change', { target: { value: 4.3 } });
+      wrapper.find('#maxCalorieInput').first().simulate('change', { target: { value: 400 } });
+      wrapper.find('#dietLabelsInput').first().simulate('change', { target: { value: 'dl1 dl2' } });
+      wrapper.find('#healthLabelsInput').first().simulate('change', { target: { value: 'hl1 hl2' } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
+      wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    });
+    wrapper.update();
+  });
+
+  it('changes sort options', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#sortOption').first().prop('onChange')(undefined, { value: 'time' });
+      wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
+      wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    });
+    wrapper.update();
+  });
+
+  it('singular recipe attributes', async () => {
     axios.get = jest.fn(() => new Promise(resolve => resolve({ data: { recipes: stubRecipes } })));
 
-    const wrapper = mount(component);
-    wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
-    wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
+      wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    });
+    wrapper.update();
   });
 
-  it('empty search result', () => {
+  it('empty search result', async () => {
     axios.get = jest.fn(() => new Promise(resolve => resolve({ data: { recipes: [] } })));
 
-    const wrapper = mount(component);
-    wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
-    wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#searchInput').simulate('change', { target: { value: 'test' } });
+      wrapper.find('#searchInput').simulate('keyDown', { key: 'Enter' });
+    });
+    wrapper.update();
   });
 
   describe('when user is not authorized', () => {
@@ -157,8 +219,15 @@ describe('<RecipeSearchPage />', () => {
       });
       wrapper.update();
 
-      wrapper.find('#showFilterTabButton').first().simulate('click');
-      wrapper.find('#applyFilterButton').first().simulate('click');
+      await act(async () => {
+        wrapper.find('#showFilterTabButton').first().simulate('click');
+      });
+      wrapper.update();
+
+      await act(async () => {
+        wrapper.find('#applyFilterButton').first().simulate('click');
+      });
+      wrapper.update();
     });
   });
 
@@ -171,21 +240,30 @@ describe('<RecipeSearchPage />', () => {
       jest.clearAllMocks();
     });
 
-    it('user may not have stored settings', () => {
-      jest.spyOn(axios, 'get')
-        .mockImplementation(() => new Promise(resolve => resolve(
-          {
-            data: {
-              cooking_time: null,
-              rating: null,
-              calorie: null,
-              diet_labels: [],
-              health_labels: [],
+    it('user may not have stored settings', async () => {
+      axios.get = jest.fn((url) => {
+        if (url === '/api/user/setting/') {
+          return new Promise(resolve => resolve(
+            {
+              data: {
+                cooking_time: null,
+                rating: null,
+                calories: null,
+                diet_labels: [],
+                health_labels: [],
+              }
             }
-          }
-        )));
+          ));
+        } else {
+          return new Promise(resolve => resolve({ data: { recipes: stubRecipes } }));
+        }
+      });
 
-      mount(component);
+      let wrapper;
+      await act(async () => {
+        wrapper = mount(component);
+      });
+      wrapper.update();
     });
 
     it('save preferences button works', async () => {
@@ -195,8 +273,15 @@ describe('<RecipeSearchPage />', () => {
       });
       wrapper.update();
 
-      wrapper.find('#showFilterTabButton').first().simulate('click');
-      wrapper.find('#saveFilterButton').first().simulate('click');
+      await act(async () => {
+        wrapper.find('#showFilterTabButton').first().simulate('click');
+      });
+      wrapper.update();
+
+      await act(async () => {
+        wrapper.find('#saveFilterButton').first().simulate('click');
+      });
+      wrapper.update();
     });
 
     it('save preferences button works with changed filters', async () => {
@@ -206,11 +291,22 @@ describe('<RecipeSearchPage />', () => {
       });
       wrapper.update();
 
-      wrapper.find('#showFilterTabButton').first().simulate('click');
-      wrapper.find('#enableMaxCookingTime').first().simulate('change');
-      wrapper.find('#enableMinRating').first().simulate('change');
-      wrapper.find('#enableMaxCalorie').first().simulate('change');
-      wrapper.find('#saveFilterButton').first().simulate('click');
+      await act(async () => {
+        wrapper.find('#showFilterTabButton').first().simulate('click');
+      });
+      wrapper.update();
+
+      await act(async () => {
+        wrapper.find('#enableMaxCookingTime').first().simulate('change');
+        wrapper.find('#enableMinRating').first().simulate('change');
+        wrapper.find('#enableMaxCalorie').first().simulate('change');
+      });
+      wrapper.update();
+      
+      await act(async () => {
+        wrapper.find('#saveFilterButton').first().simulate('click');
+      });
+      wrapper.update();
     });
   });
 
