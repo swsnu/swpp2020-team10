@@ -61,13 +61,15 @@ describe('comment reducer', () => {
   it('should add comment', () => {
     const newState = reducer(undefined, {
       type: actionTypes.ADD_COMMENT,
-      id: 1,
-      review_id: 1,
-      user_id: 1,
-      content: 'some bad comment',
-      likes: 0,
-      dislikes: 0,
-      reports: 0
+      comment:{
+        id: 1,
+        review_id: 1,
+        user_id: 1,
+        content: 'some bad comment',
+        likes: 0,
+        dislikes: 0,
+        reports: 0
+      },
     });
     expect(newState).toEqual({comments:[stubComment], selectedComment: null});
   });

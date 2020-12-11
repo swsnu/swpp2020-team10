@@ -323,7 +323,7 @@ export const ReviewDetail = ({ match }) => {
   );
 
   return (
-    <Container text>
+    <Container text id='ReviewDetail'>
       {reviewCard}
       {
         currentUser.isAuthorized &&

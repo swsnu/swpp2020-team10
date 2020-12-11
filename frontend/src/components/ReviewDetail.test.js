@@ -130,7 +130,7 @@ describe('<ReviewDetail />', () => {
 
   it('should render ReviewDetail', () => {
     const component = mount(reviewDetail);
-    const wrapper = component.find('.ReviewDetail');
+    const wrapper = component.find('div');
     expect(wrapper.length).toBe(1);
   });
 

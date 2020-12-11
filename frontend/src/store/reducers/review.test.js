@@ -130,10 +130,19 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null};
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 5,
+      'dislikes': 5,
+      'reports': 3
+    }};
     const newState = reducer(stubInitialState, {
       type: actionTypes.LIKE_REVIEW,
-      targetId: 1,
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -141,7 +150,7 @@ describe('review reducer', () => {
       'user_id': 1,
       'title': 'Kimchi review!!!',
       'content': 'Kimchi is good modify content',
-      'likes': 6,
+      'likes': 5,
       'dislikes': 5,
       'reports': 3
     },
@@ -154,7 +163,17 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null});
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 6,
+      'dislikes': 5,
+      'reports': 3
+    }});
   });
   it('should dislike the review', () => {
     const stubInitialState = {reviews: [{
@@ -176,10 +195,19 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null};
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 5,
+      'dislikes': 5,
+      'reports': 3
+    }};
     const newState = reducer(stubInitialState, {
       type: actionTypes.DISLIKE_REVIEW,
-      targetId: 1,
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -188,7 +216,7 @@ describe('review reducer', () => {
       'title': 'Kimchi review!!!',
       'content': 'Kimchi is good modify content',
       'likes': 5,
-      'dislikes': 6,
+      'dislikes': 5,
       'reports': 3
     },
     {
@@ -200,7 +228,17 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null});
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 5,
+      'dislikes': 6,
+      'reports': 3
+    }});
   });
 
   it('should report the review', () => {
@@ -223,10 +261,19 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null};
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 5,
+      'dislikes': 5,
+      'reports': 3
+    }};
     const newState = reducer(stubInitialState, {
       type: actionTypes.REPORT_REVIEW,
-      targetId: 1,
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -236,7 +283,7 @@ describe('review reducer', () => {
       'content': 'Kimchi is good modify content',
       'likes': 5,
       'dislikes': 5,
-      'reports': 4
+      'reports': 3
     },
     {
       'id': 2,
@@ -247,7 +294,17 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: null});
+    }], selectedReview: 
+    {
+      'id': 1,
+      'recipe_id': 1,
+      'user_id': 1,
+      'title': 'Kimchi review!!!',
+      'content': 'Kimchi is good modify content',
+      'likes': 5,
+      'dislikes': 5,
+      'reports': 4
+    }});
   });
 
   it('should delete a review', () => {

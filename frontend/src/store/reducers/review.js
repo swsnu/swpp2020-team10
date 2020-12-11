@@ -55,7 +55,8 @@ const reducer = (state = initialState, action) => {
       };
     }
     case actionTypes.DELETE_REVIEW:
-      break;
+      const reviews = state.reviews.filter(review => review.id !== action.targetId);
+      return { ...state, reviews };
     default:
       break;
   }
