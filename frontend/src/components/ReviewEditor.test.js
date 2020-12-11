@@ -93,6 +93,8 @@ describe('<ReviewEditor />', () => {
     component.update();
     let wrapper = component.find('#submitButton');
     expect(wrapper.exists()).toBeTruthy();
+    expect(spyGetReview).toBeCalledTimes(1);
+    expect(spyEditReview).toBeCalledTimes(0);
 
     /*wrapper = component.find('MenuItem').at(1);
     wrapper.simulate('click');

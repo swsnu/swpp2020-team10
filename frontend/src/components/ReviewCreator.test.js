@@ -116,6 +116,7 @@ describe('<ReviewCreator />', () => {
     const component = mount(reviewCreator);
     const wrapper = component.find('#submitButton');
     expect(wrapper.exists()).toBeTruthy();
+    expect(spyPostReview).toBeCalledTimes(0);
   });
 
   it('should change tab properly on click tab buttons', () => {

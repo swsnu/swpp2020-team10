@@ -40,7 +40,8 @@ const stubInitialState = {
     'content': 'Kimchi is good modify content',
     'likes': 5,
     'dislikes': 5,
-    'reports': 3
+    'reports': 3,
+    'image_url': 'https://github.com/'
   },
   
   'reviews' : [{
@@ -141,32 +142,20 @@ describe('<ReviewDetail />', () => {
       };});
     spyLikeReview = jest.spyOn(reviewActionCreators, 'likeReview')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 400,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyDislikeReview = jest.spyOn(reviewActionCreators, 'dislikeReview')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyReportReview = jest.spyOn(reviewActionCreators, 'reportReview')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyEditComment = jest.spyOn(commentActionCreators, 'editComment')
@@ -191,32 +180,20 @@ describe('<ReviewDetail />', () => {
       };});
     spyLikeComment = jest.spyOn(commentActionCreators, 'likeComment')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyDislikeComment = jest.spyOn(commentActionCreators, 'dislikeComment')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyReportComment = jest.spyOn(commentActionCreators, 'reportComment')
       .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
+        return new Promise(() => {
+          throw new Error();
         });
       };});
     spyDeleteReview = jest.spyOn(reviewActionCreators, 'deleteReview')
@@ -239,6 +216,8 @@ describe('<ReviewDetail />', () => {
     component.update();
     //console.log(component.debug());
     const wrapper = component.find('#ReviewDetail').at(0);
+    expect(spyGetReview).toBeCalledTimes(1);
+    expect(spyGetCommentList).toBeCalledTimes(1);
     expect(wrapper.length).toBe(1);
   });
 
@@ -271,7 +250,7 @@ describe('<ReviewDetail />', () => {
     });
     component.update();
     const wrapper = component.find('#backButton').at(0);
-    expect(spyPush).toBeCalledTimes(0);
+    expect(wrapper.length).toBe(1);
   });
 
   it('should upload comment', async () => {
