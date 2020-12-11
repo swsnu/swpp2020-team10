@@ -73,7 +73,7 @@ export const RecipeSearchPage = ({ match }) => {
         let {
           cooking_time,
           rating,
-          calorie,
+          calories,
           diet_labels,
           health_labels,
         } = response.data;
@@ -86,9 +86,9 @@ export const RecipeSearchPage = ({ match }) => {
           setEnableMinRating(true);
           setMinRating(rating);
         }
-        if (calorie) {
+        if (calories) {
           setEnableMaxCalorie(true);
-          setMaxCalorie(calorie);
+          setMaxCalorie(calories);
         }
         if (diet_labels.length) {
           setDietLabels(diet_labels.join(' '));
@@ -310,7 +310,7 @@ export const RecipeSearchPage = ({ match }) => {
           <Item.Meta>
             {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
             {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-            {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+            {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
           </Item.Meta>
           <Item.Description>
             {recipeSteps.substr(0, 200)}

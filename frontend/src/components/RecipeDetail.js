@@ -20,7 +20,7 @@ export const RecipeDetail = ({ match }) => {
   const [hasReviews, setHasReviews] = useState(false);
 
   const [enableRating, setEnableRating] = useState(true);
-
+  
   // fetch recipe and reviews on initial mount
   useEffect(() => {
     dispatch(actionCreators.selectRecipeById(recipeId))
@@ -113,7 +113,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
+              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calories / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
