@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -32,28 +32,39 @@ export const Notification = () => {
   const name = useSelector(state => state.user.name);
   const noti = useSelector(state => state.user.noti);
 
+  const [hasNoti, setHasNoti] = useState(false);
+
+  const defaultMessage = 'You have no new notifications.';
+
   // fetch notifications on mount
   useEffect(() => {
     if (isAuthorized) {
-      dispatch(actionCreators.notification(id));
+      dispatch(actionCreators.notification(id))
+        .then(() => setHasNoti(true));
     }
   }, []);
 
-  if (noti !== null) {
-    const itemNotifications =
-      noti.near_expired_items.map((item, key) =>
-        itemNotification(item, key)
-      );
-
-    const commentNotifications =
-      noti.recent_comments
-        .filter(comment => comment.comment_author !== name)
-        .map((comment, key) =>
-          commentNotification(comment, key + itemNotification.length)
-        );
-
-    return itemNotifications.concat(commentNotifications);
+  if (!hasNoti || !noti) {
+    return defaultMessage;
   }
 
-  return null;
+  const itemNotifications =
+    noti.near_expired_items.map((item, key) =>
+      itemNotification(item, key)
+    );
+
+  const commentNotifications =
+    noti.recent_comments
+      .filter(comment => comment.comment_author !== name)
+      .map((comment, key) =>
+        commentNotification(comment, key + itemNotification.length)
+      );
+    
+  const notifications = itemNotifications.concat(commentNotifications);
+
+  if (notifications.length) {
+    return notifications;
+  } else {
+    return defaultMessage;
+  }
 };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-import { Button, Card, Container, Grid, Header, Image, Segment } from 'semantic-ui-react';
+import { Button, Card, Container, Grid, Header, Icon, Image, Segment } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
 import { FoodCreate } from './FoodCreate';
@@ -10,6 +11,7 @@ import { FoodDetail } from './FoodDetail';
 
 export const MyFridge = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const user = useSelector(state => state.user);
   const fridgeItems = useSelector(state => state.fridgeItem.fridgeItems);
@@ -78,9 +80,9 @@ export const MyFridge = () => {
             textAlign='center'
           />
         </Segment>
-        <Segment>
+        <Segment style={{minHeight: 350}}>
           <Grid padded verticalAlign='bottom'>
-            {fridgeItemRows}
+            {fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.'}
           </Grid>
         </Segment>
         <Segment textAlign='right' color='blue' inverted tertiary>
@@ -98,6 +100,11 @@ export const MyFridge = () => {
           />
         </Segment>
       </Segment.Group>
+      <div style={{ textAlign: 'right' }}>
+        <a onClick={() => history.goBack()} style={{ cursor: 'pointer' }}>
+          <Icon name='triangle left' />Go back
+        </a>
+      </div>
       <br />
       {
         isCreate && // unmount on close

@@ -1,5 +1,5 @@
 import json
-from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from backend.models import Recipe, RecipeProfile
 
 # Auth : Anyone can search and request for recipes
@@ -20,44 +20,52 @@ def recipes(request):
 # PUT : Updates Rating of recipe, given {"recipe_id":"1", "rating":"2"} style json.
 @csrf_exempt
 def recipe_by_id(request, _id):
-    if request.method == 'GET':
+    if request.method == "GET":
         try:
             recipe = json.dumps(Recipe.objects.filter(id=_id).all().values()[0])
         except IndexError:
             return HttpResponseBadRequest(status=404)
-        return HttpResponse(recipe, status=200, content_type='application/json')
+        return HttpResponse(recipe, status=200, content_type="application/json")
 
-    if request.method == 'PUT':
+    if request.method == "PUT":
         if not request.user.is_authenticated:
-            return HttpResponse("You are not logged in\n",status=401)
+            return HttpResponse("You are not logged in\n", status=401)
 
         req_data = json.loads(request.body.decode())
 
         try:
-            rating = float(req_data['rating'])
+            new_rating = float(req_data["rating"])
         except KeyError:
             return HttpResponseBadRequest(status=404)
-        
+
         try:
             target_object = Recipe.objects.filter(id=_id).all().values()[0]
         except IndexError:
             return HttpResponseBadRequest(status=404)
-        
-        # cannot rate more than once
-        profile = RecipeProfile.objects.filter(recipe_id=_id, user_id=request.user.id).all()
-        if len(profile) != 0:
-            return HttpResponse("You have already rated this recipe.\n", status=403)
-        
-        new_profile = RecipeProfile(recipe_id=_id, user=request.user)
-        new_profile.save()
 
-        # Using current rating and # of ratings, compute new rating
-        current_rating = target_object['rating']
-        current_rating_count = target_object['count_ratings']
-        current_total = current_rating * current_rating_count + rating
-        current_rating_count += 1
-        current_rating = current_total / current_rating_count
-        Recipe.objects.filter(id=_id).update(rating=current_rating, count_ratings=current_rating_count)
-        return HttpResponse(f"Recipe rating for {target_object['title']} "
-                            f"is updated sucessfully to {current_rating}", status=200)
+        old_rating_avg = target_object["rating"]
+        old_rating_count = target_object["count_ratings"]
+        old_rating_sum = old_rating_avg * old_rating_count
+
+        profile = RecipeProfile.objects.filter(recipe_id=_id, user=request.user)
+
+        # has rated before
+        if profile.exists():
+            old_rating = profile.get().rating
+            profile.update(rating=new_rating)
+            new_rating_sum = old_rating_sum - old_rating + new_rating
+            new_rating_count = old_rating_count
+            new_rating_avg = new_rating_sum / old_rating_count
+        else:
+            RecipeProfile.objects.create(recipe_id=_id, user=request.user, rating=new_rating)
+            new_rating_sum = old_rating_sum + new_rating
+            new_rating_count = old_rating_count + 1
+            new_rating_avg = new_rating_sum / new_rating_count
+
+        Recipe.objects.filter(id=_id).update(rating=new_rating_avg, count_ratings=new_rating_count)
+        return JsonResponse(
+            {"rating": new_rating_avg, "count_ratings": new_rating_count},
+            status=200,
+        )
+
     return HttpResponseNotAllowed(["GET", "PUT"])

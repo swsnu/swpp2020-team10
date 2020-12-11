@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Input, Form, Modal, Button, Segment } from 'semantic-ui-react';
+import { Input, Form, Modal, Button } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
 import { getFormattedDate } from '../../misc';
@@ -99,9 +99,7 @@ export const FoodCreate = ({ open, setOpen }) => {
     >
       <Modal.Header content='Add fridge item' />
       <Modal.Content>
-        <Segment>
-          {form}
-        </Segment>
+        {form}
       </Modal.Content>
       <Modal.Actions>
         <Button
