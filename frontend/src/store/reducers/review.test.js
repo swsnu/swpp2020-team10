@@ -130,19 +130,13 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: 
-    {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
-      'likes': 5,
-      'dislikes': 5,
-      'reports': 3
-    }};
+    }], selectedReview: null,
+    };
     const newState = reducer(stubInitialState, {
       type: actionTypes.LIKE_REVIEW,
+      likes: 5,
+      dislikes: 5,
+      reports: 3
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -163,14 +157,8 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: 
-    {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
-      'likes': 6,
+    }], selectedReview: {
+      'likes': 5,
       'dislikes': 5,
       'reports': 3
     }});
@@ -197,17 +185,15 @@ describe('review reducer', () => {
       'reports': 0
     }], selectedReview: 
     {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
       'likes': 5,
       'dislikes': 5,
       'reports': 3
     }};
     const newState = reducer(stubInitialState, {
       type: actionTypes.DISLIKE_REVIEW,
+      likes: 5,
+      dislikes: 5,
+      reports: 3
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -230,13 +216,8 @@ describe('review reducer', () => {
       'reports': 0
     }], selectedReview: 
     {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
       'likes': 5,
-      'dislikes': 6,
+      'dislikes': 5,
       'reports': 3
     }});
   });
@@ -261,19 +242,13 @@ describe('review reducer', () => {
       'likes': 3,
       'dislikes': 5,
       'reports': 0
-    }], selectedReview: 
-    {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
-      'likes': 5,
-      'dislikes': 5,
-      'reports': 3
-    }};
+    }], selectedReview: null
+    };
     const newState = reducer(stubInitialState, {
       type: actionTypes.REPORT_REVIEW,
+      likes: 5,
+      dislikes: 5,
+      reports: 3
     });
     expect(newState).toEqual({reviews: [{
       'id': 1,
@@ -296,14 +271,9 @@ describe('review reducer', () => {
       'reports': 0
     }], selectedReview: 
     {
-      'id': 1,
-      'recipe_id': 1,
-      'user_id': 1,
-      'title': 'Kimchi review!!!',
-      'content': 'Kimchi is good modify content',
       'likes': 5,
       'dislikes': 5,
-      'reports': 4
+      'reports': 3
     }});
   });
 

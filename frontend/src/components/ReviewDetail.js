@@ -320,7 +320,7 @@ export const ReviewDetail = ({ match }) => {
     <Container text id='ReviewDetail'>
       {reviewCard}
       <div style={{ textAlign: 'right' }}>
-        <Link to={`/recipe/${storedReview.recipe_id}/`}>
+        <Link id='backButton' to={`/recipe/${storedReview.recipe_id}/`}>
           <Icon name='triangle left' />Back to recipe
         </Link>
       </div>

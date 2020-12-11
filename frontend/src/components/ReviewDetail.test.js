@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import { Router, Route, Switch } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { getMockStore } from '../test-utils/mocks';
+import { act } from 'react-dom/test-utils';
+
 
 import ReviewDetail from './ReviewDetail';
 import * as reviewActionCreators from '../store/actions/review';
@@ -83,10 +85,12 @@ const stubInitialState = {
 const mockStore = getMockStore(stubInitialState);
 
 describe('<ReviewDetail />', () => {
-  let reviewDetail, /*spyGetCommentList, spyGetReview,*/ spyPostComment, spyLikeReview,
+  let reviewDetail, spyGetCommentList, spyGetReview, spyPostComment, spyLikeReview,
     spyDislikeReview, spyReportReview, spyEditComment, spyDeleteComment,
     spyDeleteReview, spyLikeComment, spyDislikeComment, spyReportComment;
   const history = createBrowserHistory();
+  const setState = jest.fn();
+  const useStateSpy = jest.spyOn(React, 'useState');
   let spyPush = jest.spyOn(history, 'push')
     .mockImplementation(() => {});
 
@@ -102,155 +106,314 @@ describe('<ReviewDetail />', () => {
       </Provider>
     );
     
-    /*spyGetCommentList = jest.spyOn(commentActionCreators, 'getCommentList')
-      .mockImplementation(() => {return () => {};});
-    spyGetReview = jest.spyOn(reviewActionCreators, 'getReview')
+    useStateSpy.mockImplementation((init) => [init, setState]);
+    spyGetCommentList = jest.spyOn(commentActionCreators, 'getCommentList')
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: stubInitialState.comments
+          };
+          resolve(result);
+        });
+      };});
+    /*spyGetReview = jest.spyOn(reviewActionCreators, 'getReview')
       .mockImplementation(() => {return () => {};});  */
+    spyGetReview = jest.spyOn(reviewActionCreators, 'getReview')
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: stubInitialState.selectedReview
+          };
+          resolve(result);
+        });
+      };});
     spyPostComment = jest.spyOn(commentActionCreators, 'postComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyLikeReview = jest.spyOn(reviewActionCreators, 'likeReview')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 400,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyDislikeReview = jest.spyOn(reviewActionCreators, 'dislikeReview')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyReportReview = jest.spyOn(reviewActionCreators, 'reportReview')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyEditComment = jest.spyOn(commentActionCreators, 'editComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyDeleteComment = jest.spyOn(commentActionCreators, 'deleteComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyLikeComment = jest.spyOn(commentActionCreators, 'likeComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyDislikeComment = jest.spyOn(commentActionCreators, 'dislikeComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyReportComment = jest.spyOn(commentActionCreators, 'reportComment')
-      .mockImplementation(() => {return () => {};});
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
     spyDeleteReview = jest.spyOn(reviewActionCreators, 'deleteReview')
-      .mockImplementation(() => {return () => {};});        
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: stubInitialState.selectedReview
+          };
+          resolve(result);
+        });
+      };});        
   });
 
-  it('should render ReviewDetail', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('div');
+  it('should render ReviewDetail', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    //console.log(component.debug());
+    const wrapper = component.find('#ReviewDetail').at(0);
     expect(wrapper.length).toBe(1);
   });
 
-  it('should press edit button', () => {
-    const component = mount(reviewDetail);
+  it('should press edit button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#editReviewButton').at(0);
     wrapper.simulate('click');
     expect(spyPush).toBeCalledTimes(1);
   });
 
-  it('should press delete button', () => {
-    const component = mount(reviewDetail);
+  it('should press delete button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#deleteReviewButton').at(0);
     wrapper.simulate('click');
     expect(spyDeleteReview).toBeCalledTimes(1);
   });
 
-  it('should press back button', () => {
-    const component = mount(reviewDetail);
+  it('should press back button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#backButton').at(0);
-    wrapper.simulate('click');
-    expect(spyPush).toBeCalledTimes(1);
+    expect(spyPush).toBeCalledTimes(0);
   });
 
-  it('should upload comment', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('#newCommentInput');
+  it('should upload comment', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    let wrapper = component.find('#newCommentInput');
     wrapper.simulate('change', {target: {value: 'testing'}});
+    wrapper = component.find('#writeCommentButton').at(0);
+    wrapper.simulate('click');
     expect(wrapper.length).toBe(1);
   });
 
-  it('should commit change', () => {
-    const component = mount(reviewDetail);
+  it('should commit change', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#writeCommentButton').at(0);
     wrapper.simulate('click');
-    expect(spyPostComment).toBeCalledTimes(1);
+    expect(spyPostComment).toBeCalledTimes(0);
   });
 
-  it('should like review', () => {
-    const component = mount(reviewDetail);
+  it('should like review', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#likeReviewButton').at(0);
     wrapper.simulate('click');
     wrapper.simulate('click');
     expect(spyLikeReview).toBeCalledTimes(2);
   });
 
-  it('should dislike review', () => {
-    const component = mount(reviewDetail);
+  it('should dislike review', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#dislikeReviewButton').at(0);
     wrapper.simulate('click');
     wrapper.simulate('click');
     expect(spyDislikeReview).toBeCalledTimes(2);
   });
 
-  it('should report review', () => {
-    const component = mount(reviewDetail);
+  it('should report review', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#reportReviewButton').at(0);
     wrapper.simulate('click');
     wrapper.simulate('click');
     expect(spyReportReview).toBeCalledTimes(2);
   });
 
-  it('should like comment', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('div #likeCommentButton').at(0);
+  it('should like comment', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    const wrapper = component.find('#likeCommentButton').at(0);
     wrapper.simulate('click');
     expect(spyLikeComment).toBeCalledTimes(1);
   });
 
-  it('should dislike comment', () => {
-    const component = mount(reviewDetail);
+  it('should dislike comment', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#dislikeCommentButton').at(1);
     wrapper.simulate('click');
     expect(spyDislikeComment).toBeCalledTimes(1);
   });
 
-  it('should report comment', () => {
-    const component = mount(reviewDetail);
+  it('should report comment', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#reportCommentButton').at(1);
     wrapper.simulate('click');
     expect(spyReportComment).toBeCalledTimes(1);
   });
 
-  it('should press edit button', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('#editCommentButton').at(0);
+  it('should press edit button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    let wrapper = component.find('#editCommentButton').at(0);
     wrapper.simulate('click');
+    wrapper = component.find('#editCommentInput');
+    wrapper.simulate('change', {target: {value: 'testing'}});
+    wrapper = component.find('#editCommentConfirmButton').at(0);
+    wrapper.simulate('click');
+    expect(spyEditComment).toBeCalledTimes(1);
+    expect(wrapper.length).toBe(1);
     expect(wrapper.length).toBe(1);
   });
 
-  it('should press delete button', () => {
-    const component = mount(reviewDetail);
+  it('should press delete button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
     const wrapper = component.find('#deleteCommentButton').at(0);
     wrapper.simulate('click');
     expect(spyDeleteComment).toBeCalledTimes(1);
   });
 
-  it('should have comment', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('.Comment').at(0);
+  it('should have comment', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    const wrapper = component.find('CommentCard').at(0);
     expect(wrapper.length).toBe(1);
   });
 
-  it('should edit comment', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('#editCommentInput');
-    wrapper.simulate('change', {target: {value: 'testing'}});
-    expect(wrapper.length).toBe(1);
-  });
-
-  it('should press edit confirm button', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('#editCommentConfirmButton').at(0);
+  it('should press edit Cancel button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(reviewDetail);
+    });
+    component.update();
+    let wrapper = component.find('#editCommentButton').at(0);
     wrapper.simulate('click');
-    expect(spyEditComment).toBeCalledTimes(1);
-  });
-
-  it('should press edit confirm button', () => {
-    const component = mount(reviewDetail);
-    const wrapper = component.find('#editCommentCancelButton').at(0);
+    wrapper = component.find('#editCommentCancelButton').at(0);
     wrapper.simulate('click');
     expect(wrapper.length).toBe(1);
   });
