@@ -6,6 +6,7 @@ import { createBrowserHistory } from 'history';
 import { getMockStore } from '../test-utils/mocks';
 
 import ReviewCreator from './ReviewCreator';
+import * as reviewActionCreators from '../store/actions/review';
 //import * as fridgeItemActionCreators from '../store/actions/fridgeItem';
 
 const stubInitialState = {
@@ -93,6 +94,7 @@ describe('<ReviewCreator />', () => {
   
   const setState = jest.fn();
   const useStateSpy = jest.spyOn(React, 'useState');
+  let spyPostReview;
   
   beforeEach(() => {
     reviewCreator = (
@@ -106,24 +108,27 @@ describe('<ReviewCreator />', () => {
       </Provider>
     );
     useStateSpy.mockImplementation((init) => [init, setState]);
+    spyPostReview = jest.spyOn(reviewActionCreators, 'postReview')
+      .mockImplementation(() => {return () => {};});
   });
 
   it('should render ReviewCreator', () => {
     const component = mount(reviewCreator);
-    const wrapper = component.find('#ReviewCreator');
+    const wrapper = component.find('#submitButton');
     expect(wrapper.exists()).toBeTruthy();
+    expect(spyPostReview).toBeCalledTimes(0);
   });
 
   it('should change tab properly on click tab buttons', () => {
     const component = mount(reviewCreator);
     let wrapper = component.find('MenuItem').at(1);
     wrapper.simulate('click');
-    let subcomp = component.find('#PreviewTab');
+    let subcomp = component.find('PreviewTab');
     expect(subcomp.exists()).toBeTruthy();
 
     wrapper = component.find('MenuItem').at(0);
     wrapper.simulate('click');
-    subcomp = component.find('#WriteTab');
+    subcomp = component.find('WriteTab');
     expect(subcomp.exists()).toBeTruthy();
   });
 
@@ -132,23 +137,26 @@ describe('<ReviewCreator />', () => {
     const component = mount(reviewCreator);
     let wrapper = component.find('#titleInput').at(0).find('input');
     wrapper.simulate('change', { target: { value: title } });
-    
-    wrapper = component.find('MenuItem').at(1);
-    wrapper.simulate('click');
-    let subcomp = component.find('#title').at(0);
-    expect(subcomp.text()).toBe(title);
-  });
-
-  it(`should change value properly on content input`, () => {
     const content = 'TEST_CONTENT';
-    const component = mount(reviewCreator);
-    let wrapper = component.find('#contentInput').at(0).find('textarea');
+    wrapper = component.find('#contentInput').at(0).find('textarea');
     wrapper.simulate('change', { target: { value: content } });
     
     wrapper = component.find('MenuItem').at(1);
     wrapper.simulate('click');
-    let subcomp = component.find('#contentPreview').at(0);
-    expect(subcomp.text()).toBe(content);
+    wrapper = component.find('#submitButton').at(0);
+    wrapper.simulate('click');
+  });
+
+  it(`should change value properly on url input`, () => {
+    const content = 'TEST_CONTENT';
+    const component = mount(reviewCreator);
+    let wrapper = component.find('#imageInput').at(0).find('input');
+    wrapper.simulate('change', { target: { value: content } });
+    
+    wrapper = component.find('MenuItem').at(1);
+    wrapper.simulate('click');
+    wrapper = component.find('#submitButton').at(0);
+    wrapper.simulate('click');
   });
 
   it('should press submit button', () => {

@@ -38,8 +38,10 @@ const reducer = (state = initialState, action) => {
         }
       };
     }
-    case actionTypes.DELETE_REVIEW:
-      break;
+    case actionTypes.DELETE_REVIEW: {
+      const reviews = state.reviews.filter(review => review.id !== action.targetId);
+      return { ...state, reviews };
+    }
     default:
       break;
   }

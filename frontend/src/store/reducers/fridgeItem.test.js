@@ -4,31 +4,28 @@ import * as actionTypes from '../actions/actionTypes';
 const stubFridgeItem = {
   id: 1,
   name: 'test_name',
-  type: 'test_type',
+  ingredient_id: 'test_ingredient',
   quantity: 'test_quantity',
   unit: 'test_unit',
-  expiryDate: 'test_date',
-  nutritionFacts: ['test_calorie', 'test_sodium', 'test_protein'],
+  expiry_date: 'test_date',
 };
 
 const stubFridgeItem2 = {
   id: 2,
   name: 'test_name2',
-  type: 'test_type2',
+  ingredient_id: 'test_ingredient2',
   quantity: 'test_quantity2',
   unit: 'test_unit2',
-  expiryDate: 'test_date2',
-  nutritionFacts: ['test_calorie2', 'test_sodium2', 'test_protein2'],
+  expiry_date: 'test_date2',
 };
 
 const stubEditFridgeItem = {
   id: 1,
   name: 'edit_name',
-  type: 'edit_type',
+  ingredient_id: 'edit_ingredient',
   quantity: 'edit_quantity',
   unit: 'edit_unit',
-  expiryDate: 'edit_date',
-  nutritionFacts: ['edit_calorie', 'edit_sodium', 'edit_protein'],
+  expiry_date: 'edit_date',
 };
 
 const emptyState = {

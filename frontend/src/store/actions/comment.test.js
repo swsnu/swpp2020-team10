@@ -98,7 +98,7 @@ describe('comment actionCreators', () => {
         return new Promise((resolve) => {
           const result = {
             status: 200,
-            data: null
+            data: {}
           };
           resolve(result);
         });
@@ -115,7 +115,7 @@ describe('comment actionCreators', () => {
         return new Promise((resolve) => {
           const result = {
             status: 200,
-            data: null
+            data: {}
           };
           resolve(result);
         });
@@ -132,7 +132,7 @@ describe('comment actionCreators', () => {
         return new Promise((resolve) => {
           const result = {
             status: 200,
-            data: null
+            data: {}
           };
           resolve(result);
         });

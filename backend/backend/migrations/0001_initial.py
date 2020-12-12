@@ -30,6 +30,18 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='Comment',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('author_name', models.CharField(blank=True, default='', max_length=80, null=True)),
+                ('content', models.TextField(default='')),
+                ('likes', models.IntegerField(default=0)),
+                ('dislikes', models.IntegerField(default=0)),
+                ('reports', models.IntegerField(default=0)),
+                ('time_posted', models.DateTimeField(blank=True, default=django.utils.timezone.now, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
             name='Ingredient',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

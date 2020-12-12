@@ -99,6 +99,7 @@ export const FoodDetail = ({ open, setOpen }) => {
 
   return (
     <Modal
+      id='FoodDetail'
       open={open}
       dimmer='inverted'
       size='tiny'
