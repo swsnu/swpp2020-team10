@@ -82,8 +82,6 @@ export const RecipeDetail = ({ match }) => {
     },
   ];
 
-  console.log(storedRecipe);
-
   return (
     <Container text id='RecipeDetail'>
       <Item.Group>
