@@ -62,26 +62,7 @@ const stubInitialState = {
     serving: 2,
   },
 
-  reviews: [{
-    id: 1,
-    recipe_id: 1,
-    user_id: 1,
-    title: 'Kimchi review!!!',
-    content: 'Kimchi is good modify content',
-    likes: 5,
-    dislikes: 5,
-    reports: 3
-  },
-  {
-    id: 2,
-    recipe_id: 1,
-    user_id: 1,
-    title: 'Review 2',
-    content: 'Review 22',
-    likes: 3,
-    dislikes: 5,
-    reports: 0
-  }],
+  reviews: [],
 };
 
 const stubInitialState2 = {

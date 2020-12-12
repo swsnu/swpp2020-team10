@@ -44,11 +44,26 @@ const stubInitialState = {
   }
 };
 
+const emptyState = {
+  user: {
+    id: 1,
+    name: 'Tester',
+    isAuthorized: true,
+    noti: null,
+    recommendation: null,
+  },
+
+  fridgeItems: [],
+};
+
 const mockStore = getMockStore(stubInitialState);
+const emptyStore = getMockStore(emptyState);
 
 describe('<MyFridge />', () => {
-  let myFridge;
+  let myFridge, emptyFridge;
   const history = createBrowserHistory();
+  let spyGoBack = jest.spyOn(history, 'goBack')
+    .mockImplementation(() => {});
   let spyGetFridgeItemList, spyClearFridgeItems, spyGetFridgeItem;
   
   const setState = jest.fn();
@@ -57,6 +72,16 @@ describe('<MyFridge />', () => {
   beforeEach(() => {
     myFridge = (
       <Provider store={mockStore}>
+        <Router history={history}>
+          <Switch>
+            <Route path='/' exact component={MyFridge}
+              match={{params: {user_id: 1}}} />
+          </Switch>
+        </Router>
+      </Provider>
+    );
+    emptyFridge = (
+      <Provider store={emptyStore}>
         <Router history={history}>
           <Switch>
             <Route path='/' exact component={MyFridge}
@@ -119,6 +144,16 @@ describe('<MyFridge />', () => {
     expect(wrapper.length).toBe(stubInitialState.fridgeItems.length);
   });
 
+  it('should render empty fridgeItems', async () => {
+    let component;
+    await act(async () => {
+      component = mount(emptyFridge);
+    });
+    component.update();
+    const wrapper = component.find('.card');
+    expect(wrapper.length).toBe(0);
+  });
+
   it('should press add button', async () => {
     let component;
     await act(async () => {
@@ -162,5 +197,16 @@ describe('<MyFridge />', () => {
     
     expect(wrapper.exists()).toBeFalsy();//
     expect(spyGetFridgeItem).toBeCalledTimes(1);
+  });
+
+  it('should go back on click back', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
+    let wrapper = component.find('#backLink').at(0);
+    wrapper.simulate('click');
+    expect(spyGoBack).toHaveBeenCalledTimes(1);
   });
 });

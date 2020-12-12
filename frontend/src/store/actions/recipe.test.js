@@ -72,12 +72,12 @@ describe('recipe actionCreators', () => {
         return new Promise((resolve) => {
           const result = {
             status: 200,
-            data: null
+            data: {rating: 3, count_ratings: 3}
           };
           resolve(result);
         });
       });
-    store.dispatch(actionCreators.addRecipeRatingById(1, stubRecipe)).then(() => {
+    store.dispatch(actionCreators.addRecipeRatingById(1, stubRecipe.rating)).then(() => {
       expect(spy).toHaveBeenCalledTimes(1);
       //done();
     });

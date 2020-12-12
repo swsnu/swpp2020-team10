@@ -101,7 +101,7 @@ export const MyFridge = () => {
         </Segment>
       </Segment.Group>
       <div style={{ textAlign: 'right' }}>
-        <a onClick={() => history.goBack()} style={{ cursor: 'pointer' }}>
+        <a id='backLink' onClick={() => history.goBack()} style={{ cursor: 'pointer' }}>
           <Icon name='triangle left' />Go back
         </a>
       </div>
