@@ -6,7 +6,7 @@ const stubRecipe = {
   'food_id': 3,
   'title': 'Kimchi',
   'content': 'K-food Kimchi recipe blahblah',
-  'rating': 3.44,
+  'rating': 1,
   'count_ratings': 1,
   'ingredients': {
     'cabbage': '100'
@@ -17,6 +17,40 @@ const stubRecipe = {
   },
   'serving': 1
 };
+
+const ratedStubRecipe = {
+  'id': 1,
+  'food_id': 3,
+  'title': 'Kimchi',
+  'content': 'K-food Kimchi recipe blahblah',
+  'rating': 2,
+  'count_ratings': 2,
+  'ingredients': {
+    'cabbage': '100'
+  },
+  'cooking_time': 120,
+  'tag': {
+    'difficulty': 'hard'
+  },
+  'serving': 1
+};
+
+const stubRecipe2 = {
+  'id': 2,
+  'food_id': 3,
+  'title': 'Kimchi 2',
+  'content': 'K-food recipe blahblah',
+  'rating': 3.44,
+  'count_ratings': 1,
+  'ingredients': {
+    'cabbage': '100'
+  },
+  'cooking_time': 120,
+  'tag': {
+    'difficulty': 'hard'
+  },
+  'serving': 1
+}
 
 describe('recipe reducer', () => {
   it('should return default state', () => {
@@ -70,75 +104,12 @@ describe('recipe reducer', () => {
     expect(newState).toEqual({recipes: [], selectedRecipe: stubRecipe});
   });
   it('should rate recipe', () => {
-    const stubInitialState = {recipes: [{
-      'id': 1,
-      'food_id': 3,
-      'title': 'Kimchi',
-      'content': 'K-food Kimchi recipe blahblah',
-      'rating': 1,
-      'count_ratings': 1,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }, 
-    {
-      'id': 2,
-      'food_id': 3,
-      'title': 'Kimchi 2',
-      'content': 'K-food recipe blahblah',
-      'rating': 3.44,
-      'count_ratings': 1,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }
-    ], selectedRecipe: null};
+    const stubInitialState = {recipes: [stubRecipe, stubRecipe2], selectedRecipe: stubRecipe};
     const newState = reducer(stubInitialState, {
       type: actionTypes.RATE_RECIPE,
       targetID: 1,
-      rating: 1,
+      rating: 3,
     });
-    expect(newState).toEqual({recipes: [{
-      'id': 1,
-      'food_id': 3,
-      'title': 'Kimchi',
-      'content': 'K-food Kimchi recipe blahblah',
-      'rating': 1,
-      'count_ratings': 2,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }, {
-      'id': 2,
-      'food_id': 3,
-      'title': 'Kimchi 2',
-      'content': 'K-food recipe blahblah',
-      'rating': 3.44,
-      'count_ratings': 1,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }
-    ], selectedRecipe: null});
+    expect(newState).toEqual({recipes: [stubRecipe, stubRecipe2], selectedRecipe: ratedStubRecipe});
   });
 });

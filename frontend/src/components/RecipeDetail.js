@@ -35,8 +35,7 @@ export const RecipeDetail = ({ match }) => {
 
   const onRate = (e, { rating }) => {
     setEnableRating(false);
-    dispatch(actionCreators.addRecipeRatingById(recipeId, rating))
-      .catch(error => error);
+    dispatch(actionCreators.addRecipeRatingById(recipeId, rating));
   };
 
   const ingredients = (
@@ -83,8 +82,10 @@ export const RecipeDetail = ({ match }) => {
     },
   ];
 
+  console.log(storedRecipe);
+
   return (
-    <Container text className='RecipeDetail'>
+    <Container text id='RecipeDetail'>
       <Item.Group>
         <Item>
           <Item.Image
@@ -111,7 +112,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
+              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calorie{storedRecipe.calories == 1 ? '' : 's'} / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
@@ -177,6 +178,5 @@ const ReviewTab = ({ reviews, recipeId }) => {
     </div>
   );
 };
-
 
 export default RecipeDetail;

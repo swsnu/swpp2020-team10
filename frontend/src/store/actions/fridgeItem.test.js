@@ -80,7 +80,7 @@ describe('fridgeItem actionCreators', () => {
         return new Promise((resolve) => {
           const result = {
             status: 200,
-            data: null
+            data: stubFridgeItem
           };
           resolve(result);
         });

@@ -93,6 +93,7 @@ export const FoodCreate = ({ open, setOpen }) => {
 
   return (
     <Modal
+      id='FoodCreate'
       open={open}
       dimmer='inverted'
       size='tiny'

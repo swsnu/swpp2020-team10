@@ -69,7 +69,7 @@ export const MyFridge = () => {
   }
 
   return (
-    <Container text>
+    <Container id='MyFridge' text>
       <Segment.Group raised>
         <Segment color='blue' inverted tertiary>
           <Header
