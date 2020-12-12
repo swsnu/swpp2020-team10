@@ -61,13 +61,15 @@ describe('comment reducer', () => {
   it('should add comment', () => {
     const newState = reducer(undefined, {
       type: actionTypes.ADD_COMMENT,
-      id: 1,
-      review_id: 1,
-      user_id: 1,
-      content: 'some bad comment',
-      likes: 0,
-      dislikes: 0,
-      reports: 0
+      comment:{
+        id: 1,
+        review_id: 1,
+        user_id: 1,
+        content: 'some bad comment',
+        likes: 0,
+        dislikes: 0,
+        reports: 0
+      },
     });
     expect(newState).toEqual({comments:[stubComment], selectedComment: null});
   });
@@ -131,13 +133,16 @@ describe('comment reducer', () => {
     const newState = reducer(stubInitialState, {
       type: actionTypes.LIKE_COMMENT,
       targetId: 1,
+      likes: 0,
+      dislikes: 0,
+      reports: 0
     });
     expect(newState).toEqual({comments: [{
       'id': 1,
       'review_id': 1,
       'user_id': 1,
       'content': 'some bad comment',
-      'likes': 1,
+      'likes': 0,
       'dislikes': 0,
       'reports': 0
     },
@@ -175,6 +180,9 @@ describe('comment reducer', () => {
     const newState = reducer(stubInitialState, {
       type: actionTypes.DISLIKE_COMMENT,
       targetId: 1,
+      likes: 0,
+      dislikes: 0,
+      reports: 0
     });
     expect(newState).toEqual({comments: [{
       'id': 1,
@@ -182,7 +190,7 @@ describe('comment reducer', () => {
       'user_id': 1,
       'content': 'some bad comment',
       'likes': 0,
-      'dislikes': 1,
+      'dislikes': 0,
       'reports': 0
     },
     {
@@ -219,6 +227,9 @@ describe('comment reducer', () => {
     const newState = reducer(stubInitialState, {
       type: actionTypes.REPORT_COMMENT,
       targetId: 1,
+      likes: 0,
+      dislikes: 0,
+      reports: 0
     });
     expect(newState).toEqual({comments: [{
       'id': 1,
@@ -227,7 +238,7 @@ describe('comment reducer', () => {
       'content': 'some bad comment',
       'likes': 0,
       'dislikes': 0,
-      'reports': 1
+      'reports': 0
     },
     {
       'id': 2,

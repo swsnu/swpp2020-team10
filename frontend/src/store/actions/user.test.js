@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
 
 import * as actionCreators from './user';
+import { getMockStore } from '../../test-utils/mocks';
 
 
 const initialState = {
@@ -11,11 +10,11 @@ const initialState = {
     id: null,
     name: null,
     noti: null,
+    recommendation: null,
   }
 };
 
-const mockStore = createStore((state = initialState) => state, applyMiddleware(thunk));
-
+const mockStore = getMockStore(initialState);
 
 describe('user action creators', () => {
   afterEach(() => {
@@ -36,9 +35,17 @@ describe('user action creators', () => {
     await mockStore.dispatch(actionCreators.signin());
   });
 
-  it('checkUserStatus', async () => {
+  it('user status authorized', async () => {
     jest.spyOn(axios, 'get')
       .mockImplementation(() => Promise.resolve({ data: { user_id: 1, username: 'user 1' } }));
+
+    await mockStore.dispatch(actionCreators.checkUserStatus());
+  });
+
+
+  it('user status unauthorized', async () => {
+    jest.spyOn(axios, 'get')
+      .mockImplementation(() => Promise.reject());
 
     await mockStore.dispatch(actionCreators.checkUserStatus());
   });
@@ -52,14 +59,16 @@ describe('user action creators', () => {
 
   it('notification', async () => {
     jest.spyOn(axios, 'get')
-      .mockImplementation(() => Promise.resolve({ data: {  } }));
+      .mockImplementation(() => Promise.resolve({ data: {} }));
 
     await mockStore.dispatch(actionCreators.notification(1));
   });
 
-  it('notification failure', async () => {
+  it('recommendation', async () => {
     jest.spyOn(axios, 'get')
-      .mockImplementation(() => Promise.reject());
-    await mockStore.dispatch(actionCreators.notification(1));
+      .mockImplementation(() => Promise.resolve({ data: {} }));
+      
+    await mockStore.dispatch(actionCreators.getRecommendation());
   });
+
 });

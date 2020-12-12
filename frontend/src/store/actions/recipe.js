@@ -17,15 +17,15 @@ export const selectRecipeById = (id) => {
 };
 
 
-const addRecipeRatingById_ = (rating) => {
-  return { type: actionTypes.RATE_RECIPE, rating };
+const addRecipeRatingById_ = ({ rating, count_ratings }) => {
+  return { type: actionTypes.RATE_RECIPE, rating, count_ratings };
 };
 
 export const addRecipeRatingById = (id, rating) => {
   return dispatch => {
     return axios.put(`/api/recipe/${id}/`, { rating })
       .then(response => {
-        dispatch(addRecipeRatingById_(rating));
+        dispatch(addRecipeRatingById_(response.data));
         return response;
       });
   };

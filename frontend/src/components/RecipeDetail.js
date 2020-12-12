@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 
-import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon } from 'semantic-ui-react';
+import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon, List } from 'semantic-ui-react';
 
 import * as actionCreators from '../store/actions/index';
 
@@ -20,7 +20,7 @@ export const RecipeDetail = ({ match }) => {
   const [hasReviews, setHasReviews] = useState(false);
 
   const [enableRating, setEnableRating] = useState(true);
-
+  
   // fetch recipe and reviews on initial mount
   useEffect(() => {
     dispatch(actionCreators.selectRecipeById(recipeId))
@@ -35,7 +35,8 @@ export const RecipeDetail = ({ match }) => {
 
   const onRate = (e, { rating }) => {
     setEnableRating(false);
-    dispatch(actionCreators.addRecipeRatingById(recipeId, rating));
+    dispatch(actionCreators.addRecipeRatingById(recipeId, rating))
+      .then(() => setEnableRating(true));
   };
 
   const ingredients = (
@@ -65,7 +66,9 @@ export const RecipeDetail = ({ match }) => {
       menuItem: 'Directions',
       pane: (
         <Tab.Pane key={1}>
-          {storedRecipe.content}
+          <List ordered relaxed>
+            {storedRecipe.content.map((line, key) => <List.Item content={line} key={key} />)}
+          </List>
         </Tab.Pane>
       )
     },
@@ -110,7 +113,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calorie{storedRecipe.calories == 1 ? '' : 's'} / serving
+              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calories / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
@@ -135,6 +138,34 @@ const ReviewTab = ({ reviews, recipeId }) => {
 
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
+  const reviewCards = (
+    <Card.Group>
+      {reviews.map(review => (
+        <Card key={review.id} fluid>
+          <Card.Content>
+            <Card.Header>
+              <Link id='review-link' to={`/review/${review.id}`}>
+                {review.title}
+              </Link>
+            </Card.Header>
+            <Card.Meta>
+              By {review.author_name}
+            </Card.Meta>
+            <Card.Description>
+              {review.content.substr(0, 100)}
+              {review.content.length > 100 ? '...' : ''}
+            </Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+            <Icon name='thumbs up' /> {review.likes}&emsp;
+            <Icon name='thumbs down' /> {review.dislikes}&emsp;
+            <Icon name='warning circle' /> {review.reports}
+          </Card.Content>
+        </Card>
+      ))}
+    </Card.Group>
+  );
+
   return (
     <div className='review'>
       <div>
@@ -148,31 +179,11 @@ const ReviewTab = ({ reviews, recipeId }) => {
         />
       </div>
       <br />
-      <Card.Group>
-        {reviews.map(review => (
-          <Card key={review.id} fluid>
-            <Card.Content>
-              <Card.Header>
-                <Link id='review-link' to={`/review/${review.id}`}>
-                  {review.title}
-                </Link>
-              </Card.Header>
-              <Card.Meta>
-                By {review.author_name}
-              </Card.Meta>
-              <Card.Description>
-                {review.content.substr(0, 100)}
-                {review.content.length > 100 ? '...' : ''}
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              <Icon name='thumbs up' /> {review.likes}&emsp;
-              <Icon name='thumbs down' /> {review.dislikes}&emsp;
-              <Icon name='warning circle' /> {review.reports}
-            </Card.Content>
-          </Card>
-        ))}
-      </Card.Group>
+      {
+        reviews.length
+          ? reviewCards
+          : 'No reviews yet.'
+      }
     </div>
   );
 };

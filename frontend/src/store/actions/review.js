@@ -62,45 +62,45 @@ export const editReview = (id, review) => {
 };
 
 
-export const likeReview_ = (id) => {
-  return { type: actionTypes.LIKE_REVIEW, targetId: id };
+export const likeReview_ = ({ likes, dislikes, reports }) => {
+  return { type: actionTypes.LIKE_REVIEW, likes, dislikes, reports };
 };
 
 export const likeReview = (id) => {
   return dispatch => {
     return axios.put(`/api/review/${id}/reaction/`, { like: 1, dislike: 0, report: 0 })
       .then(response => {
-        dispatch(likeReview_(id));
+        dispatch(likeReview_(response.data));
         return response;
       });
   };
 };
 
 
-export const dislikeReview_ = (id) => {
-  return { type: actionTypes.DISLIKE_REVIEW, targetId: id };
+export const dislikeReview_ = ({ likes, dislikes, reports }) => {
+  return { type: actionTypes.DISLIKE_REVIEW, likes, dislikes, reports };
 };
 
 export const dislikeReview = (id) => {
   return dispatch => {
     return axios.put(`/api/review/${id}/reaction/`, { like: 0, dislike: 1, report: 0 })
       .then(response => {
-        dispatch(dislikeReview_(id));
+        dispatch(dislikeReview_(response.data));
         return response;
       });
   };
 };
 
 
-export const reportReview_ = (id) => {
-  return { type: actionTypes.REPORT_REVIEW, targetId: id };
+export const reportReview_ = ({ likes, dislikes, reports }) => {
+  return { type: actionTypes.REPORT_REVIEW, likes, dislikes, reports };
 };
 
 export const reportReview = (id) => {
   return dispatch => {
     return axios.put(`/api/review/${id}/reaction/`, { like: 0, dislike: 0, report: 1 })
       .then(response => {
-        dispatch(reportReview_(id));
+        dispatch(reportReview_(response.data));
         return response;
       });
   };

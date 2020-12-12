@@ -62,45 +62,63 @@ export const editComment = (id, content) => {
 };
 
 
-export const likeComment_ = (id) => {
-  return { type: actionTypes.LIKE_COMMENT, targetId: id };
+export const likeComment_ = ({ id, likes, dislikes, reports }) => {
+  return {
+    type: actionTypes.LIKE_COMMENT,
+    targetId: id,
+    likes,
+    dislikes,
+    reports,
+  };
 };
 
 export const likeComment = (id) => {
   return dispatch => {
     return axios.put(`/api/comment/${id}/reaction/`, { like: 1, dislike: 0, report: 0 })
       .then(response => {
-        dispatch(likeComment_(id));
+        dispatch(likeComment_(response.data));
         return response;
       });
   };
 };
 
 
-export const dislikeComment_ = (id) => {
-  return { type: actionTypes.DISLIKE_COMMENT, targetId: id };
+export const dislikeComment_ = ({ id, likes, dislikes, reports }) => {
+  return {
+    type: actionTypes.DISLIKE_COMMENT,
+    targetId: id,
+    likes,
+    dislikes,
+    reports,
+  };
 };
 
 export const dislikeComment = (id) => {
   return dispatch => {
     return axios.put(`/api/comment/${id}/reaction/`, { like: 0, dislike: 1, report: 0 })
       .then(response => {
-        dispatch(dislikeComment_(id));
+        dispatch(dislikeComment_(response.data));
         return response;
       });
   };
 };
 
 
-export const reportComment_ = (id) => {
-  return { type: actionTypes.REPORT_COMMENT, targetId: id };
+export const reportComment_ = ({ id, likes, dislikes, reports }) => {
+  return {
+    type: actionTypes.REPORT_COMMENT,
+    targetId: id,
+    likes,
+    dislikes,
+    reports,
+  };
 };
 
 export const reportComment = (id) => {
   return dispatch => {
     return axios.put(`/api/comment/${id}/reaction/`, { like: 0, dislike: 0, report: 1 })
       .then(response => {
-        dispatch(reportComment_(id));
+        dispatch(reportComment_(response.data));
         return response;
       });
   };

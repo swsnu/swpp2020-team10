@@ -53,6 +53,7 @@ const MenuBefore = () => {
 
 
 const MenuAfter = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
 
   return (
@@ -67,7 +68,11 @@ const MenuAfter = () => {
         </Menu.Item>
         <Menu.Item
           position='right'
-          content='Sign out'
+          content='My Fridge'
+          onClick={() => history.push('/fridge')}
+        />
+        <Menu.Item
+          content='Sign Out'
           onClick={() => dispatch(actionCreators.signout())}
         />
       </Container>
@@ -119,7 +124,7 @@ function App() {
     <Router>
       <Switch>
         <WrappedRoute menu={MenuAfter} exact path='/search/:q' component={RecipeSearchPage} />
-        <WrappedRoute menu={MenuAfter} exact path='/fridge/' component={MyFridge} />
+        <WrappedRoute menu={MenuAfter} exact path='/fridge' component={MyFridge} />
         <WrappedRoute menu={MenuAfter} exact path='/recipe/:recipe_id' component={RecipeDetail} />
         <WrappedRoute menu={MenuAfter} exact path='/recipe/:recipe_id/create-review' component={ReviewCreator} />
         <WrappedRoute menu={MenuAfter} exact path='/review/:review_id' component={ReviewDetail} />
