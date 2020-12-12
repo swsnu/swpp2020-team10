@@ -86,7 +86,7 @@ export const RecipeDetail = ({ match }) => {
   ];
 
   return (
-    <Container text className='RecipeDetail'>
+    <Container text id='RecipeDetail'>
       <Item.Group>
         <Item>
           <Item.Image
@@ -187,6 +187,5 @@ const ReviewTab = ({ reviews, recipeId }) => {
     </div>
   );
 };
-
 
 export default RecipeDetail;
