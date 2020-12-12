@@ -2,55 +2,61 @@ import reducer from './recipe';
 import * as actionTypes from '../actions/actionTypes';
 
 const stubRecipe = {
-  'id': 1,
-  'food_id': 3,
-  'title': 'Kimchi',
-  'content': 'K-food Kimchi recipe blahblah',
-  'rating': 1,
-  'count_ratings': 1,
-  'ingredients': {
-    'cabbage': '100'
+  id: 1,
+  food_id: 3,
+  title: 'Kimchi',
+  content: ['step1', 'step2'],
+  image: 'http://domain/image.jpg',
+  rating: 1,
+  count_ratings: 1,
+  ingredients: {
+    'cabbage': 100
   },
-  'cooking_time': 120,
-  'tag': {
-    'difficulty': 'hard'
-  },
-  'serving': 1
+  ingredient_lines: ['first', 'second' ,'third'],
+  health_labels: ['label1', 'label2'],
+  diet_labels: ['label3', 'label4'],
+  calories: 500,
+  cooking_time: 120,
+  serving: 2,
 };
 
 const ratedStubRecipe = {
-  'id': 1,
-  'food_id': 3,
-  'title': 'Kimchi',
-  'content': 'K-food Kimchi recipe blahblah',
-  'rating': 2,
-  'count_ratings': 2,
-  'ingredients': {
-    'cabbage': '100'
+  id: 1,
+  food_id: 3,
+  title: 'Kimchi',
+  content: ['step1', 'step2'],
+  image: 'http://domain/image.jpg',
+  rating: 3,
+  count_ratings: 2,
+  ingredients: {
+    'cabbage': 100
   },
-  'cooking_time': 120,
-  'tag': {
-    'difficulty': 'hard'
-  },
-  'serving': 1
+  ingredient_lines: ['first', 'second' ,'third'],
+  health_labels: ['label1', 'label2'],
+  diet_labels: ['label3', 'label4'],
+  calories: 500,
+  cooking_time: 120,
+  serving: 2,
 };
 
 const stubRecipe2 = {
-  'id': 2,
-  'food_id': 3,
-  'title': 'Kimchi 2',
-  'content': 'K-food recipe blahblah',
-  'rating': 3.44,
-  'count_ratings': 1,
-  'ingredients': {
-    'cabbage': '100'
+  id: 2,
+  food_id: 3,
+  title: 'Kimchi 2',
+  content: ['step1', 'step2'],
+  image: 'http://domain/image.jpg',
+  rating: 3.44,
+  count_ratings: 1,
+  ingredients: {
+    'cabbage': 100
   },
-  'cooking_time': 120,
-  'tag': {
-    'difficulty': 'hard'
-  },
-  'serving': 1
-}
+  ingredient_lines: ['first', 'second' ,'third'],
+  health_labels: ['label1', 'label2'],
+  diet_labels: ['label3', 'label4'],
+  calories: 500,
+  cooking_time: 120,
+  serving: 2,
+};
 
 describe('recipe reducer', () => {
   it('should return default state', () => {
@@ -59,37 +65,7 @@ describe('recipe reducer', () => {
   });
 
   it('should get recipe', () => {
-    const stubRecipes = [{
-      'id': 1,
-      'food_id': 3,
-      'title': 'Kimchi',
-      'content': 'K-food Kimchi recipe blahblah',
-      'rating': 3.44,
-      'count_ratings': 1,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }, {
-      'id': 2,
-      'food_id': 3,
-      'title': 'Kimchi 2',
-      'content': 'K-food recipe blahblah',
-      'rating': 3.44,
-      'count_ratings': 1,
-      'ingredients': {
-        'cabbage': '100'
-      },
-      'cooking_time': 120,
-      'tag': {
-        'difficulty': 'hard'
-      },
-      'serving': 1
-    }];
+    const stubRecipes = [stubRecipe, stubRecipe2];
     const newState = reducer(undefined, {
       type: actionTypes.FETCH_ALL_RECIPES,
       recipes: stubRecipes,
@@ -107,8 +83,8 @@ describe('recipe reducer', () => {
     const stubInitialState = {recipes: [stubRecipe, stubRecipe2], selectedRecipe: stubRecipe};
     const newState = reducer(stubInitialState, {
       type: actionTypes.RATE_RECIPE,
-      targetID: 1,
       rating: 3,
+      count_ratings: 2
     });
     expect(newState).toEqual({recipes: [stubRecipe, stubRecipe2], selectedRecipe: ratedStubRecipe});
   });

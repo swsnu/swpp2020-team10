@@ -28,7 +28,7 @@ const stubInitialState = {
     id: 1,
     food_id: 3,
     title: 'Kimchi',
-    content: 'K-food Kimchi recipe blahblah',
+    content: ['step1', 'step2'],
     image: 'http://domain/image.jpg',
     rating: 3.44,
     count_ratings: 1,
@@ -47,7 +47,7 @@ const stubInitialState = {
     id: 1,
     food_id: 3,
     title: 'Kimchi',
-    content: 'K-food Kimchi recipe blahblah',
+    content: ['step1', 'step2'],
     image: 'http://domain/image.jpg',
     rating: 3.44,
     count_ratings: 1,
@@ -94,7 +94,7 @@ const stubInitialState2 = {
     id: 1,
     food_id: 3,
     title: 'Kimchi',
-    content: 'K-food Kimchi recipe blahblah',
+    content: ['step1', 'step2'],
     image: '',
     rating: 3.44,
     count_ratings: 1,
@@ -113,7 +113,7 @@ const stubInitialState2 = {
     id: 1,
     food_id: 3,
     title: 'Kimchi',
-    content: 'K-food Kimchi recipe blahblah',
+    content: ['step1', 'step2'],
     image: '',
     rating: 3.44,
     count_ratings: 1,
@@ -256,6 +256,9 @@ describe('<RecipeDetail />', () => {
     const event = {rating: 1}; 
     const wrapper = component.find('RatingIcon').last();
     wrapper.simulate('click', event);
-    expect(wrapper.length).toBe(1);
+
+    await act(async () => {
+      expect(wrapper.length).toBe(1);
+    })
   });
 });

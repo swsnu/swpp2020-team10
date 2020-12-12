@@ -67,7 +67,11 @@ export const RecipeDetail = ({ match }) => {
       pane: (
         <Tab.Pane key={1}>
           <List ordered relaxed>
-            {storedRecipe.content.map((line, key) => <List.Item content={line} key={key} />)}
+            {storedRecipe.content.map((line, key) => {
+              return (
+                <List.Item content={line} key={key} />
+              );
+            })}
           </List>
         </Tab.Pane>
       )
