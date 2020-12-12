@@ -4,15 +4,18 @@ import { Provider } from 'react-redux';
 import { Router, Route, Switch } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { getMockStore } from '../../test-utils/mocks';
+import { act } from 'react-dom/test-utils';
 
 import MyFridge from './MyFridge';
-//import * as fridgeItemActionCreators from '../../store/actions/fridgeItem';
+import * as fridgeItemActionCreators from '../../store/actions/fridgeItem';
 
 const stubInitialState = {
   user: {
     id: 1,
     name: 'Tester',
-    isAuthorized: true
+    isAuthorized: true,
+    noti: null,
+    recommendation: null,
   },
 
   fridgeItems: [{
@@ -22,7 +25,6 @@ const stubInitialState = {
     quantity: 'test_quantity',
     unit: 'test_unit',
     expiryDate: 'test_date',
-    nutritionFacts: ['test_calorie', 'test_sodium', 'test_protein'],
   },
   {
     id: 2,
@@ -31,7 +33,6 @@ const stubInitialState = {
     quantity: 'test_quantity2',
     unit: 'test_unit2',
     expiryDate: 'test_date2',
-    nutritionFacts: ['test_calorie2', 'test_sodium2', 'test_protein2'],
   }],
   selectedFridgeItem: {
     id: 1,
@@ -40,19 +41,30 @@ const stubInitialState = {
     quantity: 'test_quantity',
     unit: 'test_unit',
     expiryDate: 'test_date',
-    nutritionFacts: ['test_calorie', 'test_sodium', 'test_protein'],
   }
 };
 
+const emptyState = {
+  user: {
+    id: 1,
+    name: 'Tester',
+    isAuthorized: true,
+    noti: null,
+    recommendation: null,
+  },
+
+  fridgeItems: [],
+};
+
 const mockStore = getMockStore(stubInitialState);
+const emptyStore = getMockStore(emptyState);
 
 describe('<MyFridge />', () => {
-  let myFridge;
+  let myFridge, emptyFridge;
   const history = createBrowserHistory();
-  let spyPush = jest.spyOn(history, 'push')
+  let spyGoBack = jest.spyOn(history, 'goBack')
     .mockImplementation(() => {});
-  //let spyOnClearFridgeItems = jest.spyOn(fridgeItemActionCreators, 'clearFridgeItems')
-  //  .mockImplementation({});
+  let spyGetFridgeItemList, spyClearFridgeItems, spyGetFridgeItem;
   
   const setState = jest.fn();
   const useStateSpy = jest.spyOn(React, 'useState');
@@ -62,37 +74,92 @@ describe('<MyFridge />', () => {
       <Provider store={mockStore}>
         <Router history={history}>
           <Switch>
-            <Route path='/' exact component={MyFridge} 
+            <Route path='/' exact component={MyFridge}
+              match={{params: {user_id: 1}}} />
+          </Switch>
+        </Router>
+      </Provider>
+    );
+    emptyFridge = (
+      <Provider store={emptyStore}>
+        <Router history={history}>
+          <Switch>
+            <Route path='/' exact component={MyFridge}
               match={{params: {user_id: 1}}} />
           </Switch>
         </Router>
       </Provider>
     );
     useStateSpy.mockImplementation((init) => [init, setState]);
+    spyGetFridgeItemList = jest.spyOn(fridgeItemActionCreators, 'getFridgeItemList')
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
+    spyClearFridgeItems = jest.spyOn(fridgeItemActionCreators, 'clearFridgeItems')
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
+    spyGetFridgeItem = jest.spyOn(fridgeItemActionCreators, 'getFridgeItem')
+      .mockImplementation(() => {return () => {
+        return new Promise((resolve) => {
+          const result = {
+            status: 200,
+            data: {}
+          };
+          resolve(result);
+        });
+      };});
   });
 
-  it('should render MyFridge', () => {
-    const component = mount(myFridge);
+  it('should render MyFridge', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
     const wrapper = component.find('#MyFridge');
     expect(wrapper.exists()).toBeTruthy();
+    expect(spyGetFridgeItemList).toHaveBeenCalledTimes(1);
   });
 
-  it('should render fridgeItems', () => {
-    const component = mount(myFridge);
+  it('should render fridgeItems', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
     const wrapper = component.find('.card');
     expect(wrapper.length).toBe(stubInitialState.fridgeItems.length);
   });
 
-  it('should redirect to recipe search page on click button', () => {
-    const component = mount(myFridge);
-    const wrapper = component.find('#searchRecipeButton').at(0);
-    wrapper.simulate('click');
-    expect(spyPush).toBeCalledTimes(1);
-    expect(spyPush).toBeCalledWith('/search');
+  it('should render empty fridgeItems', async () => {
+    let component;
+    await act(async () => {
+      component = mount(emptyFridge);
+    });
+    component.update();
+    const wrapper = component.find('.card');
+    expect(wrapper.length).toBe(0);
   });
 
-  it('should press add button', () => {
-    const component = mount(myFridge);
+  it('should press add button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
     let wrapper = component.find('#addFoodButton').at(0);
     wrapper.simulate('click');
     
@@ -100,23 +167,46 @@ describe('<MyFridge />', () => {
     expect(wrapper.exists()).toBeTruthy();
   });
 
-  it('should press clear button', () => {
-    const component = mount(myFridge);
+  it('should press clear button', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
     let wrapper = component.find('#clearFridgeButton').at(0);
     wrapper.simulate('click');
     
     wrapper = component.find('.card');
-    //do the followings after axios is ready
-    //expect(wrapper.length).toBe(0);
-    //expect(spyOnClearFridgeItems).toBeCalledTimes(0);
+    expect(wrapper.length).toBe(2);//
+    expect(spyClearFridgeItems).toBeCalledTimes(1);
   });
 
-  it('should press fridgeItem', () => {
-    const component = mount(myFridge);
+  it('should press fridgeItem', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
     let wrapper = component.find('.card').at(0);
     wrapper.simulate('click');
     
-    wrapper = component.find('#FoodDetail');
-    expect(wrapper.exists()).toBeTruthy();
+    await act(async () => {
+      wrapper = component.find('#FoodDetail');
+    });
+    wrapper.update();
+    
+    expect(wrapper.exists()).toBeFalsy();//
+    expect(spyGetFridgeItem).toBeCalledTimes(1);
+  });
+
+  it('should go back on click back', async () => {
+    let component;
+    await act(async () => {
+      component = mount(myFridge);
+    });
+    component.update();
+    let wrapper = component.find('#backLink').at(0);
+    wrapper.simulate('click');
+    expect(spyGoBack).toHaveBeenCalledTimes(1);
   });
 });

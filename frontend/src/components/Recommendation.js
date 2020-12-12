@@ -69,7 +69,7 @@ export const Recommendation = () => {
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}
           <br />
-          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
+          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
         </Card.Meta>
         <Card.Description>
           {recipeSteps.substr(0, 100)}
@@ -80,6 +80,7 @@ export const Recommendation = () => {
         isAuthorized &&
         <Card.Content extra>
           <Icon
+            id='thumbsUpButton'
             name='thumbs up'
             link={enableReaction}
             onClick={onClickLike}
@@ -87,6 +88,7 @@ export const Recommendation = () => {
             disabled={!enableReaction}
           />&ensp;
           <Icon
+            id='thumbsDownButton'
             name='thumbs down'
             link={enableReaction}
             onClick={onClickDislike}

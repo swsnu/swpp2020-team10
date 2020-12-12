@@ -20,7 +20,7 @@ export const RecipeDetail = ({ match }) => {
   const [hasReviews, setHasReviews] = useState(false);
 
   const [enableRating, setEnableRating] = useState(true);
-
+  
   // fetch recipe and reviews on initial mount
   useEffect(() => {
     dispatch(actionCreators.selectRecipeById(recipeId))
@@ -67,7 +67,11 @@ export const RecipeDetail = ({ match }) => {
       pane: (
         <Tab.Pane key={1}>
           <List ordered relaxed>
-            {storedRecipe.content.map((line, key) => <List.Item content={line} key={key} />)}
+            {storedRecipe.content.map((line, key) => {
+              return (
+                <List.Item content={line} key={key} />
+              );
+            })}
           </List>
         </Tab.Pane>
       )
@@ -86,7 +90,7 @@ export const RecipeDetail = ({ match }) => {
   ];
 
   return (
-    <Container text className='RecipeDetail'>
+    <Container text id='RecipeDetail'>
       <Item.Group>
         <Item>
           <Item.Image
@@ -113,7 +117,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calorie{storedRecipe.calorie == 1 ? '' : 's'} / serving
+              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calories / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
@@ -187,6 +191,5 @@ const ReviewTab = ({ reviews, recipeId }) => {
     </div>
   );
 };
-
 
 export default RecipeDetail;
