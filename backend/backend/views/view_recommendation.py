@@ -35,7 +35,7 @@ def recommendation_react(request):
             lab_norm += 1
             continue
         my_label_preference[label] += reaction
-        lab_norm += my_label_preference[label] * 2 * reaction - 1
+        lab_norm += reaction
         #print(f"{my_label_preference[label]-reaction} => {my_label_preference[label]} : add {my_label_preference[label] * 2 * reaction - 1}")
         LabelPreference.objects.filter(user_id=request_user_id, name=label).update(score=my_label_preference[label])
 
@@ -45,7 +45,7 @@ def recommendation_react(request):
             lab_norm += 1
             continue
         my_label_preference[label] += reaction
-        lab_norm += my_label_preference[label] * 2 * reaction - 1
+        lab_norm += reaction
         #print(f"{my_label_preference[label]-reaction} => {my_label_preference[label]} : add {my_label_preference[label] * 2 * reaction - 1}")
         LabelPreference.objects.filter(user_id=request_user_id, name=label).update(score=my_label_preference[label])
 
@@ -57,7 +57,7 @@ def recommendation_react(request):
             lab_norm += 1
             continue
         my_ing_preference[ing] += reaction
-        ing_norm += my_ing_preference[ing] * 2 * reaction - 1
+        ing_norm += reaction
         IngredientPreference.objects.filter(user_id=request_user_id, name=ing) \
             .update(score=my_ing_preference[ing])
 

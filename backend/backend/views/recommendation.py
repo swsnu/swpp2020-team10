@@ -6,7 +6,8 @@ from ..models import *
 from .util import json_default
 from bisect import bisect
 from random import random, choice, sample
-
+from django.contrib.postgres.search import SearchVector, TrigramSimilarity
+from django.db.models import Q
 
 TOTAL_NUMBER_OF_LABELS = 50
 TOTAL_NUMBER_OF_INGS = 1e4
@@ -33,7 +34,8 @@ def recommend_recipe(request):
 
     try:
         lab_norm, ing_norm = pref['label_norm'], pref['ingredient_norm']
-
+        lab_norm = abs(int(lab_norm))
+        ing_norm = abs(int(ing_norm))
         my_ingredients, my_label_preference, my_ing_preference = set(), dict(), dict()
         for it in FridgeItem.objects.filter(user_id=request_user_id).all().values():
             my_ingredients.add(it['ingredient_id'])
@@ -66,6 +68,23 @@ def recommend_recipe(request):
                 if flag is True:
                     #print(f"Recipe {r['id']} is feasible")
                     feasible_list.append(r)
+
+        query = Recipe.objects
+        search_setting = request.user.searchsetting
+        filter_q = Q()
+        filter_q &= Q(diet_labels__contains=search_setting.diet_labels)
+        filter_q &= Q(health_labels__contains=search_setting.health_labels)
+        if search_setting.calories is not None:
+            filter_q &= Q(calories__lte=int(search_setting.calories))
+        if search_setting.cooking_time is not None:
+            filter_q &= Q(cooking_time__lte=int(search_setting.cooking_time))
+        if search_setting.rating is not None:
+            filter_q &= Q(rating__gte=float(search_setting.rating))
+        query = query.filter(filter_q)
+        setting_filtered_recipes = list(query.all().values())
+        for r in feasible_list:
+            if r not in setting_filtered_recipes:
+                feasible_list.remove(r)
         #print(f"Feasible : {feasible_list}")
         # For each feasible recipe, compute score
         cdf = []
