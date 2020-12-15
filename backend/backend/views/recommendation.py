@@ -28,7 +28,7 @@ def recommend_recipe(request):
     except IndexError:
         p = Preference(user=request.user)
         p.save()
-        print(f"make {p}")
+        #print(f"make {p}")
         pref = Preference.objects.filter(user_id=request_user_id).all().values()[0]
 
     try:
@@ -36,7 +36,7 @@ def recommend_recipe(request):
 
         my_ingredients, my_label_preference, my_ing_preference = set(), dict(), dict()
         for it in FridgeItem.objects.filter(user_id=request_user_id).all().values():
-            my_ingredients.add(it['id'])
+            my_ingredients.add(it['ingredient_id'])
 
         for it in LabelPreference.objects.filter(user_id=request_user_id).all().values():
             my_label_preference[it['name']] = it['score']
@@ -51,6 +51,8 @@ def recommend_recipe(request):
                 rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
 
         feasible_list = list()
+        #print(f"Rec Ing : {rec_ing_list}")
+        #print(f"My Ing : {list(my_ingredients)}")
         for r in Recipe.objects.all().values():
             if r['id'] not in rec_ing_list:
                 feasible_list.append(r)
@@ -64,10 +66,7 @@ def recommend_recipe(request):
                 if flag is True:
                     #print(f"Recipe {r['id']} is feasible")
                     feasible_list.append(r)
-
-        if len(feasible_list) == 0:
-            return random_draw(request)
-
+        #print(f"Feasible : {feasible_list}")
         # For each feasible recipe, compute score
         cdf = []
         sqscs = 0.0
@@ -81,7 +80,6 @@ def recommend_recipe(request):
                     lp.save()
                 else:
                     LS += (my_label_preference[label]/max(1.0, lab_norm))
-
             for label in recipe['health_labels']:
                 if label not in my_label_preference:
                     my_label_preference[label] = 0.0
@@ -91,13 +89,14 @@ def recommend_recipe(request):
                     LS += (my_label_preference[label]/max(1.0, lab_norm))
             # Ingredient score
             IS = 0.0
-            for ing in rec_ing_list[recipe['id']]:
-                if ing not in my_ing_preference:
-                    my_ing_preference[ing] = 0.0
-                    ip = IngredientPreference(user=request.user, name=ing, score=0.0)
-                    ip.save()
-                else:
-                    IS += (my_ing_preference[ing]/max(1.0, ing_norm))
+            if recipe['id'] in rec_ing_list:
+                for ing in rec_ing_list[recipe['id']]:
+                    if ing not in my_ing_preference:
+                        my_ing_preference[ing] = 0.0
+                        ip = IngredientPreference(user=request.user, name=ing, score=0.0)
+                        ip.save()
+                    else:
+                        IS += (my_ing_preference[ing]/max(1.0, ing_norm))
 
             # maybe some math will do the job
             # 1 negative => Out of recommendation seems wrong.
@@ -105,14 +104,13 @@ def recommend_recipe(request):
             # Also, give 'small probability' for might-dislikes.
             # Does 0.1 work?
             recipe['score'] = 0.1 + LS + IS
+            #print(f"score of {recipe['title']} in {request_user_id} perspective : {recipe['score']}")
             if recipe['score'] >= 0:
                 sqscs += pow(recipe['score'], 2)
-
-        if sqscs == 0:
-            return random_draw(request)
         # Probability ~ (Score)^2
-
+        #print(sqscs)
         for r in feasible_list:
+            #print(r)
             if r['score'] < 0:
                 pr = 0
             else:
@@ -121,7 +119,7 @@ def recommend_recipe(request):
                 cdf = [pr]
             else:
                 cdf.append(cdf[-1] + pr)
-            print(f"{r} : {pr}")
+            #print(f"{r} : {pr}")
 
         chosen_recipes = set()
         rec_ind = bisect(cdf,random())
