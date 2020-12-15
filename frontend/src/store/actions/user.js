@@ -2,22 +2,21 @@ import axios from 'axios';
 import * as actionTypes from './actionTypes';
 
 
-const authorize = (response_data) => {
+const authorize = (responseData) => {
   return {
     type: actionTypes.SIGN_IN,
-    id: response_data.user_id,
-    name: response_data.username,
+    id: responseData.user_id,
+    name: responseData.username,
   };
 };
 
-export const signin = (request_data) => {
+export const signin = (requestData) => {
   return dispatch => {
-    return axios.post('/api/user/signin/', request_data)
+    return axios.post('/api/user/signin/', requestData)
       .then(response => {
         dispatch(authorize(response.data));
         return response;
-      })
-      .catch(error => error);
+      });
   };
 };
 

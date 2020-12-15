@@ -1,26 +1,23 @@
-import { mount } from 'enzyme';
 import React from 'react';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import { mount } from 'enzyme';
+import { Provider, useDispatch } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-import { SignInPage } from './SignInPage';
+import { SignInPage } from './SignInPage.js';
+import { getMockStore } from '../../test-utils/mocks';
 
-
-const mockStore = createStore(state => state);
-
-const mockDispatch = jest.fn();
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useDispatch: () => mockDispatch,
+  useDispatch: jest.fn(),
+  useSelector: jest.fn(),
 }));
-
-const mockHistoryPush = jest.fn();
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
-    push: mockHistoryPush,
+    goBack: jest.fn(),
+    replace: jest.fn(),
   }),
 }));
 
@@ -29,13 +26,17 @@ jest.mock('../../store/actions/index', () => ({
 }));
 
 
+const mockStore = getMockStore({});
+
 describe('<SignInPage />', () => {
   let component;
 
   beforeEach(() => {
     component = (
       <Provider store={mockStore}>
-        <SignInPage />
+        <Router>
+          <SignInPage />
+        </Router>
       </Provider>
     );
   });
@@ -64,24 +65,26 @@ describe('<SignInPage />', () => {
 
   it('routes to sign up page', () => {
     mount(component).find('#signupButton').first().simulate('click');
-    expect(mockHistoryPush).toBeCalledWith('/signup');
   });
 
   it('rejects invalid sign in request', async () => {
-    mockDispatch.mockImplementation(() => Promise.reject());
+    useDispatch.mockImplementation(() => () => Promise.reject());
 
     const wrapper = mount(component);
+    wrapper.find('#usernameInput').simulate('change', { target: { value: 'user' } });
+    wrapper.find('#passwordInput').simulate('change', { target: { value: 'pass' } });
     wrapper.find('#signinConfirmButton').first().simulate('click');
     await Promise.resolve();
   });
 
   it('accepts valid sign in request', async () => {
-    mockDispatch.mockImplementation(() => Promise.resolve());
+    useDispatch.mockImplementation(() => () => Promise.resolve());
 
     const wrapper = mount(component);
+    wrapper.find('#usernameInput').simulate('change', { target: { value: 'user' } });
+    wrapper.find('#passwordInput').simulate('change', { target: { value: 'pass' } });
     wrapper.find('#signinConfirmButton').first().simulate('click');
     await Promise.resolve();
-    expect(mockHistoryPush).toBeCalledWith('/');
   });
 
 });
