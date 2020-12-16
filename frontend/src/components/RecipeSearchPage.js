@@ -72,12 +72,17 @@ export const RecipeSearchPage = ({ match }) => {
     return axios.get('/api/user/setting/')
       .then(response => {
         let {
+          fridge_able,
           cooking_time,
           rating,
           calories,
           diet_labels,
           health_labels,
         } = response.data;
+
+        if (fridge_able) {
+          setEnableFridge(true);
+        }
 
         if (cooking_time) {
           setEnableMaxCookingTime(true);
@@ -104,6 +109,7 @@ export const RecipeSearchPage = ({ match }) => {
 
   const saveSetting = () => {
     return axios.put('/api/user/setting/', {
+      fridge_able: enableFridge ? 'true' : 'false',
       cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
       rating: enableMinRating ? minRating : 0,
       calories: enableMaxCalorie ? maxCalorie : 0,

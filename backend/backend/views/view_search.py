@@ -49,7 +49,7 @@ def search(request):
 
         filtered_recipes = query.all()[filter_from:filter_to].values()
         feasible_recipes = []
-        if not fridge_able:
+        if fridge_able == 'true':
             feasible_recipes = filtered_recipes
         else:
             try:
