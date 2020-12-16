@@ -1,7 +1,5 @@
 import json
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
-from backend.models import Ingredient
 
 class IngredientTestCase(TestCase):
     def test_ingredient(self):
@@ -15,4 +13,3 @@ class IngredientTestCase(TestCase):
 
         response = client.post('/api/ingredient/?q=kimchi', json.dumps('\{\}'), content_type='application/json')
         self.assertEqual(response.status_code, 405)
-

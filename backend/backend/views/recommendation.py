@@ -1,13 +1,8 @@
-import json
-from datetime import datetime
 from json import JSONDecodeError
-from django.forms.models import model_to_dict
-from ..models import *
-from .util import json_default
 from bisect import bisect
-from random import random, choice, sample
-from django.contrib.postgres.search import SearchVector, TrigramSimilarity
+from random import random, choice
 from django.db.models import Q
+from ..models import *
 
 TOTAL_NUMBER_OF_LABELS = 50
 TOTAL_NUMBER_OF_INGS = 1e4

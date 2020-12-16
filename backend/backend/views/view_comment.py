@@ -1,7 +1,6 @@
 import json
 from json import JSONDecodeError
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from django.forms.models import model_to_dict
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from ..models import Comment, CommentProfile

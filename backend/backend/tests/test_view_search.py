@@ -1,9 +1,6 @@
 import json
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
-from backend.models import SearchSetting
-from .data_for_testing import (test_user, test_user_2,
-                               test_post_fridge_item_2, t_data)
+from .data_for_testing import (test_user, t_data)
 
 class SearchTestCase(TestCase):
     def setUp(self):
@@ -36,4 +33,3 @@ class SearchTestCase(TestCase):
 
         response = client.get('/api/search/?q=kimchi&from=0&to=10&fridge_able=true')
         self.assertEqual(response.status_code, 200)
-

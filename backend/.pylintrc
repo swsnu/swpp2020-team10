@@ -9,7 +9,7 @@ fail-under=7.0
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=backend/migrations
+ignore=backend/migrations, script/
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -141,9 +141,15 @@ disable=print-statement,
         C0114,
         C0115,
         C0116,
+        C0103,
+        C0303,
         C0301,
         R5102,
         R5101,
+        E0401,
+        E5142,
+        W0401,
+        W0614,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -1,7 +1,7 @@
 import json
 from django.test import TestCase, Client
+from backend.models import FridgeItem
 from .data_for_testing import test_review_write as rev, test_user, test_user_2, t_data
-from backend.models import User, Recipe, FridgeItem, Review
 
 class UserTestCase(TestCase):
     def setUp(self):
@@ -11,7 +11,7 @@ class UserTestCase(TestCase):
             "email" : "email@email.com"
         }
         client = Client()
-        response = client.post('/api/user/signup/', json.dumps(test_user_3), content_type='application/json')
+        client.post('/api/user/signup/', json.dumps(test_user_3), content_type='application/json')
         self.t_data = t_data()
 
     def test_user_signup(self):

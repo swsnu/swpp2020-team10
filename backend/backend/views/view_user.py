@@ -4,7 +4,7 @@ import json
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import SearchSetting
 from ..models import FridgeItem, Review, Comment, Recipe
 

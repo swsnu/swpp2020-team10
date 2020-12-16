@@ -1,6 +1,8 @@
+import json
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .recommendation import *
+from .recommendation import recommend_recipe
+from ..models import *
 
 @ensure_csrf_cookie
 def recommendation(request):

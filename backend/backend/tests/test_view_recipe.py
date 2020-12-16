@@ -1,7 +1,6 @@
 import json
 from django.test import TestCase, Client
 from .data_for_testing import test_recipe_rating as rtest, test_recipe_rating_wrong as rtestf, test_user, t_data
-from ..models import *
 
 
 class RecipeTestCase(TestCase):

@@ -1,6 +1,5 @@
 import json
 from django.test import TestCase, Client
-from ..models import *
 from .data_for_testing import (test_user,
     test_post_fridge_item_2, t_data)
 
@@ -26,8 +25,6 @@ class FoodTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_manage_fridge_login(self):
-        item_id = self.t_data.item_id
-        user_id = self.t_data.user_id
         client = Client()
         client.post('/api/user/signup/', json.dumps(test_user),
             content_type='applications/json')

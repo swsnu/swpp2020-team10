@@ -1,8 +1,6 @@
 import json
-import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from django.forms.models import model_to_dict
 from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import FridgeItem
 
@@ -39,7 +37,7 @@ def manage_fridge(request, _id):
             quantity = req_data['quantity']
             unit = req_data['unit']
             expiry_date = req_data['expiry_date']
-        except (KeyError, JSONDecodeError, IndexError) as e:
+        except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
         new_fridge_item = FridgeItem(
             ingredient_id=ingredient_id, user=request.user, quantity=quantity,

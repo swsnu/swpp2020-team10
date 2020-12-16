@@ -1,6 +1,5 @@
-import json
-from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
-from django.contrib.postgres.search import SearchVector, TrigramSimilarity
+from django.http import HttpResponseNotAllowed, JsonResponse
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Q
 from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Recipe, FridgeItem, IngredientIncidence
