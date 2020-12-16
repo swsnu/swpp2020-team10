@@ -56,7 +56,7 @@ def search(request):
                 my_ingredients = set()
                 rec_ing_list = dict()
                 for it in FridgeItem.objects.filter(user_id=request.user.id).all().values():
-                    my_ingredients.add(it['id'])
+                    my_ingredients.add(it['ingredient_id'])
                 for it in IngredientIncidence.objects.all().values():
                     if it['recipe_id'] in rec_ing_list:
                         rec_ing_list[it['recipe_id']].append(it['ingredient_id'])
