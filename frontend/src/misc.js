@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import { Image as SUImage, Placeholder } from 'semantic-ui-react';
+
+
 export const getFormattedDate = () => {
   const dateObject = new Date();
   const year = dateObject.getFullYear();
@@ -14,15 +18,45 @@ export const validateImageUrl = (imageUrl) => {
     if (!imageUrl) {
       resolve();
     }
-  
+
     // construct HTMLImageElement for test
     const testImage = new Image();
-  
+
     // install callbacks
     testImage.onload = resolve;
     testImage.onerror = reject;
-  
+
     // try loading image
     testImage.src = imageUrl;
   });
+};
+
+
+export const ImageWrapper = ({ src, length }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    validateImageUrl(src)
+      .then(() => setLoaded(true));
+  }, []);
+
+  if (!src) {
+    return null;
+  }
+
+  if (!loaded) {
+    return (
+      <Placeholder>
+        <Placeholder.Image
+          square={!length}
+          rectangular={Boolean(length)}
+          style={length && { width: length, height: length }}
+        />
+      </Placeholder>
+    );
+  }
+
+  return (
+    <SUImage src={src} />
+  );
 };

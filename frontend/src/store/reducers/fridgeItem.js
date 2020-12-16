@@ -30,6 +30,7 @@ const reducer = (state = initialState, action) => {
       });
       return { ...state, fridgeItems };
     }
+    case actionTypes.SIGN_OUT:
     case actionTypes.CLEAR_FRIDGE_ITEMS:
       return { ...state, fridgeItems: [] };
     default:
