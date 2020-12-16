@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Button, Card, Container, Grid, Header, Icon, Image, Segment } from 'semantic-ui-react';
+import { Button, Card, Container, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { ImageWrapper } from '../../misc';
 
 import * as actionCreators from '../../store/actions/index';
 import { FoodCreate } from './FoodCreate';
@@ -47,10 +48,7 @@ export const MyFridge = () => {
         onClick={onClickFridgeItemButton(item.id)}
         raised
       >
-        <Image
-          src={`https://source.unsplash.com/512x512/?soup${item.id}`}
-          rounded
-        />
+        <ImageWrapper src={item.image} />
         <Card.Content>
           <Card.Header content={item.name} />
           <Card.Meta content={item.quantity + ' ' + item.unit} />
@@ -80,7 +78,7 @@ export const MyFridge = () => {
             textAlign='center'
           />
         </Segment>
-        <Segment style={{minHeight: 350}}>
+        <Segment style={{ minHeight: 350 }}>
           <Grid padded verticalAlign='bottom'>
             {fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.'}
           </Grid>

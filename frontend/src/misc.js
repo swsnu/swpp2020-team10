@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Image as SUImage, Placeholder } from 'semantic-ui-react';
 
 
-export const getFormattedDate = () => {
+export const getFormattedDate = (offset) => {
   const dateObject = new Date();
+  if (offset) {
+    dateObject.setDate(dateObject.getDate() + offset);
+  }
+
   const year = dateObject.getFullYear();
   const month = ('0' + (dateObject.getMonth() + 1)).slice(-2);
   const date = ('0' + dateObject.getDate()).slice(-2);

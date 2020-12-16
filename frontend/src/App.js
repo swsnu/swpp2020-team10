@@ -123,6 +123,8 @@ function App() {
   return (
     <Router>
       <Switch>
+        <Route exact path='/signin' component={SignInPage} />
+        <Route exact path='/signup' component={SignUpPage} />
         <WrappedRoute menu={MenuAfter} exact path='/search/:q' component={RecipeSearchPage} />
         <WrappedRoute menu={MenuAfter} exact path='/fridge' component={MyFridge} />
         <WrappedRoute menu={MenuAfter} exact path='/recipe/:recipe_id' component={RecipeDetail} />

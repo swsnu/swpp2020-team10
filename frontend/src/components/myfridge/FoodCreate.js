@@ -1,7 +1,8 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Input, Form, Modal, Button } from 'semantic-ui-react';
+import { Form, Modal, Button } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
 import { getFormattedDate } from '../../misc';
@@ -16,11 +17,31 @@ export const FoodCreate = ({ open, setOpen }) => {
   const [type, setType] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [unit, setUnit] = useState('');
-  const [expiryDate, setExpiryDate] = useState(getFormattedDate());
+  const [expiryDate, setExpiryDate] = useState(getFormattedDate(7));
 
-  const [isWaitingResponse, setIsWaitingResponse] = useState(true);
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [hasTypeOptions, setHasTypeOptions] = useState(false);
 
-  const style = { width: '8em' };
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+
+  // query ingredient type to backend
+  const onBlurName = () => {
+    if (!name) {
+      return;
+    }
+    
+    axios.get('/api/ingredient/')
+      .then(response => {
+        setTypeOptions(response.data.map(item => {
+          return {
+            key: item.id,
+            text: item.name,
+            value: item.id,
+          };
+        }));
+        setHasTypeOptions(true);
+      });
+  };
 
   // add new fridge item and close food create modal
   const onClickAddButton = () => {
@@ -33,61 +54,51 @@ export const FoodCreate = ({ open, setOpen }) => {
     };
 
     // disallow multiple clicks
-    setIsWaitingResponse(false);
+    setIsWaitingResponse(true);
     dispatch(actionCreators.postFridgeItem(userId, newFridgeItem))
       .then(() => setOpen(false));
   };
 
   const form = (
     <Form>
-      <Form.Field>
-        <Input
-          id='nameInput'
-          value={name}
-          onChange={e => setName(e.target.value)}
-          label={{ basic: true, content: 'Name', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='typeInput'
-          value={type}
-          onChange={e => setType(e.target.value)}
-          label={{ basic: true, content: 'Type', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='quantityInput'
-          type='number'
-          value={quantity}
-          min={1}
-          onChange={e => setQuantity(e.target.value)}
-          label={{ basic: true, content: 'Quantity', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='unitInput'
-          value={unit}
-          onChange={e => setUnit(e.target.value)}
-          label={{ basic: true, content: 'Unit', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='expiryDateInput'
-          type='date'
-          value={expiryDate}
-          onChange={e => setExpiryDate(e.target.value)}
-          label={{ basic: true, content: 'Expiry Date', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
+      <Form.Input
+        id='nameInput'
+        label='Name'
+        value={name}
+        onChange={e => setName(e.target.value)}
+        onBlur={onBlurName}
+        required
+      />
+      <Form.Select
+        id='typeInput'
+        label='Type'
+        options={typeOptions}
+        value={type}
+        onChange={(e, { value }) => (console.log(value), setType(value))}
+        placeholder={!hasTypeOptions && 'Please fill in the name first.'}
+        required
+      />
+      <Form.Input
+        id='quantityInput'
+        type='number'
+        label='Quantity'
+        value={quantity}
+        min={0}
+        onChange={e => setQuantity(e.target.value)}
+      />
+      <Form.Input
+        id='unitInput'
+        label='Unit'
+        value={unit}
+        onChange={e => setUnit(e.target.value)}
+      />
+      <Form.Input
+        id='expiryDateInput'
+        type='date'
+        label='Expiry Date'
+        value={expiryDate}
+        onChange={e => setExpiryDate(e.target.value)}
+      />
     </Form>
   );
 
@@ -96,7 +107,7 @@ export const FoodCreate = ({ open, setOpen }) => {
       id='FoodCreate'
       open={open}
       dimmer='inverted'
-      size='tiny'
+      size='mini'
     >
       <Modal.Header content='Add fridge item' />
       <Modal.Content>
@@ -107,13 +118,13 @@ export const FoodCreate = ({ open, setOpen }) => {
           id='addButton'
           onClick={onClickAddButton}
           content='Submit'
-          disabled={!isWaitingResponse}
+          disabled={isWaitingResponse || !name || !type}
         />
         <Button
           id='backButton'
           onClick={() => setOpen(false)}
           content='Back'
-          disabled={!isWaitingResponse}
+          disabled={isWaitingResponse}
         />
       </Modal.Actions>
     </Modal>
