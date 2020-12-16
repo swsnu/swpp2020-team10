@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
+import { ImageWrapper } from '../misc';
 
 
 export const RecipeSearchPage = ({ match }) => {
@@ -71,12 +72,17 @@ export const RecipeSearchPage = ({ match }) => {
     return axios.get('/api/user/setting/')
       .then(response => {
         let {
+          fridge_able,
           cooking_time,
           rating,
           calories,
           diet_labels,
           health_labels,
         } = response.data;
+
+        if (fridge_able) {
+          setEnableFridge(true);
+        }
 
         if (cooking_time) {
           setEnableMaxCookingTime(true);
@@ -103,6 +109,7 @@ export const RecipeSearchPage = ({ match }) => {
 
   const saveSetting = () => {
     return axios.put('/api/user/setting/', {
+      fridge_able: enableFridge ? 'true' : 'false',
       cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
       rating: enableMinRating ? minRating : 0,
       calories: enableMaxCalorie ? maxCalorie : 0,
@@ -249,6 +256,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='dietLabelsInput'
             value={dietLabels}
             onChange={e => setDietLabels(e.target.value)}
+            placeholder='available:&emsp;Balanced&emsp;High-Protein&emsp;High-Fiber&emsp;Low-Fat&emsp;Low-Carb&emsp;Low-Sodium'
           />
         </Form.Field>
         <Form.Field>
@@ -258,6 +266,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='healthLabelsInput'
             value={healthLabels}
             onChange={e => setHealthLabels(e.target.value)}
+            placeholder='others'
           />
         </Form.Field>
         <Form.Group>
@@ -289,10 +298,9 @@ export const RecipeSearchPage = ({ match }) => {
     const recipeSteps = recipe.content.join(' ');
     return (
       <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
-        <Item.Image
-          src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
-          size='small'
-        />
+        <Item.Image size='small'>
+          <ImageWrapper src={recipe.image} />
+        </Item.Image>
         <Item.Content>
           <Item.Header>
             {recipe.title}
@@ -310,7 +318,7 @@ export const RecipeSearchPage = ({ match }) => {
           <Item.Meta>
             {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
             {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-            {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
+            {recipe.calories.toFixed(0)}&ensp;calories / serving
           </Item.Meta>
           <Item.Description>
             {recipeSteps.substr(0, 200)}

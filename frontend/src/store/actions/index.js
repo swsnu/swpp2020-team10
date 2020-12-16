@@ -4,6 +4,7 @@ export {
   signout,
   notification,
   getRecommendation,
+  setTabIndex,
 } from './user';
 
 export {

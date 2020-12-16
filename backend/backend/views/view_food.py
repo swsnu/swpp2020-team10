@@ -39,11 +39,13 @@ def manage_fridge(request, _id):
             quantity = req_data['quantity']
             unit = req_data['unit']
             expiry_date = req_data['expiry_date']
+            image = req_data['image']
         except (KeyError, JSONDecodeError, IndexError) as e:
             print(e)
             return HttpResponse(status=400)
-        new_fridge_item = FridgeItem(ingredient_id=ingredient_id, user=request.user, quantity=quantity,
-            name=name, expiry_date=expiry_date, unit=unit)
+        new_fridge_item = FridgeItem(
+            ingredient_id=ingredient_id, user=request.user, quantity=quantity,
+            name=name, expiry_date=expiry_date, unit=unit, image=image)
         new_fridge_item.save()
         new_fridge_item_dict = FridgeItem.objects.filter(id=new_fridge_item.id).all().values()[0]
         return HttpResponse(json.dumps(new_fridge_item_dict, default=json_default), status=201)

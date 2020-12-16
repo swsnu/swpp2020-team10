@@ -13,13 +13,12 @@ def signup(request):
         request_data = json.loads(request.body.decode())
         username = request_data["username"]
         password = request_data["password"]
-        email = request_data["email"]
 
         # username already exists
         if User.objects.filter(username=username).exists():
             return HttpResponse(status=409)
 
-        new_user = User.objects.create_user(username=username, password=password, email=email)
+        new_user = User.objects.create_user(username=username, password=password)
         new_user.save()
         new_setting = SearchSetting(user=new_user)
         new_setting.save()

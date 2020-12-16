@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { Message } from 'semantic-ui-react';
+import { Loader, Message } from 'semantic-ui-react';
 
 import * as actionCreators from '../store/actions/index';
 
@@ -41,10 +41,18 @@ export const Notification = () => {
     if (isAuthorized) {
       dispatch(actionCreators.notification(id))
         .then(() => setHasNoti(true));
+    } else {
+      setHasNoti(true);
     }
   }, []);
 
-  if (!hasNoti || !noti) {
+  if (!hasNoti) {
+    return (
+      <Loader active inline='centered' />
+    );
+  }
+
+  if (!noti) {
     return defaultMessage;
   }
 

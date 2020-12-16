@@ -7,6 +7,7 @@ from django.utils.timezone import now
 
 class SearchSetting(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    fridge_able = models.BooleanField(default=False)
     diet_labels = ArrayField(models.CharField(max_length=15), default=list, blank=True)
     health_labels = ArrayField(models.CharField(max_length=20), default=list, blank=True)
     calories = models.IntegerField(default=0)

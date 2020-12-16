@@ -7,6 +7,7 @@ const initialState = {
   name: null,
   noti: null,
   recommendation: null,
+  tabIndex: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -35,6 +36,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         recommendation: action.recommendation,
+      };
+    case actionTypes.SET_TAB_INDEX:
+      return {
+        ...state,
+        tabIndex: action.index,
       };
     default:
       return state;
