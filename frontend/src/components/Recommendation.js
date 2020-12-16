@@ -96,7 +96,7 @@ export const Recommendation = () => {
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}
           <br />
-          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
+          {recipe.calories.toFixed(0)}&ensp;calories / serving
         </Card.Meta>
         <Card.Description>
           {recipeSteps.substr(0, 100)}

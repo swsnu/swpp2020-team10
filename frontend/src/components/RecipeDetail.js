@@ -122,7 +122,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calories / serving
+              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calories / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}

@@ -318,7 +318,7 @@ export const RecipeSearchPage = ({ match }) => {
           <Item.Meta>
             {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
             {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-            {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
+            {recipe.calories.toFixed(0)}&ensp;calories / serving
           </Item.Meta>
           <Item.Description>
             {recipeSteps.substr(0, 200)}
