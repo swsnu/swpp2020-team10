@@ -57,6 +57,7 @@ def search(request):
             try:
                 my_ingredients = set()
                 rec_ing_list = dict()
+                sc_rec_ing = dict() # recipe_id -> ingredient_own_score
                 for it in FridgeItem.objects.filter(user_id=request.user.id).all().values():
                     my_ingredients.add(it['ingredient_id'])
                 for it in IngredientIncidence.objects.all().values():
@@ -66,16 +67,16 @@ def search(request):
                         rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
                 for r in filtered_recipes:
                     if r['id'] not in rec_ing_list:
-                        feasible_recipes.append(r)
+                        sc_rec_ing[r['id']] = 0
                     else:
                         r_ing = rec_ing_list[r['id']]
-                        flag = True
+                        cnt = 0
                         for ing in r_ing:
-                            if ing not in my_ingredients:
-                                flag = False
-                                break
-                        if flag is True:
-                            feasible_recipes.append(r)
+                            if ing in my_ingredients:
+                                cnt += 1
+                        sc_rec_ing[r['id']] = (cnt / len(r_ing))
+                feasible_recipes = sorted(filtered_recipes,
+                                          key = lambda re : sc_rec_ing[re['id']], reverse=True)
             except (KeyError, ValueError, IndexError):
                 feasible_recipes = filtered_recipes
         recipes = [recipe for recipe in feasible_recipes]
