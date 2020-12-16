@@ -5,11 +5,6 @@ from django.db.models import Q
 from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Ingredient
 
-def _ingredientToDict(ingredient):
-    return {
-        'name': ingredient.name,
-        'image': ingredient.image,
-    }
 
 # Search matching ingredients
 @ensure_csrf_cookie
@@ -23,9 +18,7 @@ def ingredient(request):
                 similarity=TrigramSimilarity('name', search_query)
             ).filter(similarity__gt=0.2).order_by('-similarity')
 
-        ingredients = [_ingredientToDict(ingredient) for ingredient in query.all()]
-        if len(ingredients) > 5:
-            ingredients = ingredients[:5]
+        ingredients = [ingredient for ingredient in query.values()][:5]
 
         return JsonResponse(ingredients, status=200, safe=False)
 

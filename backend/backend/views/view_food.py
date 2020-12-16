@@ -27,9 +27,9 @@ def manage_food(request):
 @ensure_csrf_cookie
 def manage_fridge(request, _id):
     if request.method == "GET":
-        fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()),
-            default=json_default)
-        return HttpResponse(fridge_item_list, status=200, content_type="application/json")
+        response_data = json.dumps(list(FridgeItem.objects.filter(user_id=_id).values()), default=json_default)
+
+        return HttpResponse(response_data, status=200)
 
     if request.method == "POST":
         try:
@@ -39,15 +39,13 @@ def manage_fridge(request, _id):
             quantity = req_data['quantity']
             unit = req_data['unit']
             expiry_date = req_data['expiry_date']
-            image = req_data['image']
         except (KeyError, JSONDecodeError, IndexError) as e:
-            print(e)
             return HttpResponse(status=400)
         new_fridge_item = FridgeItem(
             ingredient_id=ingredient_id, user=request.user, quantity=quantity,
-            name=name, expiry_date=expiry_date, unit=unit, image=image)
+            name=name, expiry_date=expiry_date, unit=unit)
         new_fridge_item.save()
-        new_fridge_item_dict = FridgeItem.objects.filter(id=new_fridge_item.id).all().values()[0]
+        new_fridge_item_dict = FridgeItem.objects.filter(id=new_fridge_item.id).values().get()
         return HttpResponse(json.dumps(new_fridge_item_dict, default=json_default), status=201)
     
     if request.method == "DELETE":
@@ -61,8 +59,10 @@ def manage_fridge(request, _id):
 @ensure_csrf_cookie
 def fridge_by_id(request, _id):
     try:
-        fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0],
-            default=json_default)
+        query = FridgeItem.objects.filter(id=_id).select_related('ingredient')
+        fridge_item = query.values().get()
+        fridge_item['ingredient_name'] = query.get().ingredient.name
+        fridge_item = json.dumps(fridge_item, default=json_default)
     except (IndexError, JSONDecodeError):
         return HttpResponseBadRequest(status=404)
     if request.method == "GET":

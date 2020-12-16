@@ -19,7 +19,11 @@ const commentNotification = (comment, key) => (
 
 const itemNotification = (item, key) => (
   <Message color='red' key={key}>
-    Your <b>{item.name}</b> expires in <b>{item.left_days}</b> days.
+    {
+      item.left_days >= 0
+        ? <span>Your <b>{item.name}</b> expires in <b>{item.left_days}</b> days.</span>
+        : <span>Your <b>{item.name}</b> has expired</span>
+    }
   </Message>
 );
 
@@ -67,7 +71,7 @@ export const Notification = () => {
       .map((comment, key) =>
         commentNotification(comment, key + itemNotification.length)
       );
-    
+
   const notifications = itemNotifications.concat(commentNotifications);
 
   if (notifications.length) {

@@ -30,7 +30,7 @@ export const FoodCreate = ({ open, setOpen }) => {
       return;
     }
     
-    axios.get('/api/ingredient/')
+    axios.get(`/api/ingredient/?q=${name}`)
       .then(response => {
         setTypeOptions(response.data.map(item => {
           return {
@@ -74,8 +74,8 @@ export const FoodCreate = ({ open, setOpen }) => {
         label='Type'
         options={typeOptions}
         value={type}
-        onChange={(e, { value }) => (console.log(value), setType(value))}
-        placeholder={!hasTypeOptions && 'Please fill in the name first.'}
+        onChange={(e, { value }) => setType(value)}
+        placeholder={hasTypeOptions ? '' : 'Please fill in the name first.'}
         required
       />
       <Form.Input
@@ -85,6 +85,7 @@ export const FoodCreate = ({ open, setOpen }) => {
         value={quantity}
         min={0}
         onChange={e => setQuantity(e.target.value)}
+        required
       />
       <Form.Input
         id='unitInput'
@@ -118,7 +119,7 @@ export const FoodCreate = ({ open, setOpen }) => {
           id='addButton'
           onClick={onClickAddButton}
           content='Submit'
-          disabled={isWaitingResponse || !name || !type}
+          disabled={isWaitingResponse || !name || !type || !quantity}
         />
         <Button
           id='backButton'

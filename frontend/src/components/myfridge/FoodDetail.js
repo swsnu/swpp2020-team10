@@ -64,6 +64,7 @@ export const FoodDetail = ({ open, setOpen }) => {
         value={quantity}
         min={0}
         onChange={e => setQuantity(e.target.value)}
+        required
       />
       <Form.Input
         id='unitInput'
@@ -97,7 +98,7 @@ export const FoodDetail = ({ open, setOpen }) => {
           id='editButton'
           onClick={onClickConfirmEditButton}
           content='Submit'
-          disabled={isWaitingResponse || !name}
+          disabled={isWaitingResponse || !name || !quantity}
         />
         <Button
           id='deleteButton'

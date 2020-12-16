@@ -31,7 +31,8 @@ export const FrontPage = () => {
 
   const fridgeItemList = fridgeItems.map((item, key) =>
     <div key={key}>
-      {`${item.name} ${item.quantity} ${item.unit}`}
+
+      {item.name} ({item.quantity}{item.unit ? ` ${item.unit})` : ')'}
     </div>
   );
 
