@@ -1,12 +1,18 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
+import * as actionCreators from '../../store/actions/index';
+
 
 export const SignUpPage = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
+
+  const isAuthorized = useSelector(state => state.user.isAuthorized);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,8 +28,8 @@ export const SignUpPage = () => {
     setWait(true);
     axios.post('/api/user/signup/', { username, password })
       .then(() => {
-        window.alert('Succesfully created an account. Please sign in.');
-        history.replace('/signin');
+        dispatch(actionCreators.signin({ username, password }))
+          .then(() => history.goBack());
       })
       .catch(error => {
         if (error.response.status === 409) {
@@ -38,6 +44,10 @@ export const SignUpPage = () => {
   const checkUsernameError = () => !username;
   const checkPasswordError = () => password.length < 8;
   const checkConfirmPasswordError = () => confirmPassword.length == 0 || password !== confirmPassword;
+
+  if (isAuthorized) {
+    return null;
+  }
 
   return (
     <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
@@ -10,6 +10,8 @@ import * as actionCreators from '../../store/actions/index';
 export const SignInPage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const isAuthorized = useSelector(state => state.user.isAuthorized);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +27,10 @@ export const SignInPage = () => {
         setWait(false);
       });
   };
+
+  if (isAuthorized) {
+    return null;
+  }
 
   return (
     <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
