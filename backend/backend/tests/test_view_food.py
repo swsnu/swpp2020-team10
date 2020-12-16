@@ -40,7 +40,8 @@ class FoodTestCase(TestCase):
             "name": "fit1",
             "quantity": 100,
             "expiry_date": "2020-4-23",
-            "unit" : 'g'
+            "unit" : 'g',
+            "image" : "image-url"
         }
         response = client.post(f'/api/fridge/{user_id}/user/', json.dumps(test_post_fridge_item_1),
             content_type='application/json')

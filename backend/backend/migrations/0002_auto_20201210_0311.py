@@ -18,21 +18,6 @@ class Migration(migrations.Migration):
             model_name='fridgeitem',
             name='unit',
         ),
-        migrations.AddField(
-            model_name='ingredient',
-            name='image',
-            field=models.TextField(blank=True, default=''),
-        ),
-        migrations.AddField(
-            model_name='ingredientincidence',
-            name='unit',
-            field=models.CharField(max_length=10, null=True),
-        ),
-        migrations.AddField(
-            model_name='recipe',
-            name='image',
-            field=models.TextField(blank=True, default=''),
-        ),
         migrations.AlterField(
             model_name='fridgeitem',
             name='expiry_date',
@@ -52,48 +37,5 @@ class Migration(migrations.Migration):
             model_name='recipe',
             name='title',
             field=models.TextField(),
-        ),
-        migrations.CreateModel(
-            name='ReviewProfile',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('review', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='comment_profile_review_id', to='backend.review')),
-                ('user', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='review_profile_user_id', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Preference',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('label_norm', models.FloatField(default=0.0)),
-                ('ingredient_norm', models.FloatField(default=0.0)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='preference_user', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='LabelPreference',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='', max_length=20)),
-                ('score', models.FloatField(default=0.0)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='label_preference_user', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='IngredientPreference',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='', max_length=30)),
-                ('score', models.FloatField(default=0.0)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ing_pref_user', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='CommentProfile',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='profile_comment_id', to='backend.comment')),
-                ('user', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='profile_user_id', to=settings.AUTH_USER_MODEL)),
-            ],
         ),
     ]

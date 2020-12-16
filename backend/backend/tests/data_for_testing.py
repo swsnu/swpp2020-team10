@@ -5,7 +5,8 @@ test_search_setting = {
     "health_labels": ['alcohol-free', 'immuno-supportive', 'celery-free', 'crustacean-free'],
     "calories": 800,
     "cooking_time": 5,
-    "rating": 3
+    "rating": 3,
+    "fridge_able" : True
 }
 test_recipe_data_1 = {
     "id": 1,
