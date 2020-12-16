@@ -70,21 +70,24 @@ def recommend_recipe(request):
                     feasible_list.append(r)
 
         query = Recipe.objects
-        search_setting = request.user.searchsetting
-        filter_q = Q()
-        filter_q &= Q(diet_labels__contains=search_setting.diet_labels)
-        filter_q &= Q(health_labels__contains=search_setting.health_labels)
-        if search_setting.calories is not None:
-            filter_q &= Q(calories__lte=int(search_setting.calories))
-        if search_setting.cooking_time is not None:
-            filter_q &= Q(cooking_time__lte=int(search_setting.cooking_time))
-        if search_setting.rating is not None:
-            filter_q &= Q(rating__gte=float(search_setting.rating))
-        query = query.filter(filter_q)
-        setting_filtered_recipes = list(query.all().values())
-        for r in feasible_list:
-            if r not in setting_filtered_recipes:
-                feasible_list.remove(r)
+        try:
+            search_setting = request.user.searchsetting
+            filter_q = Q()
+            filter_q &= Q(diet_labels__contains=search_setting.diet_labels)
+            filter_q &= Q(health_labels__contains=search_setting.health_labels)
+            if search_setting.calories is not None:
+                filter_q &= Q(calories__lte=int(search_setting.calories))
+            if search_setting.cooking_time is not None:
+                filter_q &= Q(cooking_time__lte=int(search_setting.cooking_time))
+            if search_setting.rating is not None:
+                filter_q &= Q(rating__gte=float(search_setting.rating))
+            query = query.filter(filter_q)
+            setting_filtered_recipes = list(query.all().values())
+            for r in feasible_list:
+                if r not in setting_filtered_recipes:
+                    feasible_list.remove(r)
+        except SearchSetting.DoesNotExist:
+            pass
         #print(f"Feasible : {feasible_list}")
         # For each feasible recipe, compute score
         cdf = []
