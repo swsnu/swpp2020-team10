@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
+import { ImageWrapper } from '../misc';
 
 
 export const RecipeSearchPage = ({ match }) => {
@@ -249,6 +250,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='dietLabelsInput'
             value={dietLabels}
             onChange={e => setDietLabels(e.target.value)}
+            placeholder='available:&emsp;Balanced&emsp;High-Protein&emsp;High-Fiber&emsp;Low-Fat&emsp;Low-Carb&emsp;Low-Sodium'
           />
         </Form.Field>
         <Form.Field>
@@ -258,6 +260,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='healthLabelsInput'
             value={healthLabels}
             onChange={e => setHealthLabels(e.target.value)}
+            placeholder='others'
           />
         </Form.Field>
         <Form.Group>
@@ -289,10 +292,9 @@ export const RecipeSearchPage = ({ match }) => {
     const recipeSteps = recipe.content.join(' ');
     return (
       <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
-        <Item.Image
-          src={recipe.image || `https://source.unsplash.com/512x512/?soup,${recipe.id}`}
-          size='small'
-        />
+        <Item.Image size='small'>
+          <ImageWrapper src={recipe.image} />
+        </Item.Image>
         <Item.Content>
           <Item.Header>
             {recipe.title}
