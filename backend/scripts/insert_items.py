@@ -74,7 +74,7 @@ def run():
         diet_labels = recipe.get('dietLabels')
         health_labels = recipe.get('healthLabels')
         serving = int(recipe.get('yield'))
-        calories = int(recipe.get('calories')) / serving
+        calories = int(int(recipe.get('calories')) / serving)
         cooking_time = int(recipe.get('totalTime'))
 
         recipe = Recipe(title=title, ingredient_lines=ingredient_lines, content=content,
