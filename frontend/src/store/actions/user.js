@@ -85,3 +85,11 @@ export const getRecommendation = () => {
       });
   };
 };
+
+
+export const setTabIndex = (index) => {
+  return {
+    type: actionTypes.SET_TAB_INDEX,
+    index,
+  };
+};
