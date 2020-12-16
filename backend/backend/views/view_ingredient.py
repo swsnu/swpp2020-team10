@@ -4,6 +4,11 @@ from django.contrib.postgres.search import SearchVector, TrigramSimilarity
 from django.db.models import Q
 from backend.models import Ingredient
 
+def _ingredientToDict(ingredient):
+    return {
+        'name': ingredient.name,
+        'image': ingredient.image,
+    }
 
 # Search matching ingredients
 def ingredient(request):
@@ -16,13 +21,10 @@ def ingredient(request):
                 similarity=TrigramSimilarity('name', search_query)
             ).filter(similarity__gt=0.2).order_by('-similarity')
 
-        ingredients = query.all().values()
+        ingredients = [_ingredientToDict(ingredient) for ingredient in query.all()]
         if len(ingredients) > 5:
             ingredients = ingredients[:5]
-        response_data = {
-            'ingredients': ingredients
-        }
 
-        return JsonResponse(response_data, status=200)
+        return JsonResponse(ingredients, status=200, safe=False)
 
     return HttpResponseNotAllowed(["GET"])
