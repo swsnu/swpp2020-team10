@@ -34,17 +34,18 @@ def recommend_recipe(request):
 
     try:
         lab_norm, ing_norm = pref['label_norm'], pref['ingredient_norm']
-        lab_norm = abs(int(lab_norm))
-        ing_norm = abs(int(ing_norm))
+        lab_norm = 0
+        ing_norm = 0
         my_ingredients, my_label_preference, my_ing_preference = set(), dict(), dict()
         for it in FridgeItem.objects.filter(user_id=request_user_id).all().values():
             my_ingredients.add(it['ingredient_id'])
 
         for it in LabelPreference.objects.filter(user_id=request_user_id).all().values():
             my_label_preference[it['name']] = it['score']
-
+            lab_norm += it['score']
         for it in IngredientPreference.objects.filter(user_id=request_user_id).all().values():
             my_ing_preference[it['name']] = it['score']
+            ing_norm += it['score']
 
         for it in IngredientIncidence.objects.all().values():
             if it['recipe_id'] in rec_ing_list:
@@ -52,22 +53,20 @@ def recommend_recipe(request):
             else:
                 rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
 
-        feasible_list = list()
+        feasible_list = list(Recipe.objects.all().values())
+        sc_rec_ing = dict()
         #print(f"Rec Ing : {rec_ing_list}")
         #print(f"My Ing : {list(my_ingredients)}")
-        for r in Recipe.objects.all().values():
+        for r in feasible_list:
             if r['id'] not in rec_ing_list:
-                feasible_list.append(r)
+                sc_rec_ing[r['id']] = 0
             else:
                 r_ing = rec_ing_list[r['id']]
-                flag = True
+                cnt = 0
                 for ing in r_ing:
-                    if ing not in my_ingredients:
-                        flag = False
-                        break
-                if flag is True:
-                    #print(f"Recipe {r['id']} is feasible")
-                    feasible_list.append(r)
+                    if ing in my_ingredients:
+                        cnt += 1
+                sc_rec_ing[r['id']] = (cnt / len(r_ing))
 
         query = Recipe.objects
         try:
@@ -125,23 +124,29 @@ def recommend_recipe(request):
             # Possible fix : exclude only when score <= crit (crit might be -10 or something)
             # Also, give 'small probability' for might-dislikes.
             # Does 0.1 work?
-            recipe['score'] = 0.1 + LS + IS
+            recipe['score'] = (0.2 + (LS + IS) * sc_rec_ing[recipe['id']]) / 2.20
             #print(f"score of {recipe['title']} in {request_user_id} perspective : {recipe['score']}")
             if recipe['score'] >= 0:
                 sqscs += pow(recipe['score'], 2)
+            #print(f"{recipe['title']} : {LS} {IS} {sc_rec_ing[recipe['id']]} = {recipe['score']}")
+        #print(feasible_list)
+        tpr = 0
         # Probability ~ (Score)^2
         #print(sqscs)
         for r in feasible_list:
             #print(r)
             if r['score'] < 0:
-                pr = 0
+                r['pr'] = 0
             else:
-                pr = (pow(r['score'], 2) / sqscs)
+                r['pr'] = pow(r['score'], 2)
+            tpr += r['pr']
+        for r in feasible_list:
+            pr = r['pr'] / tpr
             if len(cdf) == 0:
                 cdf = [pr]
             else:
                 cdf.append(cdf[-1] + pr)
-            #print(f"{r} : {pr}")
+                #print(f"{r['title']} : {pr}")
 
         chosen_recipes = set()
         rec_ind = bisect(cdf,random())

@@ -63,7 +63,7 @@ def fridge_by_id(request, _id):
         fridge_item = query.values().get()
         fridge_item['ingredient_name'] = query.get().ingredient.name
         fridge_item = json.dumps(fridge_item, default=json_default)
-    except (IndexError, JSONDecodeError):
+    except (IndexError, JSONDecodeError, FridgeItem.DoesNotExist):
         return HttpResponseBadRequest(status=404)
     if request.method == "GET":
         return HttpResponse(fridge_item, status=200, content_type='application/json')
