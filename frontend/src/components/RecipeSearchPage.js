@@ -131,7 +131,7 @@ export const RecipeSearchPage = ({ match }) => {
     let toParam = 'to=' + (reset ? 1 : pageCount + 1) * pageSize;
     let qParam = 'q=' + searchInput;
     let sortParam = sort ? 'sort=' + sort : '';
-    let fridgeParam = enableFridge ? 'fridge_able' : '';
+    let fridgeParam = enableFridge ? 'fridge_able=true' : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
     let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
