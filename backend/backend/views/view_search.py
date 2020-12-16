@@ -2,10 +2,12 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.contrib.postgres.search import SearchVector, TrigramSimilarity
 from django.db.models import Q
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Recipe, FridgeItem, IngredientIncidence
 
 
 # Fetches setting by user id
+@ensure_csrf_cookie
 def search(request):
     if request.method == 'GET':
         search_query = request.GET.get('q')

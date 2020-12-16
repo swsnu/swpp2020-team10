@@ -2,11 +2,11 @@ import json
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.forms.models import model_to_dict
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import SearchSetting
-from django.views.decorators.csrf import csrf_exempt
 
 # Fetches setting by user id
-@csrf_exempt
+@ensure_csrf_cookie
 def setting(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)

@@ -2,6 +2,7 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.contrib.postgres.search import SearchVector, TrigramSimilarity
 from django.db.models import Q
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Ingredient
 
 def _ingredientToDict(ingredient):
@@ -11,6 +12,7 @@ def _ingredientToDict(ingredient):
     }
 
 # Search matching ingredients
+@ensure_csrf_cookie
 def ingredient(request):
     if request.method == 'GET':
         search_query = request.GET.get('q')

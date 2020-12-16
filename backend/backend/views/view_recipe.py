@@ -1,15 +1,14 @@
 import json
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Recipe, RecipeProfile
 
 # Auth : Anyone can search and request for recipes
 
 # Fetches all recipes and returns JSON object
 # JSON format follows design document - modelscd
-from django.views.decorators.csrf import csrf_exempt
 
-
-@csrf_exempt
+@ensure_csrf_cookie
 def recipes(request):
     if request.method == "GET":
         recipe_list = json.dumps(list(Recipe.objects.all().values()))
@@ -18,7 +17,7 @@ def recipes(request):
 
 # GET : Fetches recipe with given ID and returns JSON object
 # PUT : Updates Rating of recipe, given {"recipe_id":"1", "rating":"2"} style json.
-@csrf_exempt
+@ensure_csrf_cookie
 def recipe_by_id(request, _id):
     if request.method == "GET":
         try:

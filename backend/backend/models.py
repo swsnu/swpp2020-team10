@@ -36,9 +36,13 @@ class FridgeItem(models.Model):
         blank=True
     )
     name = models.CharField(blank=True, default='', max_length=80)
+    image = models.TextField(default='', blank=True)
     quantity = models.IntegerField(default=0)
     unit = models.CharField(blank=True, default='', max_length=80)
     expiry_date = models.DateTimeField(blank=True, null=True, default=now)
+    def save(self, *args, **kwargs):
+        self.iamge = get_object_or_404(Ingredient, pk=self.ingredient.id).image
+        super(FridgeItem, self).save(*args, **kwargs)
 
 class Recipe(models.Model):
     title = models.TextField()

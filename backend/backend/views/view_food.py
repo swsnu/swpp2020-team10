@@ -3,13 +3,12 @@ import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.forms.models import model_to_dict
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import FridgeItem
 
 # Users cannot send request to here without authentication
 # -> authentication already ensured by frontend, so
 # checks for authentication is not needed here
-from django.views.decorators.csrf import csrf_exempt
-
 
 def json_default(value):
     return value.strftime('%Y-%m-%d')
@@ -25,6 +24,7 @@ def manage_food(request):
 # GET: fetches all fridgeItems with given user id
 # POST: creates new fridgeItem on given user id
 # DELETE: clears all fridgeItems with given user id
+@ensure_csrf_cookie
 def manage_fridge(request, _id):
     if request.method == "GET":
         fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()),
@@ -56,7 +56,7 @@ def manage_fridge(request, _id):
 # GET: fetches fridgeItem by id
 # PUT: updates fridgeItem by id
 # DELETE: deletes fridgeItem by id
-@csrf_exempt
+@ensure_csrf_cookie
 def fridge_by_id(request, _id):
     try:
         fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0],
