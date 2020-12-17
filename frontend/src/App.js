@@ -108,6 +108,7 @@ function WrappedRoute({ menu: Menu, component: Component, isFridge, ...rest }) {
           <Menu isFridge={isFridge} />
           <br /><br /><br /><br />
           <Component {...routeProps} />
+          <br /><br /><br /><br />
         </>
       )}
     />

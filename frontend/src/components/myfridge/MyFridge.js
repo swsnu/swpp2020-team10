@@ -109,7 +109,6 @@ export const MyFridge = () => {
           <Icon name='triangle left' />Go back
         </a>
       </div>
-      <br />
       {
         isCreate && // unmount on close
         <FoodCreate open={isCreate} setOpen={setIsCreate} />
