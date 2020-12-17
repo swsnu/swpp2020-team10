@@ -53,6 +53,9 @@ def run():
             name = ing_model.get('ingredient')
             image = ing.get('image')
 
+            if name == 'null':
+                continue
+
             if name not in ingredient_set:
                 if image is None:
                     image = ''
