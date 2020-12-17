@@ -3,6 +3,7 @@ from bisect import bisect
 from random import random, choice
 from django.db.models import Q
 from ..models import *
+from math import exp
 
 TOTAL_NUMBER_OF_LABELS = 50
 TOTAL_NUMBER_OF_INGS = 1e4
@@ -95,12 +96,12 @@ def recommend_recipe(request):
                 if label not in my_label_preference:
                     my_label_preference[label] = 0.0
                 else:
-                    LS += (my_label_preference[label]/max(1.0, lab_norm))
+                    LS += (my_label_preference[label]/max(20.0, lab_norm))
             for label in recipe['health_labels']:
                 if label not in my_label_preference:
                     my_label_preference[label] = 0.0
                 else:
-                    LS += (my_label_preference[label]/max(1.0, lab_norm))
+                    LS += (my_label_preference[label]/max(20.0, lab_norm))
             # Ingredient score
             IS = 0.0
             if recipe['id'] in rec_ing_list:
@@ -108,7 +109,7 @@ def recommend_recipe(request):
                     if ing not in my_ing_preference:
                         my_ing_preference[ing] = 0.0
                     else:
-                        IS += (my_ing_preference[ing]/max(1.0, ing_norm))
+                        IS += (my_ing_preference[ing]/max(10.0, ing_norm))
 
             # maybe some math will do the job
             # 1 negative => Out of recommendation seems wrong.
@@ -124,13 +125,19 @@ def recommend_recipe(request):
         #print(feasible_list)
         tpr = 0
         # Probability ~ (Score)^2
+        candidate_count = 0
+        max_prob = 0
         for r in feasible_list:
             #print(r)
             if r['score'] < 0:
                 r['pr'] = 0
             else:
-                r['pr'] = pow(r['score'], 2)
+                r['pr'] = 1 / (1 + exp(1/r['score']))
+                candidate_count+=1
+                max_prob = max(max_prob, r['pr'])
             tpr += r['pr']
+        if candidate_count <= 10 or max_prob > 0.4:
+            return random_draw(request)
         for r in feasible_list:
             pr = r['pr'] / tpr
             if len(cdf) == 0:
