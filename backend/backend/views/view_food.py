@@ -1,15 +1,12 @@
 import json
-import datetime
 from json import JSONDecodeError
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadRequest
-from django.forms.models import model_to_dict
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import FridgeItem
 
 # Users cannot send request to here without authentication
 # -> authentication already ensured by frontend, so
 # checks for authentication is not needed here
-from django.views.decorators.csrf import csrf_exempt
-
 
 def json_default(value):
     return value.strftime('%Y-%m-%d')
@@ -25,11 +22,12 @@ def manage_food(request):
 # GET: fetches all fridgeItems with given user id
 # POST: creates new fridgeItem on given user id
 # DELETE: clears all fridgeItems with given user id
+@ensure_csrf_cookie
 def manage_fridge(request, _id):
     if request.method == "GET":
-        fridge_item_list = json.dumps(list(FridgeItem.objects.filter(user_id=_id).all().values()),
-            default=json_default)
-        return HttpResponse(fridge_item_list, status=200, content_type="application/json")
+        response_data = json.dumps(list(FridgeItem.objects.filter(user_id=_id).values()), default=json_default)
+
+        return HttpResponse(response_data, status=200)
 
     if request.method == "POST":
         try:
@@ -41,10 +39,11 @@ def manage_fridge(request, _id):
             expiry_date = req_data['expiry_date']
         except (KeyError, JSONDecodeError, IndexError):
             return HttpResponse(status=400)
-        new_fridge_item = FridgeItem(ingredient_id=ingredient_id, user=request.user, quantity=quantity,
+        new_fridge_item = FridgeItem(
+            ingredient_id=ingredient_id, user=request.user, quantity=quantity,
             name=name, expiry_date=expiry_date, unit=unit)
         new_fridge_item.save()
-        new_fridge_item_dict = FridgeItem.objects.filter(id=new_fridge_item.id).all().values()[0]
+        new_fridge_item_dict = FridgeItem.objects.filter(id=new_fridge_item.id).values().get()
         return HttpResponse(json.dumps(new_fridge_item_dict, default=json_default), status=201)
     
     if request.method == "DELETE":
@@ -55,12 +54,14 @@ def manage_fridge(request, _id):
 # GET: fetches fridgeItem by id
 # PUT: updates fridgeItem by id
 # DELETE: deletes fridgeItem by id
-@csrf_exempt
+@ensure_csrf_cookie
 def fridge_by_id(request, _id):
     try:
-        fridge_item = json.dumps(FridgeItem.objects.filter(id=_id).all().values()[0],
-            default=json_default)
-    except (IndexError, JSONDecodeError):
+        query = FridgeItem.objects.filter(id=_id).select_related('ingredient')
+        fridge_item = query.values().get()
+        fridge_item['ingredient_name'] = query.get().ingredient.name
+        fridge_item = json.dumps(fridge_item, default=json_default)
+    except (IndexError, JSONDecodeError, FridgeItem.DoesNotExist):
         return HttpResponseBadRequest(status=404)
     if request.method == "GET":
         return HttpResponse(fridge_item, status=200, content_type='application/json')

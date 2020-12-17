@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { Button, Container, Dimmer, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { Button, Container, Dimmer, Form, Grid, Header, Icon, Loader, Segment } from 'semantic-ui-react';
 
 import { Recommendation } from './Recommendation';
 import { Notification } from './Notification';
@@ -17,17 +17,22 @@ export const FrontPage = () => {
   const fridgeItems = useSelector(state => state.fridgeItem.fridgeItems);
 
   const [searchInput, setSearchInput] = useState('');
+  const [hasFridgeItems, setHasFridgeItems] = useState(false);
 
   // fetch fridge items on initial mount
   useEffect(() => {
     if (user.isAuthorized) {
-      dispatch(actionCreators.getFridgeItemList(user.id));
+      dispatch(actionCreators.getFridgeItemList(user.id))
+        .then(() => setHasFridgeItems(true));
+    } else {
+      setHasFridgeItems(true);
     }
   }, []);
 
   const fridgeItemList = fridgeItems.map((item, key) =>
     <div key={key}>
-      {`${item.name} ${item.quantity} ${item.unit}`}
+
+      {item.name} ({item.quantity}{item.unit ? ` ${item.unit})` : ')'}
     </div>
   );
 
@@ -77,7 +82,11 @@ export const FrontPage = () => {
           }}>
             <Header content='My Fridge' />
             <Segment style={{ minHeight: 100 }}>
-              {fridgeItemList.length ? fridgeItemList : 'Your fridge is empty.'}
+              {
+                hasFridgeItems
+                  ? (fridgeItemList.length ? fridgeItemList : 'Your fridge is empty.')
+                  : <Loader active />
+              }
             </Segment>
             <Button primary
               as={Link}
@@ -86,7 +95,7 @@ export const FrontPage = () => {
             />
             {dimmer}
           </Segment>
-          <Segment>
+          <Segment style={{ minHeight: 128 }} >
             <Header content='Notifications' />
             <Notification />
             {dimmer}

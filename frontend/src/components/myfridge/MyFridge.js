@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Button, Card, Container, Grid, Header, Icon, Image, Segment } from 'semantic-ui-react';
+import { Button, Card, Container, Grid, Header, Icon, Loader, Segment } from 'semantic-ui-react';
+import { ImageWrapper } from '../../misc';
 
 import * as actionCreators from '../../store/actions/index';
 import { FoodCreate } from './FoodCreate';
@@ -18,13 +19,15 @@ export const MyFridge = () => {
 
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [hasFridgeItems, setHasFridgeItems] = useState(false);
 
   // number of columns per row
   const nColPerRow = 3;
 
   // fetch fridge items on initial mount
   useEffect(() => {
-    dispatch(actionCreators.getFridgeItemList(user.id));
+    dispatch(actionCreators.getFridgeItemList(user.id))
+      .then(() => setHasFridgeItems(true));
   }, []);
 
   // clear fridge items
@@ -47,10 +50,7 @@ export const MyFridge = () => {
         onClick={onClickFridgeItemButton(item.id)}
         raised
       >
-        <Image
-          src={`https://source.unsplash.com/512x512/?soup${item.id}`}
-          rounded
-        />
+        <ImageWrapper src={item.image} />
         <Card.Content>
           <Card.Header content={item.name} />
           <Card.Meta content={item.quantity + ' ' + item.unit} />
@@ -80,9 +80,13 @@ export const MyFridge = () => {
             textAlign='center'
           />
         </Segment>
-        <Segment style={{minHeight: 350}}>
+        <Segment style={{ minHeight: 350 }}>
           <Grid padded verticalAlign='bottom'>
-            {fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.'}
+            {
+              hasFridgeItems
+                ? (fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.')
+                : <Loader active />
+            }
           </Grid>
         </Segment>
         <Segment textAlign='right' color='blue' inverted tertiary>
@@ -105,7 +109,6 @@ export const MyFridge = () => {
           <Icon name='triangle left' />Go back
         </a>
       </div>
-      <br />
       {
         isCreate && // unmount on close
         <FoodCreate open={isCreate} setOpen={setIsCreate} />

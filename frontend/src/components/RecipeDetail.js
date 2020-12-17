@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 
-import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon, List } from 'semantic-ui-react';
+import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon, List, Loader, Popup } from 'semantic-ui-react';
+import { ImageWrapper } from '../misc';
 
 import * as actionCreators from '../store/actions/index';
 
@@ -15,12 +16,15 @@ export const RecipeDetail = ({ match }) => {
 
   const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
   const storedReviews = useSelector(state => state.review.reviews);
+  const initialTabIndex = useSelector(state => state.user.tabIndex);
+
 
   const [hasRecipe, setHasRecipe] = useState(false);
   const [hasReviews, setHasReviews] = useState(false);
+  const [tabIndex, setTabIndex] = useState(initialTabIndex);
 
   const [enableRating, setEnableRating] = useState(true);
-  
+
   // fetch recipe and reviews on initial mount
   useEffect(() => {
     dispatch(actionCreators.selectRecipeById(recipeId))
@@ -81,8 +85,9 @@ export const RecipeDetail = ({ match }) => {
       pane: (
         <Tab.Pane key={2}>
           {
-            hasReviews &&
-            <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+            hasReviews
+              ? <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+              : <Loader active inline='centered' />
           }
         </Tab.Pane>
       )
@@ -93,9 +98,9 @@ export const RecipeDetail = ({ match }) => {
     <Container text id='RecipeDetail'>
       <Item.Group>
         <Item>
-          <Item.Image
-            size='medium'
-            src={storedRecipe.image || `https://source.unsplash.com/512x512/?soup`} />
+          <Item.Image size='medium'>
+            <ImageWrapper src={storedRecipe.image} />
+          </Item.Image>
           <Item.Content>
             <Item.Header>
               <Header as='h1' content={storedRecipe.title} />
@@ -117,7 +122,7 @@ export const RecipeDetail = ({ match }) => {
               <br />
               <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
               <br />
-              <b>{(storedRecipe.calories / storedRecipe.serving).toFixed(0)}</b>&ensp;calories / serving
+              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calories / serving
             </Item.Description>
             <Item.Extra>
               {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
@@ -129,9 +134,13 @@ export const RecipeDetail = ({ match }) => {
       </Item.Group>
       <Tab
         panes={panes}
+        activeIndex={tabIndex}
+        onTabChange={(e, { activeIndex }) => {
+          setTabIndex(activeIndex);
+          dispatch(actionCreators.setTabIndex(activeIndex));
+        }}
         renderActiveOnly={false}
       />
-      <br />
     </Container>
   );
 };
@@ -173,13 +182,24 @@ const ReviewTab = ({ reviews, recipeId }) => {
   return (
     <div className='review'>
       <div>
-        <Button
-          id='writeButton'
-          content='Write a review'
-          onClick={() => history.push(`/recipe/${recipeId}/create-review`)}
-          disabled={!userIsAuthorized}
-          basic
-          color='blue'
+        <Popup
+          content='Please signin to write a review.'
+          disabled={userIsAuthorized}
+          trigger={
+            <Button
+              id='writeButton'
+              content='Write a review'
+              onClick={() => {
+                if (userIsAuthorized) {
+                  history.push(`/recipe/${recipeId}/create-review`);
+                } else {
+                  history.push('/signin');
+                }
+              }}
+              basic
+              color='blue'
+            />
+          }
         />
       </div>
       <br />

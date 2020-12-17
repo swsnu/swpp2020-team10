@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Input, Form, Modal } from 'semantic-ui-react';
+import { Button, Form, Modal } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
 
@@ -11,15 +11,13 @@ export const FoodDetail = ({ open, setOpen }) => {
 
   const selectedFridgeItem = useSelector(state => state.fridgeItem.selectedFridgeItem);
 
-  const name = selectedFridgeItem.name;
-  const type = selectedFridgeItem.ingredient_id || '';
+  const [name, setName] = useState(selectedFridgeItem.name);
+  const type = selectedFridgeItem.ingredient_name || '';
   const [quantity, setQuantity] = useState(selectedFridgeItem.quantity);
   const [unit, setUnit] = useState(selectedFridgeItem.unit);
   const [expiryDate, setExpiryDate] = useState(selectedFridgeItem.expiry_date);
 
-  const [isWaitingResponse, setIsWaitingResponse] = useState(true);
-
-  const style = { width: '8em' };
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
 
   // edit fridge item and close food detail modal
   const onClickConfirmEditButton = () => {
@@ -31,7 +29,7 @@ export const FoodDetail = ({ open, setOpen }) => {
     };
 
     // disallow multiple clicks
-    setIsWaitingResponse(false);
+    setIsWaitingResponse(true);
     dispatch(actionCreators.editFridgeItem(selectedFridgeItem.id, editedFridgeItem))
       .then(() => setOpen(false));
   };
@@ -39,61 +37,48 @@ export const FoodDetail = ({ open, setOpen }) => {
   // delete fridge item and close food detail modal
   const onClickDeleteFoodButton = () => {
     // disallow multiple clicks
-    setIsWaitingResponse(false);
+    setIsWaitingResponse(true);
     dispatch(actionCreators.deleteFridgeItem(selectedFridgeItem.id))
       .then(() => setOpen(false));
   };
 
   const form = (
     <Form>
-      <Form.Field>
-        <Input
-          id='nameInput'
-          value={name}
-          label={{ basic: true, content: 'Name', style }}
-          labelPosition='left'
-          disabled
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='typeInput'
-          value={type}
-          label={{ basic: true, content: 'Type', style }}
-          labelPosition='left'
-          disabled
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='quantityInput'
-          type='number'
-          value={quantity}
-          min={1}
-          onChange={e => setQuantity(e.target.value)}
-          label={{ basic: true, content: 'Quantity', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='unitInput'
-          value={unit}
-          onChange={e => setUnit(e.target.value)}
-          label={{ basic: true, content: 'Unit', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
-      <Form.Field>
-        <Input
-          id='expiryDateInput'
-          type='date'
-          value={expiryDate}
-          onChange={e => setExpiryDate(e.target.value)}
-          label={{ basic: true, content: 'Expiry Date', style }}
-          labelPosition='left'
-        />
-      </Form.Field>
+      <Form.Input
+        id='nameInput'
+        label='Name'
+        value={name}
+        onChange={e => setName(e.target.value)}
+        required
+      />
+      <Form.Input
+        id='typeInput'
+        label='Type'
+        value={type}
+        disabled
+      />
+      <Form.Input
+        id='quantityInput'
+        type='number'
+        label='Quantity'
+        value={quantity}
+        min={0}
+        onChange={e => setQuantity(e.target.value)}
+        required
+      />
+      <Form.Input
+        id='unitInput'
+        label='Unit'
+        value={unit}
+        onChange={e => setUnit(e.target.value)}
+      />
+      <Form.Input
+        id='expiryDateInput'
+        type='date'
+        label='Expiry Date'
+        value={expiryDate}
+        onChange={e => setExpiryDate(e.target.value)}
+      />
     </Form>
   );
 
@@ -102,7 +87,7 @@ export const FoodDetail = ({ open, setOpen }) => {
       id='FoodDetail'
       open={open}
       dimmer='inverted'
-      size='tiny'
+      size='mini'
     >
       <Modal.Header content='Edit fridge item' />
       <Modal.Content>
@@ -113,19 +98,19 @@ export const FoodDetail = ({ open, setOpen }) => {
           id='editButton'
           onClick={onClickConfirmEditButton}
           content='Submit'
-          disabled={!isWaitingResponse}
+          disabled={isWaitingResponse || !name || !quantity}
         />
         <Button
           id='deleteButton'
           onClick={onClickDeleteFoodButton}
           content='Delete'
-          disabled={!isWaitingResponse}
+          disabled={isWaitingResponse}
         />
         <Button
           id='backButton'
           onClick={() => setOpen(false)}
           content='Back'
-          disabled={!isWaitingResponse}
+          disabled={isWaitingResponse}
         />
       </Modal.Actions>
     </Modal>

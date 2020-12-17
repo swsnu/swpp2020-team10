@@ -63,11 +63,6 @@ export const PreviewTab = ({ title, imageUrl, content, oldReview }) => {
         <Card.Content>
           <Card.Header>
             {title}
-            <Icon
-              id='backToRecipeButton'
-              link 
-              name='triangle left'
-            />
           </Card.Header>
           <Card.Meta>
             {userName}&emsp;

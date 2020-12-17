@@ -4,23 +4,21 @@ import json
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import SearchSetting
-from django.views.decorators.csrf import csrf_exempt
 from ..models import FridgeItem, Review, Comment, Recipe
 
-@csrf_exempt
 def signup(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
         username = request_data["username"]
         password = request_data["password"]
-        email = request_data["email"]
 
         # username already exists
         if User.objects.filter(username=username).exists():
             return HttpResponse(status=409)
 
-        new_user = User.objects.create_user(username=username, password=password, email=email)
+        new_user = User.objects.create_user(username=username, password=password)
         new_user.save()
         new_setting = SearchSetting(user=new_user)
         new_setting.save()
@@ -28,7 +26,7 @@ def signup(request):
         return HttpResponse(status=201)
 
     return HttpResponseNotAllowed(["POST"])
-@csrf_exempt
+
 def signin(request):
     if request.method == "POST":
         request_data = json.loads(request.body.decode())
@@ -49,7 +47,7 @@ def signin(request):
 
     return HttpResponseNotAllowed(["POST"])
 
-@csrf_exempt
+@ensure_csrf_cookie
 def signout(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
@@ -60,7 +58,7 @@ def signout(request):
 
     return HttpResponseNotAllowed(["GET"])
 
-@csrf_exempt
+@ensure_csrf_cookie
 def status(request):
     if request.method == "GET":
         if not request.user.is_authenticated:
@@ -75,7 +73,7 @@ def status(request):
     return HttpResponseNotAllowed(["GET"])
 
 
-@csrf_exempt
+@ensure_csrf_cookie
 def profile(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=401)
@@ -102,7 +100,7 @@ def profile(request):
 THRESHOLD_ITEM_DAYS    = 2.00
 THRESHOLD_COMMENT_DAYS = 1.00
 # Notification : Fridge item expiry date 24h, past 24h comment on your review
-@csrf_exempt
+@ensure_csrf_cookie
 def notification(request, _id):
     if request.method == "GET":
         if not request.user.is_authenticated:

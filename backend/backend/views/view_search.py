@@ -1,11 +1,12 @@
-import json
-from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
-from django.contrib.postgres.search import SearchVector, TrigramSimilarity
+from django.http import HttpResponseNotAllowed, JsonResponse
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Q
+from django.views.decorators.csrf import ensure_csrf_cookie
 from backend.models import Recipe, FridgeItem, IngredientIncidence
 
 
 # Fetches setting by user id
+@ensure_csrf_cookie
 def search(request):
     if request.method == 'GET':
         search_query = request.GET.get('q')
@@ -49,14 +50,15 @@ def search(request):
 
         filtered_recipes = query.all()[filter_from:filter_to].values()
         feasible_recipes = []
-        if not fridge_able:
+        if fridge_able != 'true':
             feasible_recipes = filtered_recipes
         else:
             try:
                 my_ingredients = set()
                 rec_ing_list = dict()
+                sc_rec_ing = dict() # recipe_id -> ingredient_own_score
                 for it in FridgeItem.objects.filter(user_id=request.user.id).all().values():
-                    my_ingredients.add(it['id'])
+                    my_ingredients.add(it['ingredient_id'])
                 for it in IngredientIncidence.objects.all().values():
                     if it['recipe_id'] in rec_ing_list:
                         rec_ing_list[it['recipe_id']].append(it['ingredient_id'])
@@ -64,16 +66,16 @@ def search(request):
                         rec_ing_list[it['recipe_id']] = [it['ingredient_id']]
                 for r in filtered_recipes:
                     if r['id'] not in rec_ing_list:
-                        feasible_recipes.append(r)
+                        sc_rec_ing[r['id']] = 0
                     else:
                         r_ing = rec_ing_list[r['id']]
-                        flag = True
+                        cnt = 0
                         for ing in r_ing:
-                            if ing not in my_ingredients:
-                                flag = False
-                                break
-                        if flag is True:
-                            feasible_recipes.append(r)
+                            if ing in my_ingredients:
+                                cnt += 1
+                        sc_rec_ing[r['id']] = (cnt / len(r_ing))
+                feasible_recipes = sorted(filtered_recipes,
+                                          key = lambda re : sc_rec_ing[re['id']], reverse=True)
             except (KeyError, ValueError, IndexError):
                 feasible_recipes = filtered_recipes
         recipes = [recipe for recipe in feasible_recipes]

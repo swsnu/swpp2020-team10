@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { Card, Icon, Image, Rating } from 'semantic-ui-react';
+import { Card, Icon, Placeholder, Rating } from 'semantic-ui-react';
 
+import { ImageWrapper } from '../misc';
 import * as actionCreators from '../store/actions/index';
 
 
@@ -43,14 +44,40 @@ export const Recommendation = () => {
   };
 
   if (!hasRecommendation) {
-    return null;
+    return (
+      <Card fluid>
+        <Placeholder>
+          <Placeholder.Image rectangular style={{ width: 300, height: 300 }} />
+        </Placeholder>
+        <Card.Content>
+          <Card.Description>
+            <Placeholder>
+              <Placeholder.Header>
+                <Placeholder.Line />
+              </Placeholder.Header>
+              <Placeholder.Paragraph>
+                <Placeholder.Line length='short' />
+                <Placeholder.Line length='medium' />
+                <Placeholder.Line length='medium' />
+              </Placeholder.Paragraph>
+              <Placeholder.Paragraph>
+                <Placeholder.Line />
+                <Placeholder.Line />
+                <Placeholder.Line />
+                <Placeholder.Line />
+              </Placeholder.Paragraph>
+            </Placeholder>
+          </Card.Description>
+        </Card.Content>
+      </Card>
+    );
   }
 
   const recipeSteps = recipe.content.join(' ');
 
   return (
     <Card key={recipe.id} fluid>
-      <Image src={recipe.image || `https://source.unsplash.com/512x512/?food,${recipe.id}`} />
+      <ImageWrapper src={recipe.image} length={300} />
       <Card.Content>
         <Card.Header>
           <Link to={`/recipe/${recipe.id}/`}>{recipe.title}</Link>
@@ -69,7 +96,7 @@ export const Recommendation = () => {
           {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
           {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}
           <br />
-          {(recipe.calories / recipe.serving).toFixed(0)}&ensp;calories / serving
+          {recipe.calories.toFixed(0)}&ensp;calories / serving
         </Card.Meta>
         <Card.Description>
           {recipeSteps.substr(0, 100)}

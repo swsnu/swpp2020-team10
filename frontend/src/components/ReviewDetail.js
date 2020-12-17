@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { Button, Icon, Image, Container, Card, Form } from 'semantic-ui-react';
+import { Button, Icon, Image, Container, Card, Form, Loader } from 'semantic-ui-react';
 
 import * as actionCreators from '../store/actions/index';
 import { getFormattedDate } from '../misc';
@@ -329,8 +329,14 @@ export const ReviewDetail = ({ match }) => {
         writeCommentCard
       }
       {
-        hasComments &&
-        commentList
+        hasComments
+          ? commentList
+          : (
+            <>
+              <br />
+              <Loader active inline='centered' />
+            </>
+          )
       }
     </Container>
   );

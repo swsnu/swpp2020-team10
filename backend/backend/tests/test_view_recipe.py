@@ -1,21 +1,11 @@
 import json
 from django.test import TestCase, Client
-from .data_for_testing import test_recipe_rating as rtest, test_recipe_rating_wrong as rtestf, test_user
-from ..models import *
+from .data_for_testing import test_recipe_rating as rtest, test_recipe_rating_wrong as rtestf, test_user, t_data
 
 
 class RecipeTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username=test_user['username'], password=test_user['password'])
-        self.second_user = User.objects.create_user(username="some-other-user", password='password')
-        self.food = Food.objects.create(name='food_name')
-        self.recipe = Recipe.objects.create(food=self.food, title="plz kill me")
-        self.review = Review.objects.create(recipe=self.recipe, user=self.user, title="title", content="content")
-        self.revid = self.review.id
-        self.fridgeItem = FridgeItem.objects.create(user=self.user, food=self.food)
-        self.second_item = FridgeItem.objects.create(user=self.second_user, food=self.food)
-        self.item_id = self.fridgeItem.id
-        self.user_id = self.user.id
+        self.t_data = t_data()
 
     def test_recipe_list(self):
         client = Client()
@@ -26,9 +16,12 @@ class RecipeTestCase(TestCase):
 
 
     def test_recipe_by_id(self):
-        FIRST_RECIPE_URL = f'/api/recipe/{self.recipe.id}/'
+        FIRST_RECIPE_URL = f'/api/recipe/{self.t_data.recipe.id}/'
         WRONG_RECIPE_URL = '/api/recipe/999999999/'
         client = Client()
+        response = client.put(WRONG_RECIPE_URL, json.dumps(rtest), content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+        response = client.post('/api/user/signin/', json.dumps(test_user), content_type='applications/json')
         response = client.get(FIRST_RECIPE_URL)
         self.assertEqual(response.status_code, 200)
 
@@ -39,6 +32,8 @@ class RecipeTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
         # PUT rating...
+        response = client.put(FIRST_RECIPE_URL, json.dumps(rtest), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
         response = client.put(FIRST_RECIPE_URL, json.dumps(rtest), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
