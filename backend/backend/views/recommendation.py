@@ -132,19 +132,19 @@ def recommend_recipe(request):
             if r['score'] < 0:
                 r['pr'] = 0
             else:
-                r['pr'] = 1 / (1 + exp(1/r['score']))
+                r['pr'] = (1 / (1 + exp(1/r['score']))) + 0.01
                 candidate_count+=1
-                max_prob = max(max_prob, r['pr'])
             tpr += r['pr']
-        if candidate_count <= 10 or max_prob > 0.4:
-            return random_draw(request)
         for r in feasible_list:
             pr = r['pr'] / tpr
+            max_prob = max(pr, max_prob)
             if len(cdf) == 0:
                 cdf = [pr]
             else:
                 cdf.append(cdf[-1] + pr)
                 #print(f"{r['id']} : {r['title']} : {pr}")
+        if candidate_count <= 10 or max_prob > 0.4:
+            return random_draw(request)
         #print(f"Recommendation success")
         chosen_recipes = set()
         rec_ind = bisect(cdf,random())
