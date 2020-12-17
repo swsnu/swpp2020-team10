@@ -192,5 +192,5 @@ class IngredientPreference(models.Model):
         on_delete=models.CASCADE,
         related_name='ing_pref_user',
     )
-    name = models.CharField(max_length=30, default='')
+    name = models.CharField(max_length=80, default='')
     score = models.FloatField(default=0.0)
