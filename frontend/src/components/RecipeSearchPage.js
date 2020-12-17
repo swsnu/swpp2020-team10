@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
+import { Button, Checkbox, Container, Dimmer, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
 import { ImageWrapper } from '../misc';
 
 
@@ -35,9 +35,9 @@ export const RecipeSearchPage = ({ match }) => {
   const [enableMinRating, setEnableMinRating] = useState(false);
   const [minRating, setMinRating] = useState(2.5);
 
-  const [enableMaxCalorie, setEnableMaxCalorie] = useState(false);
-  const [maxCalorie, setMaxCalorie] = useState(500);
-  const maxCalorieMaxInput = 2000;
+  const [enableMaxCalories, setEnableMaxCalories] = useState(false);
+  const [maxCalories, setMaxCalories] = useState(500);
+  const maxCaloriesMaxInput = 2000;
 
   const [dietLabels, setDietLabels] = useState('');
   const [healthLabels, setHealthLabels] = useState('');
@@ -80,28 +80,25 @@ export const RecipeSearchPage = ({ match }) => {
           health_labels,
         } = response.data;
 
-        if (fridge_able) {
-          setEnableFridge(true);
-        }
-
         if (cooking_time) {
-          setEnableMaxCookingTime(true);
           setMaxCookingTime(cooking_time);
         }
+
         if (rating) {
-          setEnableMinRating(true);
           setMinRating(rating);
         }
+
         if (calories) {
-          setEnableMaxCalorie(true);
-          setMaxCalorie(calories);
+          setMaxCalories(calories);
         }
-        if (diet_labels.length) {
-          setDietLabels(diet_labels.join(' '));
-        }
-        if (health_labels.length) {
-          setHealthLabels(health_labels.join(' '));
-        }
+
+        setDietLabels(diet_labels.join(' '));
+        setHealthLabels(health_labels.join(' '));
+
+        setEnableFridge(fridge_able);
+        setEnableMaxCookingTime(Boolean(cooking_time));
+        setEnableMinRating(Boolean(rating));
+        setEnableMaxCalories(Boolean(calories));
 
         return response;
       });
@@ -112,7 +109,7 @@ export const RecipeSearchPage = ({ match }) => {
       fridge_able: enableFridge ? 'true' : 'false',
       cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
       rating: enableMinRating ? minRating : 0,
-      calories: enableMaxCalorie ? maxCalorie : 0,
+      calories: enableMaxCalories ? maxCalories : 0,
       diet_labels: dietLabels.split(/\s+/).filter(Boolean),
       health_labels: healthLabels.split(/\s+/).filter(Boolean),
     });
@@ -134,7 +131,7 @@ export const RecipeSearchPage = ({ match }) => {
     let fridgeParam = enableFridge ? 'fridge_able=true' : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
-    let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
+    let calorieParam = enableMaxCalories ? 'calorie=' + maxCalories : '';
     let dietParam = dietLabels.split(/\s+/).filter(Boolean).map(label => 'diet_labels=' + label).join('&');
     let healthParam = healthLabels.split(/\s+/).filter(Boolean).map(label => 'health_labels=' + label).join('&');
 
@@ -169,7 +166,7 @@ export const RecipeSearchPage = ({ match }) => {
 
   useEffect(() => {
     if (userIsAuthorized) {
-      fetchSetting().finally(() => setHasSettings(true));
+      fetchSetting().then(() => setHasSettings(true));
     } else {
       setHasSettings(true);
     }
@@ -183,12 +180,19 @@ export const RecipeSearchPage = ({ match }) => {
 
   const filterTab = (
     <Segment>
+      {
+        !hasSettings &&
+        <Dimmer active inverted>
+          <Loader active />
+        </Dimmer>
+      }
       <Form>
         <Form.Field>
           <Checkbox
             id='enableFridge'
             label='Check availability from My Fridge'
             checked={enableFridge}
+            disabled={!userIsAuthorized}
             onChange={() => setEnableFridge(!enableFridge)}
           />
         </Form.Field>
@@ -204,7 +208,7 @@ export const RecipeSearchPage = ({ match }) => {
           <input
             type='number'
             id='maxCookingTimeInput'
-            min={0}
+            min={1}
             max={maxCookingTimeMaxInput}
             value={maxCookingTime}
             onChange={e => setMaxCookingTime(e.target.value)}
@@ -222,7 +226,7 @@ export const RecipeSearchPage = ({ match }) => {
           <input
             type='number'
             id='minRatingInput'
-            min={0}
+            min={0.1}
             max={5}
             step={0.1}
             value={minRating}
@@ -233,19 +237,19 @@ export const RecipeSearchPage = ({ match }) => {
           <Checkbox
             id='enableMaxCalorie'
             label='Set maximum calories per serving'
-            checked={enableMaxCalorie}
-            onChange={() => setEnableMaxCalorie(!enableMaxCalorie)}
+            checked={enableMaxCalories}
+            onChange={() => setEnableMaxCalories(!enableMaxCalories)}
           />
         </Form.Field>
         <Form.Field>
-          <Form.Field disabled={!enableMaxCalorie} width={3}>
+          <Form.Field disabled={!enableMaxCalories} width={3}>
             <input
               type='number'
               id='maxCalorieInput'
-              min={0}
-              max={maxCalorieMaxInput}
-              value={maxCalorie}
-              onChange={e => setMaxCalorie(e.target.value)}
+              min={1}
+              max={maxCaloriesMaxInput}
+              value={maxCalories}
+              onChange={e => setMaxCalories(e.target.value)}
             />
           </Form.Field>
         </Form.Field>
@@ -277,7 +281,7 @@ export const RecipeSearchPage = ({ match }) => {
               id='applyFilterButton'
               content='Apply'
               onClick={() => fetchResults(true)}
-              disabled={loadingRecipes}
+              disabled={loadingRecipes || !hasSettings}
             />
           </Form.Field>
           <Form.Field>
@@ -286,7 +290,7 @@ export const RecipeSearchPage = ({ match }) => {
               id='saveFilterButton'
               content='Save preferences'
               onClick={() => { saveSetting(); fetchResults(true); }}
-              disabled={userIsAuthorized !== true || loadingRecipes}
+              disabled={userIsAuthorized !== true || loadingRecipes || !hasSettings}
             />
           </Form.Field>
         </Form.Group>
@@ -370,7 +374,19 @@ export const RecipeSearchPage = ({ match }) => {
       />&ensp;
       <Button
         id='showFilterTabButton'
-        onClick={() => setShowFilterTab(!showFilterTab)}
+        onClick={() => {
+          if (showFilterTab) {
+            setShowFilterTab(false);
+          } else {
+            if (userIsAuthorized) {
+              setHasSettings(false);
+              setShowFilterTab(true);
+              fetchSetting().then(() => setHasSettings(true));
+            } else {
+              setShowFilterTab(true);
+            }
+          }
+        }}
         content='Filter'
       />
       {
