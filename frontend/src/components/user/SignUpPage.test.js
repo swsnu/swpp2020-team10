@@ -15,8 +15,10 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
     replace: jest.fn(),
+    goBack: jest.fn(),
   }),
 }));
+
 
 const mockStore = getMockStore({});
 
@@ -124,7 +126,16 @@ describe('<SignUpPage />', () => {
 
   it('accepts valid sign up request', async () => {
     jest.spyOn(axios, 'post')
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => {
+        return new Promise((resolve) => {
+          const result= {
+            status: 200, 
+            data: {user_id: 1, username: 'username1'}
+          };
+          resolve(result);
+        }
+        );}
+      );
 
     const username = 'username1';
     const password = 'password1';

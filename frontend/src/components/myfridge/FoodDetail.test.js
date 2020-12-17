@@ -90,16 +90,6 @@ describe('<FoodDetail />', () => {
     let wrapper = component.find('#FoodDetail');
     expect(wrapper.exists()).toBeTruthy();
 
-    wrapper = component.find('#nameInput').at(0);
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.name);
-    wrapper = component.find('#typeInput').at(0);
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.ingredient_id);
-    wrapper = component.find('#quantityInput').at(0);
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.quantity);
-    wrapper = component.find('#unitInput').at(0);
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.unit);
-    wrapper = component.find('#expiryDateInput').at(0);
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.expiry_date);
   });
 
   it(`should not change name input`, () => {
@@ -109,7 +99,7 @@ describe('<FoodDetail />', () => {
     
     wrapper.simulate('change', { target: { value: name } });
     wrapper = component.find('#nameInput').at(0).find('input');
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.name);
+    expect(wrapper.props().value).toBe(name);
   });
 
   it(`should not change type input`, () => {
@@ -119,7 +109,8 @@ describe('<FoodDetail />', () => {
     
     wrapper.simulate('change', { target: { value: type } });
     wrapper = component.find('#typeInput').at(0).find('input');
-    expect(wrapper.props().value).toBe(stubInitialState.selectedFridgeItem.ingredient_id);
+    wrapper.update();
+    expect(wrapper.props().value).toBe('');
   });
 
   it(`should set state properly on quantity input`, () => {

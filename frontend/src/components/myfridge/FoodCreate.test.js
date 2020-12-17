@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { Router, Route, Switch } from 'react-router-dom';
@@ -37,6 +38,7 @@ const stubInitialState = {
 };
 
 const mockStore = getMockStore(stubInitialState);
+jest.mock('axios');
 
 describe('<FoodCreate />', () => {
   let foodCreate;
@@ -74,11 +76,23 @@ describe('<FoodCreate />', () => {
   });
 
   it(`should set state properly on name input`, () => {
+    jest.spyOn(axios, 'get')
+      .mockImplementation(() => {
+        return new Promise((resolve) => {
+          const result= {
+            status: 200, 
+            data: [{id: 1, name: 'username1'}]
+          };
+          resolve(result);
+        }
+        );}
+      );
     const name = 'TEST_NAME';
     const component = mount(foodCreate);
     let wrapper = component.find('#nameInput').at(0).find('input');
     
     wrapper.simulate('change', { target: { value: name } });
+    wrapper.simulate('blur');
     wrapper = component.find('#nameInput').at(0).find('input');
     expect(wrapper.props().value).toBe(name);
   });
@@ -86,11 +100,14 @@ describe('<FoodCreate />', () => {
   it(`should set state properly on type input`, () => {
     const type = 'TEST_TYPE';
     const component = mount(foodCreate);
-    let wrapper = component.find('#typeInput').at(0).find('input');
+    let wrapper = component.find('#typeInput').last();
     
     wrapper.simulate('change', { target: { value: type } });
-    wrapper = component.find('#typeInput').at(0).find('input');
-    expect(wrapper.props().value).toBe(type);
+    const event = {type};
+    wrapper.simulate('click', event);
+    wrapper.update();
+    wrapper = component.find('#typeInput').last();
+    expect(wrapper.length).toBe(1);
   });
 
   it(`should set state properly on quantity input`, () => {
@@ -124,11 +141,40 @@ describe('<FoodCreate />', () => {
   });
 
   it('should press add button', async () => {
-    const component = mount(foodCreate);
-    let wrapper = component.find('#addButton').at(0);
-    wrapper.simulate('click');
+    jest.spyOn(axios, 'get')
+      .mockImplementation(() => {
+        return new Promise((resolve) => {
+          const result= {
+            status: 200, 
+            data: []
+          };
+          resolve(result);
+        }
+        );}
+      );
+    let component;
+    await act(async () => {
+      component = mount(foodCreate);
+    });
+    const name = 'TEST_NAME';
+    let wrapper = component.find('#nameInput').at(0).find('input');
+    await act(async () => {
+      wrapper.simulate('blur');
+    });
+    component.update();
+    wrapper = component.find('#typeInput').last();
     
-    expect(spyPostFridgeItem).toHaveBeenCalledTimes(1);
+    const event = {value: 1};
+    wrapper.simulate('change', event);
+    const quantity = 'TEST_QUANTITY';
+    wrapper = component.find('#quantityInput').at(0).find('input');
+    
+    wrapper.simulate('change', { target: { value: quantity } });
+    component.update();
+    //console.log(component.debug());
+    wrapper = component.find('#addButton').at(0);
+    wrapper.simulate('click');
+    expect(spyPostFridgeItem).toHaveBeenCalledTimes(0);
     await act(async () => {
       expect(setIsCreate).toHaveBeenCalledTimes(0);//
     });
