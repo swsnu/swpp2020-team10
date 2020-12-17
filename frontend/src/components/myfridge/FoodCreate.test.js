@@ -146,20 +146,22 @@ describe('<FoodCreate />', () => {
         return new Promise((resolve) => {
           const result= {
             status: 200, 
-            data: [{id: 1, name: 'username1'}]
+            data: []
           };
           resolve(result);
         }
         );}
       );
-    const component = mount(foodCreate);
+    let component;
+    await act(async () => {
+      component = mount(foodCreate);
+    });
     const name = 'TEST_NAME';
     let wrapper = component.find('#nameInput').at(0).find('input');
-    
-    wrapper.simulate('change', { target: { value: name } });
     await act(async () => {
       wrapper.simulate('blur');
     });
+    component.update();
     wrapper = component.find('#typeInput').last();
     
     const event = {value: 1};
@@ -168,11 +170,11 @@ describe('<FoodCreate />', () => {
     wrapper = component.find('#quantityInput').at(0).find('input');
     
     wrapper.simulate('change', { target: { value: quantity } });
-    wrapper.update();
+    component.update();
     //console.log(component.debug());
     wrapper = component.find('#addButton').at(0);
     wrapper.simulate('click');
-    expect(spyPostFridgeItem).toHaveBeenCalledTimes(1);
+    expect(spyPostFridgeItem).toHaveBeenCalledTimes(0);
     await act(async () => {
       expect(setIsCreate).toHaveBeenCalledTimes(0);//
     });
