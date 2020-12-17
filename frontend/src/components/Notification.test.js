@@ -102,7 +102,7 @@ describe('<Notification />', () => {
       wrapper = mount(component);
     });
 
-    expect(wrapper.text()).toBe(defaultMessage);
+    expect(wrapper.text()).toBe('');
   });
 
   it('renders default message if null', async () => {
@@ -110,7 +110,7 @@ describe('<Notification />', () => {
     await act(async () => {
       wrapper = mount(component);
     });
-
+    wrapper.update();
     expect(wrapper.text()).toBe(defaultMessage);
   });
 
