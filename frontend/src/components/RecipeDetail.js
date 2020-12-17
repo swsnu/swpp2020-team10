@@ -141,7 +141,6 @@ export const RecipeDetail = ({ match }) => {
         }}
         renderActiveOnly={false}
       />
-      <br />
     </Container>
   );
 };

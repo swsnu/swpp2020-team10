@@ -76,6 +76,10 @@ const MenuAfter = ({ isFridge }) => {
             content='Settings'
             onClick={() => setOpenSettings(true)}
           />
+          {
+            openSettings &&
+            <Settings open={openSettings} setOpen={setOpenSettings} />
+          }
           <Menu.Item
             content='My Fridge'
             onClick={() => { if (!isFridge) history.push('/fridge'); }}
@@ -90,7 +94,6 @@ const MenuAfter = ({ isFridge }) => {
           />
         </Container>
       </Menu>
-      <Settings open={openSettings} onClose={() => setOpenSettings(false)} />
     </>
   );
 };
@@ -105,6 +108,7 @@ function WrappedRoute({ menu: Menu, component: Component, isFridge, ...rest }) {
           <Menu isFridge={isFridge} />
           <br /><br /><br /><br />
           <Component {...routeProps} />
+          <br /><br /><br /><br />
         </>
       )}
     />

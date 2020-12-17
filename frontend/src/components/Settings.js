@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-import { Button, Checkbox, Form, Loader, Modal, Segment } from 'semantic-ui-react';
+import { Button, Checkbox, Dimmer, Form, Loader, Modal, Segment } from 'semantic-ui-react';
 
 
-export const Settings = ({ open, onClose }) => {
+export const Settings = ({ open, setOpen }) => {
   const [hasSettings, setHasSettings] = useState(false);
 
   // filter attributes
@@ -17,9 +17,9 @@ export const Settings = ({ open, onClose }) => {
   const [enableMinRating, setEnableMinRating] = useState(false);
   const [minRating, setMinRating] = useState(2.5);
 
-  const [enableMaxCalorie, setEnableMaxCalorie] = useState(false);
-  const [maxCalorie, setMaxCalorie] = useState(500);
-  const maxCalorieMaxInput = 2000;
+  const [enableMaxCalories, setEnableMaxCalories] = useState(false);
+  const [maxCalories, setMaxCalories] = useState(500);
+  const maxCaloriesMaxInput = 2000;
 
   const [dietLabels, setDietLabels] = useState('');
   const [healthLabels, setHealthLabels] = useState('');
@@ -36,28 +36,25 @@ export const Settings = ({ open, onClose }) => {
           health_labels,
         } = response.data;
 
-        if (fridge_able) {
-          setEnableFridge(true);
-        }
-
         if (cooking_time) {
-          setEnableMaxCookingTime(true);
           setMaxCookingTime(cooking_time);
         }
+
         if (rating) {
-          setEnableMinRating(true);
           setMinRating(rating);
         }
+
         if (calories) {
-          setEnableMaxCalorie(true);
-          setMaxCalorie(calories);
+          setMaxCalories(calories);
         }
-        if (diet_labels.length) {
-          setDietLabels(diet_labels.join(' '));
-        }
-        if (health_labels.length) {
-          setHealthLabels(health_labels.join(' '));
-        }
+
+        setDietLabels(diet_labels.join(' '));
+        setHealthLabels(health_labels.join(' '));
+
+        setEnableFridge(fridge_able);
+        setEnableMaxCookingTime(Boolean(cooking_time));
+        setEnableMinRating(Boolean(rating));
+        setEnableMaxCalories(Boolean(calories));
 
         return response;
       });
@@ -68,22 +65,28 @@ export const Settings = ({ open, onClose }) => {
       fridge_able: enableFridge ? 'true' : 'false',
       cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
       rating: enableMinRating ? minRating : 0,
-      calories: enableMaxCalorie ? maxCalorie : 0,
+      calories: enableMaxCalories ? maxCalories : 0,
       diet_labels: dietLabels.split(/\s+/).filter(Boolean),
       health_labels: healthLabels.split(/\s+/).filter(Boolean),
     });
   };
 
   useEffect(() => {
-    fetchSetting().finally(() => setHasSettings(true));
+    fetchSetting().then(() => setHasSettings(true));
   }, []);
 
   const filterTab = (
     <Segment>
+      {
+        !hasSettings &&
+        <Dimmer active inverted>
+          <Loader active />
+        </Dimmer>
+      }
       <Form>
         <Form.Field>
           <Checkbox
-            id='enableFridge'
+            id='enableFridgeSetting'
             label='Check availability from My Fridge'
             checked={enableFridge}
             onChange={() => setEnableFridge(!enableFridge)}
@@ -91,7 +94,7 @@ export const Settings = ({ open, onClose }) => {
         </Form.Field>
         <Form.Field>
           <Checkbox
-            id='enableMaxCookingTime'
+            id='enableMaxCookingTimeSetting'
             label='Set maximum cooking time'
             checked={enableMaxCookingTime}
             onChange={() => setEnableMaxCookingTime(!enableMaxCookingTime)}
@@ -100,8 +103,8 @@ export const Settings = ({ open, onClose }) => {
         <Form.Field disabled={!enableMaxCookingTime} width={3}>
           <input
             type='number'
-            id='maxCookingTimeInput'
-            min={0}
+            id='maxCookingTimeInputSetting'
+            min={1}
             max={maxCookingTimeMaxInput}
             value={maxCookingTime}
             onChange={e => setMaxCookingTime(e.target.value)}
@@ -109,7 +112,7 @@ export const Settings = ({ open, onClose }) => {
         </Form.Field>
         <Form.Field>
           <Checkbox
-            id='enableMinRating'
+            id='enableMinRatingSetting'
             label='Set minimum rating'
             checked={enableMinRating}
             onChange={() => setEnableMinRating(!enableMinRating)}
@@ -118,8 +121,8 @@ export const Settings = ({ open, onClose }) => {
         <Form.Field disabled={!enableMinRating} width={3}>
           <input
             type='number'
-            id='minRatingInput'
-            min={0}
+            id='minRatingInputSetting'
+            min={0.1}
             max={5}
             step={0.1}
             value={minRating}
@@ -128,39 +131,39 @@ export const Settings = ({ open, onClose }) => {
         </Form.Field>
         <Form.Field>
           <Checkbox
-            id='enableMaxCalorie'
+            id='enableMaxCalorieSetting'
             label='Set maximum calories per serving'
-            checked={enableMaxCalorie}
-            onChange={() => setEnableMaxCalorie(!enableMaxCalorie)}
+            checked={enableMaxCalories}
+            onChange={() => setEnableMaxCalories(!enableMaxCalories)}
           />
         </Form.Field>
         <Form.Field>
-          <Form.Field disabled={!enableMaxCalorie} width={3}>
+          <Form.Field disabled={!enableMaxCalories} width={3}>
             <input
               type='number'
-              id='maxCalorieInput'
-              min={0}
-              max={maxCalorieMaxInput}
-              value={maxCalorie}
-              onChange={e => setMaxCalorie(e.target.value)}
+              id='maxCalorieInputSetting'
+              min={1}
+              max={maxCaloriesMaxInput}
+              value={maxCalories}
+              onChange={e => setMaxCalories(e.target.value)}
             />
           </Form.Field>
         </Form.Field>
         <Form.Field>
-          <label htmlFor='dietLabelsInput'>Diet labels</label>
+          <label htmlFor='dietLabelsInputSetting'>Diet labels</label>
           <input
             type='text'
-            id='dietLabelsInput'
+            id='dietLabelsInputSetting'
             value={dietLabels}
             onChange={e => setDietLabels(e.target.value)}
             placeholder='available:&emsp;Balanced&emsp;High-Protein&emsp;High-Fiber&emsp;Low-Fat&emsp;Low-Carb&emsp;Low-Sodium'
           />
         </Form.Field>
         <Form.Field>
-          <label htmlFor='healthLabelsInput'>Health labels</label>
+          <label htmlFor='healthLabelsInputSetting'>Health labels</label>
           <input
             type='text'
-            id='healthLabelsInput'
+            id='healthLabelsInputSetting'
             value={healthLabels}
             onChange={e => setHealthLabels(e.target.value)}
             placeholder='others'
@@ -180,20 +183,17 @@ export const Settings = ({ open, onClose }) => {
       <Modal.Header content='Settings' />
       <Modal.Content>
         <p>Applied to both search and recommendation.</p>
-        {
-          hasSettings
-            ? filterTab
-            : <Loader active />
-        }
+        {filterTab}
       </Modal.Content>
       <Modal.Actions>
         <Button
           id='closeSettingsButton'
           onClick={() => {
             saveSetting();
-            onClose();
+            setOpen(false);
           }}
           content='Save and close'
+          disabled={!hasSettings}
         />
       </Modal.Actions>
     </Modal>
