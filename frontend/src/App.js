@@ -9,7 +9,7 @@ import {
   Link,
 } from 'react-router-dom';
 
-import { Container, Header, Icon, Menu } from 'semantic-ui-react';
+import { Container, Header, Icon, Menu, Segment } from 'semantic-ui-react';
 
 import { FrontPage } from './components/FrontPage';
 import { RecipeSearchPage } from './components/RecipeSearchPage';
@@ -105,10 +105,17 @@ function WrappedRoute({ menu: Menu, component: Component, isFridge, ...rest }) {
       {...rest}
       render={routeProps => (
         <>
-          <Menu isFridge={isFridge} />
-          <br /><br /><br /><br />
-          <Component {...routeProps} />
-          <br /><br /><br /><br />
+          <div style={{ minHeight: '100vh' }}>
+            <Menu isFridge={isFridge} />
+            <br /><br /><br /><br />
+            <Component {...routeProps} />
+            <br /><br /><br /><br />
+          </div>
+          <Segment textAlign='center' attached='bottom' inverted>
+            <p style={{ color: 'grey'}}>
+              Copyright &copy; 2020 SWPP FRIDGE. All rights reserved.
+            </p>
+          </Segment>
         </>
       )}
     />
