@@ -50,9 +50,9 @@ describe('<FoodDetail />', () => {
   let foodDetail;
   const history = createBrowserHistory();
   let spyEditFridgeItem, spyDeleteFridgeItem;
-  
+
   const setIsEdit = jest.fn();
-  
+
   beforeEach(() => {
     foodDetail = (
       <Provider store={mockStore}>
@@ -64,25 +64,29 @@ describe('<FoodDetail />', () => {
       </Provider>
     );
     spyEditFridgeItem = jest.spyOn(fridgeItemActionCreators, 'editFridgeItem')
-    .mockImplementation(() => {return () => {
-      return new Promise((resolve) => {
-        const result = {
-          status: 200,
-          data: {}
+      .mockImplementation(() => {
+        return () => {
+          return new Promise((resolve) => {
+            const result = {
+              status: 200,
+              data: {}
+            };
+            resolve(result);
+          });
         };
-        resolve(result);
       });
-    };});
     spyDeleteFridgeItem = jest.spyOn(fridgeItemActionCreators, 'deleteFridgeItem')
-    .mockImplementation(() => {return () => {
-      return new Promise((resolve) => {
-        const result = {
-          status: 200,
-          data: {}
+      .mockImplementation(() => {
+        return () => {
+          return new Promise((resolve) => {
+            const result = {
+              status: 200,
+              data: {}
+            };
+            resolve(result);
+          });
         };
-        resolve(result);
       });
-    };});
   });
 
   it('should render FoodDetail with initial values', () => {
@@ -96,7 +100,7 @@ describe('<FoodDetail />', () => {
     const name = 'TEST_NAME';
     const component = mount(foodDetail);
     let wrapper = component.find('#nameInput').at(0).find('input');
-    
+
     wrapper.simulate('change', { target: { value: name } });
     wrapper = component.find('#nameInput').at(0).find('input');
     expect(wrapper.props().value).toBe(name);
@@ -106,7 +110,7 @@ describe('<FoodDetail />', () => {
     const type = 'TEST_TYPE';
     const component = mount(foodDetail);
     let wrapper = component.find('#typeInput').at(0).find('input');
-    
+
     wrapper.simulate('change', { target: { value: type } });
     wrapper = component.find('#typeInput').at(0).find('input');
     wrapper.update();
@@ -117,7 +121,7 @@ describe('<FoodDetail />', () => {
     const quantity = 'TEST_QUANTITY';
     const component = mount(foodDetail);
     let wrapper = component.find('#quantityInput').at(0).find('input');
-    
+
     wrapper.simulate('change', { target: { value: quantity } });
     wrapper = component.find('#quantityInput').at(0).find('input');
     expect(wrapper.props().value).toBe(quantity);
@@ -127,7 +131,7 @@ describe('<FoodDetail />', () => {
     const unit = 'TEST_UNIT';
     const component = mount(foodDetail);
     let wrapper = component.find('#unitInput').at(0).find('input');
-    
+
     wrapper.simulate('change', { target: { value: unit } });
     wrapper = component.find('#unitInput').at(0).find('input');
     expect(wrapper.props().value).toBe(unit);
@@ -137,7 +141,7 @@ describe('<FoodDetail />', () => {
     const expiry = 'TEST_EXPIRY';
     const component = mount(foodDetail);
     let wrapper = component.find('#expiryDateInput').at(0).find('input');
-    
+
     wrapper.simulate('change', { target: { value: expiry } });
     wrapper = component.find('#expiryDateInput').at(0).find('input');
     expect(wrapper.props().value).toBe(expiry);
@@ -147,7 +151,7 @@ describe('<FoodDetail />', () => {
     const component = mount(foodDetail);
     let wrapper = component.find('#editButton').at(0);
     wrapper.simulate('click');
-    
+
     expect(spyEditFridgeItem).toHaveBeenCalledTimes(1);
     await act(async () => {
       expect(setIsEdit).toHaveBeenCalledTimes(0);//
@@ -158,7 +162,7 @@ describe('<FoodDetail />', () => {
     const component = mount(foodDetail);
     let wrapper = component.find('#deleteButton').at(0);
     wrapper.simulate('click');
-    
+
     expect(spyDeleteFridgeItem).toHaveBeenCalledTimes(1);
     expect(setIsEdit).toHaveBeenCalledTimes(0);//
   });
@@ -167,7 +171,7 @@ describe('<FoodDetail />', () => {
     const component = mount(foodDetail);
     let wrapper = component.find('#backButton').at(0);
     wrapper.simulate('click');
-    
+
     expect(setIsEdit).toHaveBeenCalledTimes(1);
   });
 });

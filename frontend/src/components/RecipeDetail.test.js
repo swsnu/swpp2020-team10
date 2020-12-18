@@ -15,7 +15,7 @@ const stubInitialState = {
   isAuthorized: true,
   noti: null,
   recommendation: null,
-  
+
   user: {
     id: 1,
     name: 'John',
@@ -35,7 +35,7 @@ const stubInitialState = {
     ingredients: {
       'cabbage': 100
     },
-    ingredient_lines: ['first', 'second' ,'third'],
+    ingredient_lines: ['first', 'second', 'third'],
     health_labels: ['label1', 'label2'],
     diet_labels: ['label3', 'label4'],
     calories: 500,
@@ -54,7 +54,7 @@ const stubInitialState = {
     ingredients: {
       'cabbage': 100
     },
-    ingredient_lines: ['first', 'second' ,'third'],
+    ingredient_lines: ['first', 'second', 'third'],
     health_labels: ['label1', 'label2'],
     diet_labels: ['label3', 'label4'],
     calories: 500,
@@ -82,7 +82,7 @@ const stubInitialState2 = {
     ingredients: {
       'cabbage': 100
     },
-    ingredient_lines: ['first', 'second' ,'third'],
+    ingredient_lines: ['first', 'second', 'third'],
     health_labels: ['label1', 'label2'],
     diet_labels: ['label3', 'label4'],
     calories: 1,
@@ -101,7 +101,7 @@ const stubInitialState2 = {
     ingredients: {
       'cabbage': 100
     },
-    ingredient_lines: ['first', 'second' ,'third'],
+    ingredient_lines: ['first', 'second', 'third'],
     health_labels: ['label1', 'label2'],
     diet_labels: ['label3', 'label4'],
     calories: 1,
@@ -135,17 +135,17 @@ const mockStore = getMockStore(stubInitialState);
 const mockStore2 = getMockStore(stubInitialState2);
 
 describe('<RecipeDetail />', () => {
-  let recipeDetail, recipeDetail2, spySelectRecipeById, spyGetReviewList, spyAddRecipeRatingById;
+  let recipeDetail, recipeDetail2, spySelectRecipeById, spyGetReviewList;
   const history = createBrowserHistory();
   let spyPush = jest.spyOn(history, 'push')
-    .mockImplementation(() => {});
+    .mockImplementation(() => { });
   beforeEach(() => {
     recipeDetail = (
       <Provider store={mockStore}>
         <Router history={history}>
           <Switch>
-            <Route path='/' exact component={RecipeDetail} 
-              match={{params: {recipe_id: 1}}} />
+            <Route path='/' exact component={RecipeDetail}
+              match={{ params: { recipe_id: 1 } }} />
           </Switch>
         </Router>
       </Provider>
@@ -154,42 +154,48 @@ describe('<RecipeDetail />', () => {
       <Provider store={mockStore2}>
         <Router history={history}>
           <Switch>
-            <Route path='/' exact component={RecipeDetail} 
-              match={{params: {recipe_id: 1}}} />
+            <Route path='/' exact component={RecipeDetail}
+              match={{ params: { recipe_id: 1 } }} />
           </Switch>
         </Router>
       </Provider>
     );
     spySelectRecipeById = jest.spyOn(recipeActionCreators, 'selectRecipeById')
-      .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
-        });
-      };});
+      .mockImplementation(() => {
+        return () => {
+          return new Promise((resolve) => {
+            const result = {
+              status: 200,
+              data: {}
+            };
+            resolve(result);
+          });
+        };
+      });
     spyGetReviewList = jest.spyOn(reviewActionCreators, 'getReviewList')
-      .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
-        });
-      };});
-    spyAddRecipeRatingById = jest.spyOn(recipeActionCreators, 'addRecipeRatingById')
-      .mockImplementation(() => {return () => {
-        return new Promise((resolve) => {
-          const result = {
-            status: 200,
-            data: {}
-          };
-          resolve(result);
-        });
-      };});
+      .mockImplementation(() => {
+        return () => {
+          return new Promise((resolve) => {
+            const result = {
+              status: 200,
+              data: {}
+            };
+            resolve(result);
+          });
+        };
+      });
+    jest.spyOn(recipeActionCreators, 'addRecipeRatingById')
+      .mockImplementation(() => {
+        return () => {
+          return new Promise((resolve) => {
+            const result = {
+              status: 200,
+              data: {}
+            };
+            resolve(result);
+          });
+        };
+      });
   });
 
   it('should render recipe detail', async () => {
@@ -215,7 +221,7 @@ describe('<RecipeDetail />', () => {
     expect(spySelectRecipeById).toHaveBeenCalledTimes(1);
     expect(spyGetReviewList).toHaveBeenCalledTimes(1);
   });
-  
+
   it('should press write button', async () => {
     let component;
     await act(async () => {
@@ -234,12 +240,12 @@ describe('<RecipeDetail />', () => {
       component = mount(recipeDetail);
     });
     component.update();
-    const event = {rating: 1}; 
+    const event = { rating: 1 };
     const wrapper = component.find('RatingIcon').last();
     wrapper.simulate('click', event);
 
     await act(async () => {
       expect(wrapper.length).toBe(1);
-    })
+    });
   });
 });

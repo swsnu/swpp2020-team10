@@ -156,7 +156,6 @@ describe('<FoodCreate />', () => {
     await act(async () => {
       component = mount(foodCreate);
     });
-    const name = 'TEST_NAME';
     let wrapper = component.find('#nameInput').at(0).find('input');
     await act(async () => {
       wrapper.simulate('blur');

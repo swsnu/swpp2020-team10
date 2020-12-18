@@ -35,7 +35,7 @@ matrix:
       script:
         - cd frontend
         - ./node_modules/.bin/eslint src/
-        - yarn test --coverage --watchAll=false --passWithNoTests
+        - yarn test --coverage --watchAll=false --passWithNoTests --silent
         - cd ..
         - cd backend
         - pylint **/*.py --load-plugins pylint_django
