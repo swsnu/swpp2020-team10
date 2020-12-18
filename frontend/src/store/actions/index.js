@@ -3,20 +3,17 @@ export {
   checkUserStatus,
   signout,
   notification,
+  getRecommendation,
+  setTabIndex,
 } from './user';
 
 export {
   getFridgeItemList,
   getFridgeItem,
-  getFridgeItem_,
   postFridgeItem,
-  postFridgeItem_,
   editFridgeItem,
-  editFridgeItem_,
   deleteFridgeItem,
-  deleteFridgeItem_,
   clearFridgeItems,
-  clearFridgeItems_,
 } from './fridgeItem';
 
 export {

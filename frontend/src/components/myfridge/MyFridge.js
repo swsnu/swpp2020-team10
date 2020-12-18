@@ -1,120 +1,125 @@
 import React, { useState, useEffect } from 'react';
-import { /*useDispatch,*/ useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+import { Button, Card, Container, Grid, Header, Icon, Loader, Segment } from 'semantic-ui-react';
+import { ImageWrapper } from '../../misc';
+
 import * as actionCreators from '../../store/actions/index';
-import FoodCreate from './FoodCreate';
-import FoodDetail from './FoodDetail';
+import { FoodCreate } from './FoodCreate';
+import { FoodDetail } from './FoodDetail';
 
-import { Button, Card, Grid, Image, List, Reveal } from 'semantic-ui-react';
-import './MyFridge.css';
 
-export default function MyFridge() {
-  //const dispatch = useDispatch();
+export const MyFridge = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
-  const params = useParams();
 
-  const userId = params.user_id;
-  useEffect(() => {
-    actionCreators.getFridgeItemList(userId);
-  });
-
-  // redux store state
-  const userName = useSelector(state => state.user.name);
+  const user = useSelector(state => state.user);
   const fridgeItems = useSelector(state => state.fridgeItem.fridgeItems);
-  
-  const title = `${userName}'s Fridge`;
-  
+
   const [isCreate, setIsCreate] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [popup, setPopup] = useState(null);
+  const [hasFridgeItems, setHasFridgeItems] = useState(false);
 
-  // callback function to come back from FoodCreate page
-  const onFoodCreateEnd = () => {
-    setIsCreate(false);
-  };
+  // number of columns per row
+  const nColPerRow = 3;
 
-  // callback function to come back from FoodDetail page
-  const onFoodDetailEnd = () => {
-    setIsEdit(false);
-  };
-
-  // go to RecipeSearch page
-  const onClickSearchRecipeButton = () => {
-    history.push(`/search`);
-  };
-
-  // open FoodCreate page
-  const onClickAddFoodButton = () => {
-    setPopup(<FoodCreate onEnd={onFoodCreateEnd}></FoodCreate>);
-    setIsCreate(true);
-  };
+  // fetch fridge items on initial mount
+  useEffect(() => {
+    dispatch(actionCreators.getFridgeItemList(user.id))
+      .then(() => setHasFridgeItems(true));
+  }, []);
 
   // clear fridge items
   const onClickClearFridgeButton = () => {
-    //dispatch(actionCreators.clearFridgeItems(userId));
-    ////dispatch(actionCreators.clearFridgeItems_());
-  };
-  
-  // open FoodDetail page
-  const onClickFridgeItemButton = (/*fridgeItem*/) => {
-    /*dispatch(actionCreators.getFridgeItem(fridgeItem.id))
-      .then(() => {
-        setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
-        setIsEdit(true);
-      });*/
-    //
-    //dispatch(actionCreators.getFridgeItem_(fridgeItem));
-    setPopup(<FoodDetail onEnd={onFoodDetailEnd}></FoodDetail>);
-    setIsEdit(true);
+    dispatch(actionCreators.clearFridgeItems(user.id));
   };
 
-  const fridgeItemButtons = fridgeItems.map((fridgeItem) => {
-    return (
-      <Grid.Column key={fridgeItem.id}>
-        <Card onClick={() => onClickFridgeItemButton()}>
-          <Reveal animated='move up'>
-            <Reveal.Content visible>
-              <Image src='https://source.unsplash.com/512x512/?soup' alt='Fridge Item' rounded></Image>
-            </Reveal.Content>
-            <Reveal.Content hidden>
-              <List verticalAlign='middle' size='huge'>
-                <List.Item>{fridgeItem.name}</List.Item>
-                <List.Item>{fridgeItem.quantity + fridgeItem.unit}</List.Item>
-                <List.Item>{fridgeItem.expiryDate}</List.Item>
-              </List>
-            </Reveal.Content>
-          </Reveal>
-        </Card>
-      </Grid.Column>
-    );
-  });
-  
-  if (isCreate || isEdit) {
-    return popup;
-  }
-  else {
-    return (
-      <Grid id='MyFridge' divided='vertically'>
-        <Grid.Row>
-          <Grid.Column>
-            <h1>{title}</h1>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row id='fridge' columns={4}>
-          {fridgeItemButtons}
-        </Grid.Row>
-        <Grid.Row id='buttons'>
-          <Button id='searchRecipeButton' onClick={() => onClickSearchRecipeButton()}>
-            Search Recipe
-          </Button>
-          <Button id='addFoodButton' onClick={() => onClickAddFoodButton()}>
-            Add
-          </Button>
-          <Button id='clearFridgeButton' onClick={() => onClickClearFridgeButton()}>
-            Clear
-          </Button>
-        </Grid.Row>
-      </Grid>
+  // open food detail modal
+  const onClickFridgeItemButton = (itemId) => () => {
+    dispatch(actionCreators.getFridgeItem(itemId))
+      .then(() => setIsEdit(true));
+  };
+
+  const fridgeItemColumns = fridgeItems.map(item => (
+    <Grid.Column
+      key={item.id}
+      verticalAlign='bottom'
+    >
+      <Card
+        onClick={onClickFridgeItemButton(item.id)}
+        raised
+      >
+        <ImageWrapper src={item.image} />
+        <Card.Content>
+          <Card.Header content={item.name} />
+          <Card.Meta content={item.quantity + ' ' + item.unit} />
+          <Card.Meta content={`Until ${item.expiry_date}`} />
+        </Card.Content>
+      </Card>
+    </Grid.Column>
+  ));
+
+  const fridgeItemRows = [];
+
+  for (let i = 0; i < Math.floor((fridgeItemColumns.length + nColPerRow - 1) / nColPerRow); i++) {
+    fridgeItemRows.push(
+      <Grid.Row key={i} columns={nColPerRow}>
+        {fridgeItemColumns.slice(i * nColPerRow, (i + 1) * nColPerRow)}
+      </Grid.Row>
     );
   }
-}
+
+  return (
+    <Container id='MyFridge' text>
+      <Segment.Group raised>
+        <Segment color='blue' inverted tertiary>
+          <Header
+            as='h1'
+            content={`${user.name}'s Fridge`}
+            textAlign='center'
+          />
+        </Segment>
+        <Segment style={{ minHeight: 350 }}>
+          <Grid padded verticalAlign='bottom'>
+            {
+              hasFridgeItems
+                ? (fridgeItemRows.length ? fridgeItemRows : 'Your fridge is empty.')
+                : <Loader active />
+            }
+          </Grid>
+        </Segment>
+        <Segment textAlign='right' color='blue' inverted tertiary>
+          <Button
+            id='addFoodButton'
+            onClick={() => setIsCreate(true)}
+            content='Add'
+            primary
+          />
+          <Button
+            id='clearFridgeButton'
+            onClick={onClickClearFridgeButton}
+            content='Clear'
+            secondary
+          />
+        </Segment>
+      </Segment.Group>
+      <div style={{ textAlign: 'right' }}>
+        <a id='backLink' onClick={() => history.goBack()} style={{ cursor: 'pointer' }}>
+          <Icon name='triangle left' />Go back
+        </a>
+      </div>
+      {
+        isCreate && // unmount on close
+        <FoodCreate open={isCreate} setOpen={setIsCreate} />
+      }
+      {
+        isEdit && // unmount on close
+        <FoodDetail open={isEdit} setOpen={setIsEdit} />
+      }
+    </Container >
+  );
+};
+
+
+export default MyFridge;

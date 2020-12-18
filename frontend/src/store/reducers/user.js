@@ -2,10 +2,12 @@ import * as actionTypes from '../actions/actionTypes';
 
 
 const initialState = {
-  isAuthorized: false,
+  isAuthorized: null,
   id: null,
   name: null,
   noti: null,
+  recommendation: null,
+  tabIndex: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -23,13 +25,22 @@ const reducer = (state = initialState, action) => {
         isAuthorized: false,
         id: null,
         name: null,
+        noti: null,
       };
     case actionTypes.GET_NOTIFICATION:
       return {
         ...state,
-        id : action.id,
-        name : action.name,
-        noti : action.noti,
+        noti: action.noti,
+      };
+    case actionTypes.GET_RECOMMENDATION:
+      return {
+        ...state,
+        recommendation: action.recommendation,
+      };
+    case actionTypes.SET_TAB_INDEX:
+      return {
+        ...state,
+        tabIndex: action.index,
       };
     default:
       return state;

@@ -1,23 +1,26 @@
-import { mount } from 'enzyme';
-import React from 'react';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
 import axios from 'axios';
+import React from 'react';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { act } from 'react-dom/test-utils';
 
-import { SignUpPage } from './SignUpPage';
+import { SignUpPage } from './SignUpPage.js';
+import { getMockStore } from '../../test-utils/mocks';
 
 
-const mockStore = createStore(state => state);
-
-const mockHistoryPush = jest.fn();
+jest.mock('axios');
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
-    push: mockHistoryPush,
+    replace: jest.fn(),
+    goBack: jest.fn(),
   }),
 }));
 
+
+const mockStore = getMockStore({});
 
 describe('<SignUpPage />', () => {
   let component;
@@ -25,8 +28,10 @@ describe('<SignUpPage />', () => {
   beforeEach(() => {
     component = (
       <Provider store={mockStore}>
-        <SignUpPage />
-      </Provider>
+        <Router>
+          <SignUpPage />
+        </Router>
+      </Provider >
     );
   });
 
@@ -38,68 +43,146 @@ describe('<SignUpPage />', () => {
     expect(mount(component).length).toBe(1);
   });
 
-  it('sets username on change', () => {
+  it('sets username on change', async () => {
     const value = 'username1';
-    const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value } });
-    expect(wrapper.find('#usernameInput').prop('value')).toBe(value);
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: 'trash' } });
+    });
+    wrapper.update();
   });
 
-  it('sets password on change', () => {
+  it('sets password on change', async () => {
     const value = 'password1';
-    const wrapper = mount(component);
-    wrapper.find('#passwordInput').simulate('change', { target: { value } });
-    expect(wrapper.find('#passwordInput').prop('value')).toBe(value);
+
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#passwordInput').first().prop('onChange')({ target: { value } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#passwordInput').first().prop('onChange')({ target: { value: 'garbage' } });
+    });
+    wrapper.update();
   });
 
-  it('sets email on change', () => {
-    const value = 'email1';
-    const wrapper = mount(component);
-    wrapper.find('#emailInput').simulate('change', { target: { value } });
-    expect(wrapper.find('#emailInput').prop('value')).toBe(value);
-  });
+  it('rejects invalid username', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
 
-  it('rejects invalid username', () => {
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: 'user' } });
+    });
+    wrapper.update();
 
-    const value = 'user name';
-    const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value } });
-    wrapper.find('#signupConfirmButton').first().simulate('click');
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: '' } });
+    });
+    wrapper.update();
   });
 
   it('rejects invalid password', () => {
-
-    const username = 'username1';
-    const password = 'pass word';
     const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value: username } });
-    wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
-    wrapper.find('#signupConfirmButton').first().simulate('click');
+    wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: 'pass' } });
+  });
+
+  it('confirm password', async () => {
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: 'pass' } });
+      wrapper.find('#confirmPasswordInput').first().prop('onChange')({ target: { value: 'pa' } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#confirmPasswordInput').first().prop('onChange')({ target: { value: 'pass' } });
+    });
+    wrapper.update();
   });
 
   it('accepts valid sign up request', async () => {
-    jest.spyOn(axios, 'post').mockImplementation(() => Promise.resolve());
+    jest.spyOn(axios, 'post')
+      .mockImplementation(() => {
+        return new Promise((resolve) => {
+          const result= {
+            status: 200, 
+            data: {user_id: 1, username: 'username1'}
+          };
+          resolve(result);
+        }
+        );}
+      );
 
     const username = 'username1';
     const password = 'password1';
-    const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value: username } });
-    wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
-    wrapper.find('#signupConfirmButton').first().simulate('click');
-    await Promise.resolve();
-    expect(mockHistoryPush).toBeCalledWith('/');
+
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: username } });
+      wrapper.find('#passwordInput').first().prop('onChange')({ target: { value: password } });
+      wrapper.find('#confirmPasswordInput').first().prop('onChange')({ target: { value: password } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#signupConfirmButton').first().simulate('click');
+    });
+    wrapper.update();
   });
 
   it('rejects username that already exists', async () => {
-    jest.spyOn(axios, 'post').mockImplementation(() => Promise.reject({ response: { status: 409 } }));
+    jest.spyOn(axios, 'post')
+      .mockImplementation(() => Promise.reject({ response: { status: 409 } }));
 
     const username = 'username1';
     const password = 'password1';
-    const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value: username } });
-    wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
-    wrapper.find('#signupConfirmButton').first().simulate('click');
-    await Promise.resolve();
+
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: username } });
+      wrapper.find('#passwordInput').first().prop('onChange')({ target: { value: password } });
+      wrapper.find('#confirmPasswordInput').first().prop('onChange')({ target: { value: password } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#signupConfirmButton').first().simulate('click');
+    });
+    wrapper.update();
   });
 
   it('rejects sign up request when error occurs', async () => {
@@ -107,11 +190,29 @@ describe('<SignUpPage />', () => {
 
     const username = 'username1';
     const password = 'password1';
+
+    let wrapper;
+    await act(async () => {
+      wrapper = mount(component);
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#usernameInput').first().prop('onChange')({ target: { value: username } });
+      wrapper.find('#passwordInput').first().prop('onChange')({ target: { value: password } });
+      wrapper.find('#confirmPasswordInput').first().prop('onChange')({ target: { value: password } });
+    });
+    wrapper.update();
+
+    await act(async () => {
+      wrapper.find('#signupConfirmButton').first().simulate('click');
+    });
+    wrapper.update();
+  });
+
+  it('sign in button', () => {
     const wrapper = mount(component);
-    wrapper.find('#usernameInput').simulate('change', { target: { value: username } });
-    wrapper.find('#passwordInput').simulate('change', { target: { value: password } });
-    wrapper.find('#signupConfirmButton').first().simulate('click');
-    await Promise.resolve();
+    wrapper.find('#signinButton').first().prop('onClick')();
   });
 
 });

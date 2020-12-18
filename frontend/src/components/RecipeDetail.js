@@ -1,236 +1,215 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { Rating, Image, Container, Header, Grid, Button, Segment } from 'semantic-ui-react';
+
+import { Rating, Container, Header, Button, Item, Table, Tab, Card, Icon, List, Loader, Popup } from 'semantic-ui-react';
+import { ImageWrapper } from '../misc';
+
 import * as actionCreators from '../store/actions/index';
 
-function RecipeDetail(props) {
 
-  const history = useHistory();
+export const RecipeDetail = ({ match }) => {
+  const recipeId = match.params.recipe_id;
+
   const dispatch = useDispatch();
-  const recipeId = props.match.params.recipe_id;
+
+  const storedRecipe = useSelector(state => state.recipe.selectedRecipe);
+  const storedReviews = useSelector(state => state.review.reviews);
+  const initialTabIndex = useSelector(state => state.user.tabIndex);
+
 
   const [hasRecipe, setHasRecipe] = useState(false);
   const [hasReviews, setHasReviews] = useState(false);
-  const [hasRated, setRated] = useState(false);
-  // check
-  if(!hasRecipe) {
-    dispatch(actionCreators.selectRecipeById(recipeId));
-    setHasRecipe(true);
+  const [tabIndex, setTabIndex] = useState(initialTabIndex);
+
+  const [enableRating, setEnableRating] = useState(true);
+
+  // fetch recipe and reviews on initial mount
+  useEffect(() => {
+    dispatch(actionCreators.selectRecipeById(recipeId))
+      .then(() => setHasRecipe(true));
+    dispatch(actionCreators.getReviewList(recipeId))
+      .then(() => setHasReviews(true));
+  }, []);
+
+  if (!hasRecipe) {
+    return null;
   }
-  if(!hasReviews){
-    dispatch(actionCreators.getReviewList(recipeId));
-    setHasReviews(true);
-  }
 
-  let storedRecipe = /*{
-    'id': 1,
-    'food_id': 3,
-    'title': 'Kimchi',
-    'content': 'K-food Kimchi recipe blahblah',
-    'rating': 3.44,
-    'count_ratings': 1,
-    'ingredients': {
-      'cabbage': '100'
+  const onRate = (e, { rating }) => {
+    setEnableRating(false);
+    dispatch(actionCreators.addRecipeRatingById(recipeId, rating))
+      .then(() => setEnableRating(true));
+  };
+
+  const ingredients = (
+    <Table striped>
+      <Table.Body>
+        {storedRecipe.ingredient_lines.map((ingredient_line, key) => {
+          return (
+            <Table.Row key={key}>
+              <Table.Cell content={ingredient_line} />
+            </Table.Row>
+          );
+        })}
+      </Table.Body>
+    </Table>
+  );
+
+  const panes = [
+    {
+      menuItem: 'Ingredients',
+      pane: (
+        <Tab.Pane key={0}>
+          {ingredients}
+        </Tab.Pane>
+      )
     },
-    'cooking_time': 120,
-    'tag': {
-      'difficulty': 'hard'
+    {
+      menuItem: 'Directions',
+      pane: (
+        <Tab.Pane key={1}>
+          <List ordered relaxed>
+            {storedRecipe.content.map((line, key) => {
+              return (
+                <List.Item content={line} key={key} />
+              );
+            })}
+          </List>
+        </Tab.Pane>
+      )
     },
-    'serving': 1
-  };//*/useSelector(state => state.recipe.selectedRecipe);
-
-  const storedReviews = /*[{
-    'id': 1,
-    'recipe_id': 1,
-    'user_id': 1,
-    'title': 'Kimchi review!!!',
-    'content': 'Kimchi is good modify content',
-    'likes': 5,
-    'reports': 3
-  },
-  {
-    'id': 2,
-    'recipe_id': 1,
-    'user_id': 1,
-    'title': 'Review 2',
-    'content': 'Review 22',
-    'likes': 3,
-    'reports': 0
-  }];//*/useSelector(state => state.review.reviews);
-
-  const userId = useSelector(state => state.user.id);
-
-  // move to 'My Fridge' page
-  const onClickMyFridgeButton = () => {
-    history.push('/fridge/' + userId);
-  };
-
-  /*// move to 'Settings' page
-  const onClickSettingsButton = () => {
-    history.push('/settings/' + this.props.user.id);
-  };
-
-  // logout and go to index page
-  const onClickSignOutButton = () => {};
-  */
-  // move to 'Review Editor' page
-  const onClickWriteButton = () => {
-    history.push('/review/' + recipeId + '/create');
-  };
-
-  // should be commented out until testing issues are solved
-  const onChangeRatingInput = () => {
-    //const ratedRecipe = { ...storedRecipe, rating: rating };
-    setRated(true);
-    //dispatch(actionCreators.addRecipeRatingById(recipeId, ratedRecipe));
-  };
-
-  let title = '', rating = 0, serving = 0, cooking_time = 0, content = 0, ingredients = null;
-  //if(storedRecipe !== null){
-  title = storedRecipe.title;
-  rating = storedRecipe.rating;
-  serving = storedRecipe.serving;
-  cooking_time = storedRecipe.cooking_time;
-  content = storedRecipe.content;
-  ingredients = storedRecipe.ingredients;
-  //}
-
-
-  let ingredient = null;
-  //if(ingredients !== null){
-  ingredient = Object.keys(ingredients).map((key) => {
-    return (
-      <p key={key}>
-        {key}: {ingredients[key]}
-      </p>
-    );
-  });
-  //}
-
-
-  /*<div className='row'>
-        <Button id='settingsButton' onClick={onClickSettingsButton()}>
-          To Settings
-        </Button>
-        <Button id='signOutButton' onClick={onClickSignOutButton()}>
-          Sign Out
-        </Button>
-      </div>
-  */ 
+    {
+      menuItem: 'Reviews',
+      pane: (
+        <Tab.Pane key={2}>
+          {
+            hasReviews
+              ? <ReviewTab reviews={storedReviews} recipeId={recipeId} />
+              : <Loader active inline='centered' />
+          }
+        </Tab.Pane>
+      )
+    },
+  ];
 
   return (
-    <div className='RecipeDetail'>
-      <Grid centered>
-        <Grid.Row>
-          <Image size='medium' src='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Various_kimchi.jpg/330px-Various_kimchi.jpg' centered/>
-        </Grid.Row>
-        <Grid.Row>
-          <Container textalign='center'>
-            <Header textalign='center'>{title}</Header>
-            <Rating id='ratingInput' icon='star' rating={1} maxRating={5} onRate={onChangeRatingInput} disabled={hasRated} />
-            <p>Rating: {rating}</p>
-            <Segment.Group horizontal  attached='top'>
-              <Segment>
-                <p>Ingredients</p>
-              </Segment>
-              <Segment>
-                {ingredient}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal>
-              <Segment>
-                <p>Serving</p>
-              </Segment> 
-              <Segment>
-                {serving}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal>
-              <Segment>
-                <p>Cooking time</p>
-              </Segment> 
-              <Segment>
-                {cooking_time}
-              </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal attached='bottom'>
-              <Segment>
-                {content}
-              </Segment>
-            </Segment.Group>
-          </Container>
-        </Grid.Row>
-        <Grid.Row>
-          <Button id='myFridgeButton' align='center' onClick={() => onClickMyFridgeButton()}>
-            My Fridge
-          </Button>
-        </Grid.Row>
-        <Grid.Row>
-          <h2 textalign='justified'> Reviews </h2>
-        </Grid.Row>
-      </Grid>
-      <ReviewPart storedReviews={storedReviews}/>
-      <Grid centered>
-        <Grid.Row>
-          <Button id='writeButton' onClick={() => onClickWriteButton()}>
-            Write Review
-          </Button>
-        </Grid.Row>
-      </Grid>
-    </div>
+    <Container text id='RecipeDetail'>
+      <Item.Group>
+        <Item>
+          <Item.Image size='medium'>
+            <ImageWrapper src={storedRecipe.image} />
+          </Item.Image>
+          <Item.Content>
+            <Item.Header>
+              <Header as='h1' content={storedRecipe.title} />
+            </Item.Header>
+            <Item.Meta>
+              ({storedRecipe.rating.toFixed(1)})&ensp;
+              <Rating
+                id='ratingInput'
+                rating={storedRecipe.rating}
+                maxRating={5}
+                onRate={onRate}
+                disabled={!enableRating}
+                icon='star'
+                size='small'
+              />
+            </Item.Meta>
+            <Item.Description>
+              <b>{storedRecipe.serving}</b>&ensp;serving{storedRecipe.serving == 1 ? '' : 's'}
+              <br />
+              <b>{storedRecipe.cooking_time}</b>&ensp;minute{storedRecipe.cooking_time == 1 ? '' : 's'}
+              <br />
+              <b>{storedRecipe.calories.toFixed(0)}</b>&ensp;calories / serving
+            </Item.Description>
+            <Item.Extra>
+              {storedRecipe.diet_labels.map((label, key) => <span key={key}>{label}</span>)}
+              <br />
+              {storedRecipe.health_labels.map((label, key) => <span key={key}>{label}</span>)}
+            </Item.Extra>
+          </Item.Content>
+        </Item>
+      </Item.Group>
+      <Tab
+        panes={panes}
+        activeIndex={tabIndex}
+        onTabChange={(e, { activeIndex }) => {
+          setTabIndex(activeIndex);
+          dispatch(actionCreators.setTabIndex(activeIndex));
+        }}
+        renderActiveOnly={false}
+      />
+    </Container>
   );
-}
-
-// return information about the recipe. Image should be inserted in future implementation.
-// Rating should be inserted after confirming the use of external libraries.
-
-
-// return list of reviews of this recipe w/ headerlines
-function ReviewPart(props) {
-  const reviewList = props.storedReviews.map((review) => {
-    return (
-      <div className='review' key={review.id}>
-        <Grid centered>
-          <Grid.Row>
-            <Segment>
-              <Grid.Column width={4}>
-                <NavLink id='review-link' to={'/review/' + review.id}>
-                  {review.title}
-                </NavLink>
-              </Grid.Column>
-              <Grid.Column width={3}>
-              Author: {review.author_name} | likes: {review.likes} | dislikes: {review.dislikes} | reports: {review.reports}
-              </Grid.Column>
-            </Segment>
-          </Grid.Row>
-        </Grid>
-      </div>
-    );
-  });
-  return reviewList;
-}
-
-/*const mapStateToProps = (state) => {
-  return {
-    storedRecipe: state.recipe.selectedRecipe,
-    storedReviews: state.review.reviews,
-  };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onGetRecipe: (recipeId) => 
-      dispatch(actionCreators.selectRecipeById(recipeId)),
-    onGetReviews: (recipeId) => 
-      dispatch(actionCreators.getReviewList(recipeId)),
-    onRateRecipe: (recipeId, recipe) => 
-      dispatch(actionCreators.addRecipeRatingById(recipeId, recipe)),
-    onDeleteReview: (reviewId) => 
-      dispatch(actionCreators.deleteReview(reviewId)),
-  };
-};*/
 
-//export default connect(mapStateToProps, mapDispatchToProps)(RecipeDetail);
+const ReviewTab = ({ reviews, recipeId }) => {
+  const history = useHistory();
+
+  const userIsAuthorized = useSelector(state => state.user.isAuthorized);
+
+  const reviewCards = (
+    <Card.Group>
+      {reviews.map(review => (
+        <Card key={review.id} fluid>
+          <Card.Content>
+            <Card.Header>
+              <Link id='review-link' to={`/review/${review.id}`}>
+                {review.title}
+              </Link>
+            </Card.Header>
+            <Card.Meta>
+              By {review.author_name}
+            </Card.Meta>
+            <Card.Description>
+              {review.content.substr(0, 100)}
+              {review.content.length > 100 ? '...' : ''}
+            </Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+            <Icon name='thumbs up' /> {review.likes}&emsp;
+            <Icon name='thumbs down' /> {review.dislikes}&emsp;
+            <Icon name='warning circle' /> {review.reports}
+          </Card.Content>
+        </Card>
+      ))}
+    </Card.Group>
+  );
+
+  return (
+    <div className='review'>
+      <div>
+        <Popup
+          content='Please signin to write a review.'
+          disabled={userIsAuthorized}
+          trigger={
+            <Button
+              id='writeButton'
+              content='Write a review'
+              onClick={() => {
+                if (userIsAuthorized) {
+                  history.push(`/recipe/${recipeId}/create-review`);
+                } else {
+                  history.push('/signin');
+                }
+              }}
+              basic
+              color='blue'
+            />
+          }
+        />
+      </div>
+      <br />
+      {
+        reviews.length
+          ? reviewCards
+          : 'No reviews yet.'
+      }
+    </div>
+  );
+};
+
 export default RecipeDetail;

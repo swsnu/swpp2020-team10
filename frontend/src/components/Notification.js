@@ -1,62 +1,82 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {Message} from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+
+import { Loader, Message } from 'semantic-ui-react';
+
 import * as actionCreators from '../store/actions/index';
 
-function commentNotification(cm) {
-  let reviewTitleConcise = cm['review_title'];
-  if (cm['review_title'].length > 20){
-    reviewTitleConcise = cm['review_title'].substr(0, 17) + '...';
-  }
-  let commentAuthor = cm['comment_author'];
-  if (cm['comment_author'].length > 12){
-    commentAuthor = cm['comment_author'].substr(0, 9) + '...';
-  }
-  return (
+
+const commentNotification = (comment, key) => (
+  <Link to={`/review/${comment.review_id}`} key={key}>
     <Message color='blue'>
-      <b>{commentAuthor}</b> has commented to your review
-      <a href={`/review/${cm['review_id']}`}>
-        <b>&#34;{reviewTitleConcise}&#34;</b>
-      </a> on <b>{cm['review_recipe']}</b>
+      <b>{comment.comment_author}</b> has commented to your review&nbsp;
+      <b>&ldquo;{comment.review_title}&rdquo;</b> on <b>{comment.review_recipe}</b>.
     </Message>
-  );
-}
+  </Link>
+);
 
-function itemNotification(item) {
-  return (
-    <Message color='red'>
-      Your <b>{item['name']}({item['quantity']})</b> expires in <b>{item['left_days']} days</b>
-    </Message>
-  );
-}
 
-export const Notification = (props) => {
-  if(props.userId === null || props.userId === undefined) {
-    return null;
-  }
-  let userId = parseInt(props.userId);
+const itemNotification = (item, key) => (
+  <Message color='red' key={key}>
+    {
+      item.left_days >= 0
+        ? <span>Your <b>{item.name}</b> expires in <b>{item.left_days}</b> days.</span>
+        : <span>Your <b>{item.name}</b> has expired</span>
+    }
+  </Message>
+);
+
+
+export const Notification = () => {
   const dispatch = useDispatch();
-  const [hasnoti, sethasnoti] = useState(false);
-  const notiJSON = useSelector(state => state.user.noti);
 
-  if (!hasnoti)
-  {
-    dispatch(actionCreators.notification(userId))
-      .then(() => {sethasnoti(true);});
-  }
-  if (notiJSON !== null)
-  {
-    let nearExpiredItems, recentComments;
-    nearExpiredItems = notiJSON['near_expired_items'];
-    recentComments = notiJSON['recent_comments'];
-    let notiString = [];
-    for (let item of nearExpiredItems) {
-      notiString.push(itemNotification(item));
+  const id = useSelector(state => state.user.id);
+  const isAuthorized = useSelector(state => state.user.isAuthorized);
+  const name = useSelector(state => state.user.name);
+  const noti = useSelector(state => state.user.noti);
+
+  const [hasNoti, setHasNoti] = useState(false);
+
+  const defaultMessage = 'You have no new notifications.';
+
+  // fetch notifications on mount
+  useEffect(() => {
+    if (isAuthorized) {
+      dispatch(actionCreators.notification(id))
+        .then(() => setHasNoti(true));
+    } else {
+      setHasNoti(true);
     }
-    for (let comment of recentComments) {
-      notiString.push(commentNotification(comment));
-    }
-    return notiString;
+  }, []);
+
+  if (!hasNoti) {
+    return (
+      <Loader active inline='centered' />
+    );
   }
-  return null;
+
+  if (!noti) {
+    return defaultMessage;
+  }
+
+  const itemNotifications =
+    noti.near_expired_items.map((item, key) =>
+      itemNotification(item, key)
+    );
+
+  const commentNotifications =
+    noti.recent_comments
+      .filter(comment => comment.comment_author !== name)
+      .map((comment, key) =>
+        commentNotification(comment, key + itemNotification.length)
+      );
+
+  const notifications = itemNotifications.concat(commentNotifications);
+
+  if (notifications.length) {
+    return notifications;
+  } else {
+    return defaultMessage;
+  }
 };

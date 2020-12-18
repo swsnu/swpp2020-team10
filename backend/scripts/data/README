@@ -1,0 +1,5 @@
+how to use Scripts:
+  1. Install django-extensions (pip install django-extensions)
+  2. Append 'django_extensions' in INSTALLED_APPS of settings.py (already done)
+  3. At swpp2020-team10/backend, type the following:
+    python manage.py runscript insert_items

@@ -9,20 +9,29 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 const initialState = {
   user: {
-
+    isAuthorized: true,
+    recommendation: {
+      title: 'recipe',
+      content: [
+        '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+        '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+      ],
+      rating: 2,
+      serving: 2,
+      cooking_time: 2,
+      calories: 2,
+    }
   },
-  recipe: {
-    recipes: [
-      {
-        id: 1,
-        title: 'title 1',
-        rating: 3,
-        serving: 1,
-        cooking_time: 30,
-        content: 'content 1',
-      }
-    ],
-  },
+  recipes: [
+    {
+      id: 1,
+      title: 'title 1',
+      rating: 3,
+      serving: 1,
+      cooking_time: 30,
+      content: ['content 1', 'content 2'],
+    }
+  ],
   fridgeItem: {
     fridgeItems: [
       {
@@ -33,7 +42,38 @@ const initialState = {
   },
 };
 
+const unAuthorizedState = {
+  user: {
+    isAuthorized: false,
+    recommendation: {
+      title: 'recipe',
+      content: [
+        '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+        '0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+      ],
+      rating: 2,
+      serving: 2,
+      cooking_time: 2,
+      calories: 2,
+    }
+  },
+  recipes: [
+    {
+      id: 1,
+      title: 'title 1',
+      rating: 3,
+      serving: 1,
+      cooking_time: 30,
+      content: ['content 1', 'content 2'],
+    }
+  ],
+  fridgeItem: {
+    fridgeItems: []
+  },
+};
+
 const mockStore = createStore((state = initialState) => state);
+const mockStore2 = createStore((state = unAuthorizedState) => state);
 
 const mockDispatch = jest.fn();
 
@@ -52,18 +92,27 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../store/actions/index', () => ({
-  fetchAllRecipes: jest.fn(),
+  getFridgeItemList: jest.fn(),
+  getRecommendation: jest.fn(),
+  notification: jest.fn(),
 }));
 
 
 describe('<FrontPage />', () => {
-  let component;
+  let component, component2;
 
   beforeEach(() => {
     mockDispatch.mockImplementation(() => ({ then: resolve => resolve() }));
 
     component = (
       <Provider store={mockStore}>
+        <Router>
+          <FrontPage />
+        </Router>
+      </Provider>
+    );
+    component2 = (
+      <Provider store={mockStore2}>
         <Router>
           <FrontPage />
         </Router>
@@ -77,6 +126,10 @@ describe('<FrontPage />', () => {
 
   it('renders without crashing', () => {
     expect(mount(component).length).toBe(1);
+  });
+
+  it('renders on unauthorized user', () => {
+    expect(mount(component2).length).toBe(1);
   });
 
   it('routes to recipe search page', () => {

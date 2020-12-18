@@ -1,30 +1,31 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Checkbox, Container, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
+
+import { Button, Checkbox, Container, Dimmer, Dropdown, Form, Grid, Icon, Item, Loader, Rating, Segment, Visibility } from 'semantic-ui-react';
+import { ImageWrapper } from '../misc';
 
 
 export const RecipeSearchPage = ({ match }) => {
   const userIsAuthorized = useSelector(state => state.user.isAuthorized);
 
+  const [hasSettings, setHasSettings] = useState(false);
+
   const [searchInput, setSearchInput] = useState(match.params.q);
-  const [showFilterTab, setShowFilterTab] = useState(false);
-  const [sortBy, setSortBy] = useState('');
-  const [hasSetting, setHasSetting] = useState(false);
 
   // search result
   const [recipes, setRecipes] = useState([]);
-  const [hasRecipes, setHasRecipes] = useState(false);
+  const [loadingRecipes, setLoadingRecipes] = useState(true);
+  const [hasFetchedAll, setHasFetchedAll] = useState(false);
 
-  // number of currently loaded pages (pageCount * pageSize recipes)
+  // number of currently loaded pages
   const [pageCount, setPageCount] = useState(0);
   const pageSize = 10;
 
-  // flag indicating whether search results have been exhausted
-  const [hasFetchedAll, setHasFetchedAll] = useState(false);
-
   // filter attributes
+  const [showFilterTab, setShowFilterTab] = useState(false);
+
   const [enableFridge, setEnableFridge] = useState(false);
 
   const [enableMaxCookingTime, setEnableMaxCookingTime] = useState(false);
@@ -34,14 +35,22 @@ export const RecipeSearchPage = ({ match }) => {
   const [enableMinRating, setEnableMinRating] = useState(false);
   const [minRating, setMinRating] = useState(2.5);
 
-  const [enableMaxCalorie, setEnableMaxCalorie] = useState(false);
-  const [maxCalorie, setMaxCalorie] = useState(500);
-  const maxCalorieMaxInput = 2000;
+  const [enableMaxCalories, setEnableMaxCalories] = useState(false);
+  const [maxCalories, setMaxCalories] = useState(500);
+  const maxCaloriesMaxInput = 2000;
 
   const [dietLabels, setDietLabels] = useState('');
   const [healthLabels, setHealthLabels] = useState('');
 
+  // sort criteria
+  const [sortBy, setSortBy] = useState('');
+
   const sortOptions = [
+    {
+      key: 0,
+      text: 'None',
+      value: '',
+    },
     {
       key: 1,
       text: 'Rating',
@@ -63,28 +72,33 @@ export const RecipeSearchPage = ({ match }) => {
     return axios.get('/api/user/setting/')
       .then(response => {
         let {
+          fridge_able,
           cooking_time,
           rating,
-          calorie,
+          calories,
           diet_labels,
           health_labels,
         } = response.data;
 
         if (cooking_time) {
-          setEnableMaxCookingTime(cooking_time);
+          setMaxCookingTime(cooking_time);
         }
+
         if (rating) {
           setMinRating(rating);
         }
-        if (calorie) {
-          setMaxCalorie(calorie);
+
+        if (calories) {
+          setMaxCalories(calories);
         }
-        if (diet_labels.length) {
-          setDietLabels(diet_labels.join(' '));
-        }
-        if (health_labels.length) {
-          setHealthLabels(health_labels.join(' '));
-        }
+
+        setDietLabels(diet_labels.join(' '));
+        setHealthLabels(health_labels.join(' '));
+
+        setEnableFridge(fridge_able);
+        setEnableMaxCookingTime(Boolean(cooking_time));
+        setEnableMinRating(Boolean(rating));
+        setEnableMaxCalories(Boolean(calories));
 
         return response;
       });
@@ -92,28 +106,41 @@ export const RecipeSearchPage = ({ match }) => {
 
   const saveSetting = () => {
     return axios.put('/api/user/setting/', {
-      cooking_time: enableMaxCookingTime ? maxCookingTime : null,
-      rating: enableMinRating ? minRating : null,
-      calorie: enableMaxCalorie ? maxCalorie : null,
-      diet_labels: dietLabels.trim().split(/\s+/),
-      health_labels: healthLabels.trim().split(/\s+/),
+      fridge_able: enableFridge ? 'true' : 'false',
+      cooking_time: enableMaxCookingTime ? maxCookingTime : 0,
+      rating: enableMinRating ? minRating : 0,
+      calories: enableMaxCalories ? maxCalories : 0,
+      diet_labels: dietLabels.split(/\s+/).filter(Boolean),
+      health_labels: healthLabels.split(/\s+/).filter(Boolean),
     });
   };
 
-  const fetchResults = (reset) => {
-    let fromParam = 'from=' + pageCount * pageSize;
-    let toParam = 'to=' + (pageCount + 1) * pageSize;
-    let sortParam = sortBy ? 'sort=' + sortBy : '';
+  const fetchResults = (reset, sort = sortBy) => {
+    setHasFetchedAll(false);
+    setLoadingRecipes(true);
+
+    if (reset) {
+      setRecipes([]);
+      setPageCount(0);
+    }
+
+    let fromParam = 'from=' + (reset ? 0 : pageCount) * pageSize;
+    let toParam = 'to=' + (reset ? 1 : pageCount + 1) * pageSize;
+    let qParam = 'q=' + searchInput;
+    let sortParam = sort ? 'sort=' + sort : '';
+    let fridgeParam = enableFridge ? 'fridge_able=true' : '';
     let timeParam = enableMaxCookingTime ? 'time=' + maxCookingTime : '';
     let ratingParam = enableMinRating ? 'rating=' + minRating : '';
-    let calorieParam = enableMaxCalorie ? 'calorie=' + maxCalorie : '';
-    let dietParam = dietLabels.trim().split(/\s+/).map(label => 'diet_labels=' + label).join('&');
-    let healthParam = healthLabels.trim().split(/\s+/).map(label => 'health_labels=' + label).join('&');
+    let calorieParam = enableMaxCalories ? 'calorie=' + maxCalories : '';
+    let dietParam = dietLabels.split(/\s+/).filter(Boolean).map(label => 'diet_labels=' + label).join('&');
+    let healthParam = healthLabels.split(/\s+/).filter(Boolean).map(label => 'health_labels=' + label).join('&');
 
     let params = [
       fromParam,
       toParam,
+      qParam,
       sortParam,
+      fridgeParam,
       timeParam,
       ratingParam,
       calorieParam,
@@ -121,44 +148,51 @@ export const RecipeSearchPage = ({ match }) => {
       healthParam,
     ].filter(Boolean).join('&');
 
-    setHasFetchedAll(false);
-
     return axios.get('/api/search/?' + params)
       .then(response => {
         const recipes_new = response.data.recipes;
-        if (!recipes_new.length) {
+
+        if (recipes_new.length < pageSize) {
           setHasFetchedAll(true);
         }
 
-        if (reset) {
-          setPageCount(0);
-          setRecipes(recipes_new);
-        } else {
-          setPageCount(pageCount + 1);
-          setRecipes(recipes.concat(recipes_new));
-        }
+        setRecipes(prevRecipes => prevRecipes.concat(recipes_new));
+        setPageCount(prevPageCount => prevPageCount + 1);
+        setLoadingRecipes(false);
 
         return response;
       });
   };
 
-  if (userIsAuthorized && !hasSetting) {
-    fetchSetting().finally(() => setHasSetting(true));
-  }
+  useEffect(() => {
+    if (userIsAuthorized) {
+      fetchSetting().then(() => setHasSettings(true));
+    } else {
+      setHasSettings(true);
+    }
+  }, []);
 
-  if (!hasRecipes) {
-    fetchResults();
-    setHasRecipes(true);
-  }
+  useEffect(() => {
+    if (hasSettings) {
+      fetchResults(true);
+    }
+  }, [hasSettings]);
 
   const filterTab = (
     <Segment>
+      {
+        !hasSettings &&
+        <Dimmer active inverted>
+          <Loader active />
+        </Dimmer>
+      }
       <Form>
         <Form.Field>
           <Checkbox
             id='enableFridge'
             label='Check availability from My Fridge'
             checked={enableFridge}
+            disabled={!userIsAuthorized}
             onChange={() => setEnableFridge(!enableFridge)}
           />
         </Form.Field>
@@ -174,7 +208,7 @@ export const RecipeSearchPage = ({ match }) => {
           <input
             type='number'
             id='maxCookingTimeInput'
-            min={0}
+            min={1}
             max={maxCookingTimeMaxInput}
             value={maxCookingTime}
             onChange={e => setMaxCookingTime(e.target.value)}
@@ -192,7 +226,7 @@ export const RecipeSearchPage = ({ match }) => {
           <input
             type='number'
             id='minRatingInput'
-            min={0}
+            min={0.1}
             max={5}
             step={0.1}
             value={minRating}
@@ -203,19 +237,19 @@ export const RecipeSearchPage = ({ match }) => {
           <Checkbox
             id='enableMaxCalorie'
             label='Set maximum calories per serving'
-            checked={enableMaxCalorie}
-            onChange={() => setEnableMaxCalorie(!enableMaxCalorie)}
+            checked={enableMaxCalories}
+            onChange={() => setEnableMaxCalories(!enableMaxCalories)}
           />
         </Form.Field>
         <Form.Field>
-          <Form.Field disabled={!enableMaxCalorie} width={3}>
+          <Form.Field disabled={!enableMaxCalories} width={3}>
             <input
               type='number'
               id='maxCalorieInput'
-              min={0}
-              max={maxCalorieMaxInput}
-              value={maxCalorie}
-              onChange={e => setMaxCalorie(e.target.value)}
+              min={1}
+              max={maxCaloriesMaxInput}
+              value={maxCalories}
+              onChange={e => setMaxCalories(e.target.value)}
             />
           </Form.Field>
         </Form.Field>
@@ -226,6 +260,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='dietLabelsInput'
             value={dietLabels}
             onChange={e => setDietLabels(e.target.value)}
+            placeholder='available:&emsp;Balanced&emsp;High-Protein&emsp;High-Fiber&emsp;Low-Fat&emsp;Low-Carb&emsp;Low-Sodium'
           />
         </Form.Field>
         <Form.Field>
@@ -235,6 +270,7 @@ export const RecipeSearchPage = ({ match }) => {
             id='healthLabelsInput'
             value={healthLabels}
             onChange={e => setHealthLabels(e.target.value)}
+            placeholder='others'
           />
         </Form.Field>
         <Form.Group>
@@ -245,6 +281,7 @@ export const RecipeSearchPage = ({ match }) => {
               id='applyFilterButton'
               content='Apply'
               onClick={() => fetchResults(true)}
+              disabled={loadingRecipes || !hasSettings}
             />
           </Form.Field>
           <Form.Field>
@@ -252,8 +289,8 @@ export const RecipeSearchPage = ({ match }) => {
               basic
               id='saveFilterButton'
               content='Save preferences'
-              onClick={() => saveSetting()}
-              disabled={userIsAuthorized !== true}
+              onClick={() => { saveSetting(); fetchResults(true); }}
+              disabled={userIsAuthorized !== true || loadingRecipes || !hasSettings}
             />
           </Form.Field>
         </Form.Group>
@@ -261,45 +298,47 @@ export const RecipeSearchPage = ({ match }) => {
     </Segment>
   );
 
-  const searchResults = recipes.map((recipe, key) => (
-    <Item key={key} as={Link} to={`/recipe/${recipe.id}`}>
-      <Item.Image
-        src={`https://source.unsplash.com/512x512/?soup,${key}`}
-        size='small'
-      />
-      <Item.Content>
-        <Item.Header>
-          {recipe.title}
-        </Item.Header>
-        <Item.Meta>
-          {recipe.rating.toFixed(1)}&ensp;
-          <Rating
-            rating={recipe.rating}
-            maxRating={5}
-            icon='star'
-            size='mini'
-            disabled
-          />
-        </Item.Meta>
-        <Item.Meta>
-          {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
-          {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
-          {recipe.calorie}&ensp;calorie{recipe.calorie == 1 ? '' : 's'} / serving
-        </Item.Meta>
-        <Item.Description>
-          {recipe.content.substr(0, 160)}
-          {recipe.content.length > 160 ? '...' : ''}
-        </Item.Description>
-        <Item.Extra>
-          {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
-          {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
-        </Item.Extra>
-      </Item.Content>
-    </Item>
-  ));
+  const searchResults = recipes.map(recipe => {
+    const recipeSteps = recipe.content.join(' ');
+    return (
+      <Item key={recipe.id} as={Link} to={`/recipe/${recipe.id}`}>
+        <Item.Image size='small'>
+          <ImageWrapper src={recipe.image} />
+        </Item.Image>
+        <Item.Content>
+          <Item.Header>
+            {recipe.title}
+          </Item.Header>
+          <Item.Meta>
+            ({recipe.rating.toFixed(1)})&ensp;
+            <Rating
+              rating={recipe.rating}
+              maxRating={5}
+              icon='star'
+              size='mini'
+              disabled
+            />
+          </Item.Meta>
+          <Item.Meta>
+            {recipe.serving}&ensp;serving{recipe.serving == 1 ? '' : 's'}&emsp;
+            {recipe.cooking_time}&ensp;minute{recipe.cooking_time == 1 ? '' : 's'}&emsp;
+            {recipe.calories.toFixed(0)}&ensp;calories / serving
+          </Item.Meta>
+          <Item.Description>
+            {recipeSteps.substr(0, 200)}
+            {recipeSteps.length > 200 ? '...' : ''}
+          </Item.Description>
+          <Item.Extra>
+            {recipe.diet_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+            {recipe.health_labels.map((tag, key) => <span key={key}>{tag}&emsp;</span>)}
+          </Item.Extra>
+        </Item.Content>
+      </Item>
+    );
+  });
 
   return (
-    <Container text style={{ marginTop: '1em' }}>
+    <Container text>
       <Segment color='blue' inverted tertiary>
         <Grid>
           <Grid.Column verticalAlign='middle' width={1}>
@@ -316,7 +355,7 @@ export const RecipeSearchPage = ({ match }) => {
                   placeholder='Search recipes...'
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
-                  onKeyDown={() => fetchResults()}
+                  onKeyDown={e => { if (searchInput && e.key === 'Enter') fetchResults(true); }}
                 />
               </Form.Field>
             </Form>
@@ -326,32 +365,51 @@ export const RecipeSearchPage = ({ match }) => {
       <Dropdown
         button
         basic
-        clearable
         id='sortOption'
         placeholder='Sort by...'
         options={sortOptions}
         value={sortBy}
-        onChange={(e, { value }) => {
-          setSortBy(value);
-          fetchResults(true);
-        }}
-        style={{ width: '11em' }}
-      />
+        onChange={(e, { value }) => { setSortBy(value); fetchResults(true, value); }}
+        style={{ width: '11em', textAlign: 'right' }}
+      />&ensp;
       <Button
         id='showFilterTabButton'
-        onClick={() => setShowFilterTab(!showFilterTab)}
+        onClick={() => {
+          if (showFilterTab) {
+            setShowFilterTab(false);
+          } else {
+            if (userIsAuthorized) {
+              setHasSettings(false);
+              setShowFilterTab(true);
+              fetchSetting().then(() => setHasSettings(true));
+            } else {
+              setShowFilterTab(true);
+            }
+          }
+        }}
         content='Filter'
       />
-      { showFilterTab &&
+      {
+        showFilterTab &&
         filterTab
       }
-      <Visibility onBottomVisible={() => fetchResults(false)}>
-        <Item.Group divided>
-          {searchResults}
-        </Item.Group>
+      <Item.Group divided>
+        {
+          searchResults.length
+            ? searchResults
+            : !loadingRecipes && 'No results found.'
+        }
+      </Item.Group>
+      <Visibility
+        once={false}
+        onTopVisible={() => { if (!loadingRecipes && !hasFetchedAll) fetchResults(false); }}
+      >
+        <Loader
+          active={!hasFetchedAll}
+          content='Loading...'
+          inline='centered'
+        />
       </Visibility>
-      <br />
-      <Loader active={!hasFetchedAll} inline='centered' />
     </Container >
   );
 };

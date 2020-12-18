@@ -1,6 +1,8 @@
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_OUT = 'SIGN_OUT';
 export const GET_NOTIFICATION = 'GET_NOTIFICATION';
+export const GET_RECOMMENDATION = 'GET_RECOMMENDATION';
+export const SET_TAB_INDEX = 'SET_TAB_INDEX';
 
 export const GET_FRIDGE_ITEMS = 'GET_FRIDGE_ITEMS';
 export const GET_FRIDGE_ITEM = 'GET_FRIDGE_ITEM';

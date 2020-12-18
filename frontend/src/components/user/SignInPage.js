@@ -1,32 +1,47 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 
 import * as actionCreators from '../../store/actions/index';
 
 
 export const SignInPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const isAuthorized = useSelector(state => state.user.isAuthorized);
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [wait, setWait] = useState(false);
+
   const onClickSigninConfirmButton = () => {
+    setWait(true);
     dispatch(actionCreators.signin({ username, password }))
-      .then(() => {
-        history.push('/');
-      })
+      .then(() => history.goBack())
       .catch(() => {
         window.alert('Authentication failed.');
+        setWait(false);
       });
   };
+
+  if (isAuthorized) {
+    return null;
+  }
 
   return (
     <Grid style={{ height: '100vh' }} verticalAlign='middle' centered>
       <Grid.Column style={{ maxWidth: 360 }}>
-        <Header content='F.R.I.D.G.E' textAlign='center' as='h1' color='blue' />
+        <Header textAlign='center' as='h1' color='blue'>
+          <Link to='/'>
+            <Header color='blue'>
+              FRIDGE
+            </Header>
+          </Link>
+        </Header>
         <Header content='Sign in' textAlign='center' as='h2' />
         <Segment raised>
           <Form>
@@ -50,16 +65,21 @@ export const SignInPage = () => {
             </Form.Field>
           </Form>
         </Segment>
-        <Button floated='right' primary
+        <Button
           type='button'
           id='signinConfirmButton'
           onClick={onClickSigninConfirmButton}
           content='Confirm'
+          disabled={!username || !password || wait}
+          floated='right'
+          primary
         />
-        <Button floated='right'
+        <Button
           id='signupButton'
-          onClick={() => { history.push('/signup'); }}
+          onClick={() => { history.replace('/signup'); }}
           content='Sign up'
+          disabled={wait}
+          floated='right'
         />
       </Grid.Column>
     </Grid>

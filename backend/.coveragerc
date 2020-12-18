@@ -6,3 +6,4 @@ omit =
     backend/asgi.py
     manage.py
     backend/models.py
+    backend/tests/*

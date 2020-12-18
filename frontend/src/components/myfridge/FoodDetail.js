@@ -1,93 +1,123 @@
 import React, { useState } from 'react';
-import { /*useDispatch,*/ useSelector } from 'react-redux';
-//import * as actionCreators from '../../store/actions/index';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Accordion, Button, Grid, Icon, Input, Label, Segment, Header } from 'semantic-ui-react';
-import './FoodPopup.css';
+import { Button, Form, Modal } from 'semantic-ui-react';
 
-export default function FoodDetail(props) {
-  //const dispatch = useDispatch();
+import * as actionCreators from '../../store/actions/index';
 
-  // redux store state
+
+export const FoodDetail = ({ open, setOpen }) => {
+  const dispatch = useDispatch();
+
   const selectedFridgeItem = useSelector(state => state.fridgeItem.selectedFridgeItem);
 
-  // local states
   const [name, setName] = useState(selectedFridgeItem.name);
-  const [type, setType] = useState(selectedFridgeItem.type);
+  const type = selectedFridgeItem.ingredient_name || '';
   const [quantity, setQuantity] = useState(selectedFridgeItem.quantity);
   const [unit, setUnit] = useState(selectedFridgeItem.unit);
-  const [expiryDate, setExpiryDate] = useState(selectedFridgeItem.expiryDate);
-  const [calorie, setCalorie] = useState(selectedFridgeItem.nutritionFacts[0]);
-  const [sodium, setSodium] = useState(selectedFridgeItem.nutritionFacts[1]);
-  const [protein, setProtein] = useState(selectedFridgeItem.nutritionFacts[2]);
-  const [open, setOpen] = useState(false);
-  
-  // go back to MyFridge page
-  const onClickBackButton = () => {
-    props.onEnd();
-  };
+  const [expiryDate, setExpiryDate] = useState(selectedFridgeItem.expiry_date);
 
-  // edit food detail and go to MyFridge page
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+
+  // edit fridge item and close food detail modal
   const onClickConfirmEditButton = () => {
-    /*const editedFridgeItem = {
-      id: selectedFridgeItem.id,
-      name, type, quantity, unit, expiryDate,
-      nutritionFacts: [calorie, sodium, protein],
-    };*/
+    const editedFridgeItem = {
+      name,
+      quantity,
+      unit,
+      expiry_date: expiryDate,
+    };
 
-    /*dispatch(actionCreators.editFridgeItem(selectedFridgeItem.id, selectedFridgeItem))
-      .then(() => {
-        props.onEnd();
-      });*/
-    
-    //dispatch(actionCreators.editFridgeItem_(editedFridgeItem));
-    props.onEnd();
+    // disallow multiple clicks
+    setIsWaitingResponse(true);
+    dispatch(actionCreators.editFridgeItem(selectedFridgeItem.id, editedFridgeItem))
+      .then(() => setOpen(false));
   };
 
-  // delete fridge instance and go to MyFridge page
+  // delete fridge item and close food detail modal
   const onClickDeleteFoodButton = () => {
-    /*dispatch(actionCreators.deleteFridgeItem(selectedFridgeItem.id))
-      .then(() => {
-        props.onEnd();
-      });*/
-    
-    //dispatch(actionCreators.deleteFridgeItem_(selectedFridgeItem.id));
-    props.onEnd();
+    // disallow multiple clicks
+    setIsWaitingResponse(true);
+    dispatch(actionCreators.deleteFridgeItem(selectedFridgeItem.id))
+      .then(() => setOpen(false));
   };
+
+  const form = (
+    <Form>
+      <Form.Input
+        id='nameInput'
+        label='Name'
+        value={name}
+        onChange={e => setName(e.target.value)}
+        required
+      />
+      <Form.Input
+        id='typeInput'
+        label='Type'
+        value={type}
+        disabled
+      />
+      <Form.Input
+        id='quantityInput'
+        type='number'
+        label='Quantity'
+        value={quantity}
+        min={0}
+        onChange={e => setQuantity(e.target.value)}
+        required
+      />
+      <Form.Input
+        id='unitInput'
+        label='Unit'
+        value={unit}
+        onChange={e => setUnit(e.target.value)}
+      />
+      <Form.Input
+        id='expiryDateInput'
+        type='date'
+        label='Expiry Date'
+        value={expiryDate}
+        onChange={e => setExpiryDate(e.target.value)}
+      />
+    </Form>
+  );
 
   return (
-    <div id='base'>
-      <Grid id='FoodDetail' verticalAlign='middle' centered>
-        <Grid.Row>
-          <Grid.Column>
-            <Header as='h1'>Food Details</Header>
-            <Segment id='foodInfo'>
-              <Input id='nameInput' type='text' value={name}
-                onChange={(event) => setName(event.target.value)}>
-                <Label basic>Name</Label>
-                <input />
-              </Input>
-              <Input id='typeInput' type='text' value={type}
-                onChange={(event) => setType(event.target.value)}>
-                <Label basic>Type</Label>
-                <input />
-              </Input>
-              <Input id='quantityInput' type='text' value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}>
-                <Label basic>Quantity</Label>
-                <input />
-              </Input>
-              <Input id='unitInput' type='text' value={unit}
-                onChange={(event) => setUnit(event.target.value)}>
-                <Label basic>Unit</Label>
-                <input />
-              </Input>
-              <Input id='expiryDateInput' type='text' value={expiryDate}
-                onChange={(event) => setExpiryDate(event.target.value)}>
-                <Label basic>Expiry Date</Label>
-                <input />
-              </Input>
-            </Segment>
+    <Modal
+      id='FoodDetail'
+      open={open}
+      dimmer='inverted'
+      size='mini'
+    >
+      <Modal.Header content='Edit fridge item' />
+      <Modal.Content>
+        {form}
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          id='editButton'
+          onClick={onClickConfirmEditButton}
+          content='Submit'
+          disabled={isWaitingResponse || !name || !quantity}
+        />
+        <Button
+          id='deleteButton'
+          onClick={onClickDeleteFoodButton}
+          content='Delete'
+          disabled={isWaitingResponse}
+        />
+        <Button
+          id='backButton'
+          onClick={() => setOpen(false)}
+          content='Back'
+          disabled={isWaitingResponse}
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
+
+/*
             <Accordion>
               <Accordion.Title id='showNutritions' active={open} onClick={() => setOpen(open ? false : true)}>
                 <Icon name='dropdown' /> Nutrition Facts
@@ -112,20 +142,4 @@ export default function FoodDetail(props) {
                 </Segment>
               </Accordion.Content>
             </Accordion>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row id='buttons'>
-          <Button id='editButton' onClick={() => onClickConfirmEditButton()}>
-            Edit
-          </Button>
-          <Button id='deleteButton' onClick={() => onClickDeleteFoodButton()}>
-            Delete
-          </Button>
-          <Button id='backButton' onClick={() => onClickBackButton()}>
-            Back
-          </Button>
-        </Grid.Row>
-      </Grid>
-    </div>
-  );
-}
+*/

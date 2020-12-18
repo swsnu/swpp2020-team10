@@ -1,81 +1,138 @@
+import axios from 'axios';
 import React, { useState } from 'react';
-//import { /*useDispatch,*/ /*useSelector*/ } from 'react-redux';
-//import * as actionCreators from '../../store/actions/index';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Accordion, Button, Icon, Input, Label, Segment, Grid, Header } from 'semantic-ui-react';
-import './FoodPopup.css';
+import { Form, Modal, Button } from 'semantic-ui-react';
 
-export default function FoodCreate(props) {
-  //const dispatch = useDispatch();
+import * as actionCreators from '../../store/actions/index';
+import { getFormattedDate } from '../../misc';
 
-  // redux store state
-  //const userId = useSelector(state => state.user.id);
 
-  // local states
+export const FoodCreate = ({ open, setOpen }) => {
+  const dispatch = useDispatch();
+
+  const userId = useSelector(state => state.user.id);
+
   const [name, setName] = useState('');
   const [type, setType] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [unit, setUnit] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [calorie, setCalorie] = useState('');
-  const [sodium, setSodium] = useState('');
-  const [protein, setProtein] = useState('');
-  const [open, setOpen] = useState(false);
+  const [expiryDate, setExpiryDate] = useState(getFormattedDate(7));
 
-  // go back to MyFridge page
-  const onClickBackButton = () => {
-    props.onEnd();
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [hasTypeOptions, setHasTypeOptions] = useState(false);
+
+  const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+
+  // query ingredient type to backend
+  const onBlurName = () => {
+    if (!name) {
+      return;
+    }
+    
+    axios.get(`/api/ingredient/?q=${name}`)
+      .then(response => {
+        setTypeOptions(response.data.map(item => {
+          return {
+            key: item.id,
+            text: item.name,
+            value: item.id,
+          };
+        }));
+        setHasTypeOptions(true);
+      });
   };
 
-  // add new fridge item and go to MyFridge page
+  // add new fridge item and close food create modal
   const onClickAddButton = () => {
-    /*const newFridgeItem = {
-      name, type, quantity, unit, expiryDate,
-      nutritionFacts: [calorie, sodium, protein],
-      id: '100'
-    };*/
+    const newFridgeItem = {
+      name,
+      ingredient_id: type,
+      quantity,
+      unit,
+      expiry_date: expiryDate,
+    };
 
-    /*dispatch(actionCreators.postFridgeItem(userId, newFridgeItem))
-      .then(() => {
-        props.onEnd();
-      });*/
-    //dispatch(actionCreators.postFridgeItem_(newFridgeItem));
-    props.onEnd();
+    // disallow multiple clicks
+    setIsWaitingResponse(true);
+    dispatch(actionCreators.postFridgeItem(userId, newFridgeItem))
+      .then(() => setOpen(false));
   };
+
+  const form = (
+    <Form>
+      <Form.Input
+        id='nameInput'
+        label='Name'
+        value={name}
+        onChange={e => setName(e.target.value)}
+        onBlur={onBlurName}
+        required
+      />
+      <Form.Select
+        id='typeInput'
+        label='Type'
+        options={typeOptions}
+        value={type}
+        onChange={(e, { value }) => setType(value)}
+        placeholder={hasTypeOptions ? '' : 'Please fill in the name first.'}
+        required
+      />
+      <Form.Input
+        id='quantityInput'
+        type='number'
+        label='Quantity'
+        value={quantity}
+        min={0}
+        onChange={e => setQuantity(e.target.value)}
+        required
+      />
+      <Form.Input
+        id='unitInput'
+        label='Unit'
+        value={unit}
+        onChange={e => setUnit(e.target.value)}
+      />
+      <Form.Input
+        id='expiryDateInput'
+        type='date'
+        label='Expiry Date'
+        value={expiryDate}
+        onChange={e => setExpiryDate(e.target.value)}
+      />
+    </Form>
+  );
 
   return (
-    <div id='base'>
-      <Grid id='FoodCreate' verticalAlign='middle' centered>
-        <Grid.Row>
-          <Grid.Column>
-            <Header as='h1'>Add New Food</Header>
-            <Segment id='foodInfo'>
-              <Input id='nameInput' type='text' value={name}
-                onChange={(event) => setName(event.target.value)}>
-                <Label basic>Name</Label>
-                <input />
-              </Input>
-              <Input id='typeInput' type='text' value={type}
-                onChange={(event) => setType(event.target.value)}>
-                <Label basic>Type</Label>
-                <input />
-              </Input>
-              <Input id='quantityInput' type='text' value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}>
-                <Label basic>Quantity</Label>
-                <input />
-              </Input>
-              <Input id='unitInput' type='text' value={unit}
-                onChange={(event) => setUnit(event.target.value)}>
-                <Label basic>Unit</Label>
-                <input />
-              </Input>
-              <Input id='expiryDateInput' type='text' value={expiryDate}
-                onChange={(event) => setExpiryDate(event.target.value)}>
-                <Label basic>Expiry Date</Label>
-                <input />
-              </Input>
-            </Segment>
+    <Modal
+      id='FoodCreate'
+      open={open}
+      dimmer='inverted'
+      size='mini'
+    >
+      <Modal.Header content='Add fridge item' />
+      <Modal.Content>
+        {form}
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          id='addButton'
+          onClick={onClickAddButton}
+          content='Submit'
+          disabled={isWaitingResponse || !name || !type || !quantity}
+        />
+        <Button
+          id='backButton'
+          onClick={() => setOpen(false)}
+          content='Back'
+          disabled={isWaitingResponse}
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
+
+/*
             <Accordion>
               <Accordion.Title id='showNutritions' active={open} onClick={() => setOpen(open ? false : true)}>
                 <Icon name='dropdown' /> Nutrition Facts
@@ -100,17 +157,4 @@ export default function FoodCreate(props) {
                 </Segment>
               </Accordion.Content>
             </Accordion>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row id='buttons'>
-          <Button id='addButton' onClick={() => onClickAddButton()}>
-            Add
-          </Button>
-          <Button id='backButton' onClick={() => onClickBackButton()}>
-            Back
-          </Button>
-        </Grid.Row>
-      </Grid>
-    </div>
-  );
-}
+*/
