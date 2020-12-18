@@ -74,6 +74,7 @@ matrix:
         - pip install -r requirements.txt
         - pip install coveralls
         - pip install psycopg2
+        - pip install django-extensions
       before_script:
         - psql -c "CREATE DATABASE fridge_db;" -U postgres
       env:
